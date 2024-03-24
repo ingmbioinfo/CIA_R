@@ -19,7 +19,7 @@ compute_signature_scores(
 
 \item{seurat_assay}{Assay to use for SeuratObject objects (default "RNA").}
 
-\item{matrix}{Slot to use for Seurat or SingleCellExperiment objects (default "data" for SO, 'logcounts' for SCE).}
+\item{matrix}{Slot to use for Seurat or SingleCellExperiment objects (default "data" for SO, "logcounts" for SCE).}
 
 \item{total_col_sums}{Optional precomputed column sums for normalization.}
 }

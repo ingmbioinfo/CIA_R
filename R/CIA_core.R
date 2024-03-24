@@ -19,7 +19,7 @@
 #' ## TODO
 load_signatures <- function(signatures_input) {
   if (is.character(signatures_input)) {
-    df <- fread(signatures_input, sep = '\t', header = FALSE)
+    df <- fread(signatures_input, sep = "\t", header = FALSE)
     signatures <- split(df[, -1], df[[1]])
     signatures <- lapply(signatures, na.omit)
     signatures <- lapply(signatures, as.character)
@@ -41,7 +41,7 @@ load_signatures <- function(signatures_input) {
 #' @param data Numeric matrix, data frame, SeuratObject, or SingleCellExperiment with genes in rows and cells in columns.
 #' @param geneset Vector of gene names to compute the scores for.
 #' @param seurat_assay Assay to use for SeuratObject objects (default "RNA").
-#' @param matrix Slot to use for Seurat or SingleCellExperiment objects (default "data" for SO, 'logcounts' for SCE).
+#' @param matrix Slot to use for Seurat or SingleCellExperiment objects (default "data" for SO, "logcounts" for SCE).
 #' @param total_col_sums Optional precomputed column sums for normalization.
 #'
 #' @return Vector of signature scores for each column (cell) in the data.
@@ -57,7 +57,7 @@ compute_signature_scores <- function(data, geneset, seurat_assay="RNA", matrix="
   if (inherits(data, "Seurat")) {
     datam <- slot(data[[seurat_assay]],matrix)
   } else if (inherits(data, "SingleCellExperiment")) {
-    if(matrix=='data'){matrix<-'logcounts'}
+    if(matrix=="data"){matrix<-"logcounts"}
     datam <- assay(data, matrix)
   } else {datam <- data}
   geneset <- intersect(geneset, rownames(datam))
@@ -92,9 +92,9 @@ compute_signature_scores <- function(data, geneset, seurat_assay="RNA", matrix="
 #' @param return_score Boolean to return scores directly (default FALSE).
 #' @param seurat_assay Assay for Seurat objects (default "RNA").
 #' @param matrix Slot to use for Seurat or SingleCellExperiment objects
-#' (default "data" for SO, 'logcounts' for SCE).
-#' @param score_mode Calculation mode for scores: 'raw', 'scaled', or
-#' log-transformed ('log', 'log2', 'log10').
+#' (default "data" for SO, "logcounts" for SCE).
+#' @param score_mode Calculation mode for scores: "raw", "scaled", or
+#' log-transformed ("log", "log2", "log10").
 #' @param n_cpus Number of CPU cores for parallel computation (default uses a
 #' quarter of available cores).
 #'
@@ -105,23 +105,24 @@ compute_signature_scores <- function(data, geneset, seurat_assay="RNA", matrix="
 #' @importFrom future.apply future_lapply
 #' @importFrom data.table fread
 #' @importFrom sparseMatrixStats colSums2
-#' @importFrom SummarizedExperiment assay colData colData<-
+#' @importFrom SummarizedExperiment assay colData<- colData
+#' @importFrom SingleCellExperiment SingleCellExperiment counts logcounts
 #'
 #' @export
 #'
 #' @examples
 #' ## TODO
-signature_score <- function(data, signatures_input, return_score=FALSE, seurat_assay="RNA",matrix="data", score_mode = 'raw', n_cpus = NULL) {
+signature_score <- function(data, signatures_input, return_score=FALSE, seurat_assay="RNA",matrix="data", score_mode = "raw", n_cpus = NULL) {
   signatures <- load_signatures(signatures_input)
     # Check the type of data and extract expression matrix accordingly
   if (inherits(data, "Seurat")) {
     datam <- slot(data[[seurat_assay]],matrix)
   } else if (inherits(data, "SingleCellExperiment")) {
-    if(matrix=='data'){matrix<-'logcounts'}
+    if(matrix=="data"){matrix<-"logcounts"}
     datam <- assay(data, matrix)
   } else {datam <- data}
 
-  cat('Checking if genes are in the dataset matrix...', "\n")
+  cat("Checking if genes are in the dataset matrix...", "\n")
   result <- sapply(names(signatures), function(x) {
     lt <- length(signatures[[x]])
     l <- sum(signatures[[x]] %in% rownames(data))
@@ -142,11 +143,11 @@ signature_score <- function(data, signatures_input, return_score=FALSE, seurat_a
   scores_df <- do.call(cbind, scores)
   colnames(scores_df) <- names(signatures)
 
-  if (score_mode == 'scaled') {
+  if (score_mode == "scaled") {
     scores_df <- sweep(scores_df, 2, apply(scores_df, 2, max), `/`)
-  } else if (score_mode %in% c('log', 'log2', 'log10')) {
+  } else if (score_mode %in% c("log", "log2", "log10")) {
     scores_df <- match.fun(score_mode)(scores_df + .Machine$double.xmin)
-  } else if (score_mode != 'raw') {
+  } else if (score_mode != "raw") {
     stop("Invalid score_mode. Must be one of: ['raw', 'scaled', 'log', 'log2', 'log10']")
   }
 
@@ -157,12 +158,12 @@ signature_score <- function(data, signatures_input, return_score=FALSE, seurat_a
 
 if (inherits(data, "Seurat")) {
     data@meta.data[, colnames(scores_df)] <- scores_df
-    cat('Scores have been added in data@meta.data', "\n")
+    cat("Scores have been added in data@meta.data", "\n")
     return(data)
 
   } else if (inherits(data, "SingleCellExperiment")) {
     colData(data)[, colnames(scores_df)] <- scores_df
-    cat('Scores have been added in colData(data)', "\n")
+    cat("Scores have been added in colData(data)", "\n")
     return(data)
   } else {return(scores_df)}
 
@@ -184,7 +185,7 @@ if (inherits(data, "Seurat")) {
 #' vector of gene names with names of the list elements representing signature names.
 #' @param seurat_assay Assay for Seurat objects (default "RNA").
 #' @param matrix Slot to use for Seurat or SingleCellExperiment objects (default
-#' "data" for SO, 'logcounts' for SCE).
+#' "data" for SO, "logcounts" for SCE).
 #' @param n_cpus An optional integer indicating the number of CPU cores to use
 #' for parallel computation. If NULL, the function will decide the number based on
 #' available system resources.
@@ -193,9 +194,9 @@ if (inherits(data, "Seurat")) {
 #' assign a specific class to a cell. If the difference is less than or equal to
 #' this threshold, the cell is labeled as unassigned.
 #' @param column_name The name of the column to be added to the metadata storing
-#' the classification labels, default is 'CIA_prediction'.
+#' the classification labels, default is "CIA_prediction".
 #' @param unassigned_label The label to assign to the cells where no clear majority
-#' signature is identified, default is 'Unassigned'.
+#' signature is identified, default is "Unassigned".
 #'
 #' @return Modifies the input data object by adding the classification labels to
 #' its metadata and returns the modified data object.
@@ -208,8 +209,8 @@ if (inherits(data, "Seurat")) {
 #' @examples
 #' ## TODO
 signature_based_classification <- function(data, signatures_input, n_cpus = NULL, similarity_threshold = 0.1,
-                                           seurat_assay="RNA",matrix="data",column_name='CIA_prediction',
-                                           unassigned_label='Unassigned') {
+                                           seurat_assay="RNA",matrix="data",column_name="CIA_prediction",
+                                           unassigned_label="Unassigned") {
   start_time <- Sys.time()  # Capture start time
 
   get_label <- function(row) {
@@ -221,7 +222,7 @@ signature_based_classification <- function(data, signatures_input, n_cpus = NULL
     }
   }
 
-  score_matrix <- signature_score(data, signatures_input, score_mode = 'scaled',seurat_assay=seurat_assay,
+  score_matrix <- signature_score(data, signatures_input, score_mode = "scaled",seurat_assay=seurat_assay,
                                   matrix=matrix, return_score=T, n_cpus = n_cpus)
   labels <- apply(score_matrix, 1, get_label)
 
@@ -233,11 +234,11 @@ signature_based_classification <- function(data, signatures_input, n_cpus = NULL
 
 if (inherits(data, "Seurat")) {
     data@meta.data[,column_name] <-as.factor(labels)
-    cat(column_name,'has been added in data@meta.data', "\n")
+    cat(column_name,"has been added in data@meta.data", "\n")
     return(data)
   } else if (is(data, "SingleCellExperiment")) {
     colData(data)[,column_name]<- as.data.frame(labels)
-    cat(column_name,'has been added in colData(data)', "\n")
+    cat(column_name,"has been added in colData(data)", "\n")
     return(data)
   }
   else {return(as.factor(labels))}

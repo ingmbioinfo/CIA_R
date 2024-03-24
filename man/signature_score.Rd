@@ -28,10 +28,10 @@ vector of gene names with names of the list elements representing signature name
 \item{seurat_assay}{Assay for Seurat objects (default "RNA").}
 
 \item{matrix}{Slot to use for Seurat or SingleCellExperiment objects
-(default "data" for SO, 'logcounts' for SCE).}
+(default "data" for SO, "logcounts" for SCE).}
 
-\item{score_mode}{Calculation mode for scores: 'raw', 'scaled', or
-log-transformed ('log', 'log2', 'log10').}
+\item{score_mode}{Calculation mode for scores: "raw", "scaled", or
+log-transformed ("log", "log2", "log10").}
 
 \item{n_cpus}{Number of CPU cores for parallel computation (default uses a
 quarter of available cores).}

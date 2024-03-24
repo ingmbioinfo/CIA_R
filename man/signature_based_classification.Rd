@@ -36,13 +36,13 @@ this threshold, the cell is labeled as unassigned.}
 \item{seurat_assay}{Assay for Seurat objects (default "RNA").}
 
 \item{matrix}{Slot to use for Seurat or SingleCellExperiment objects (default
-"data" for SO, 'logcounts' for SCE).}
+"data" for SO, "logcounts" for SCE).}
 
 \item{column_name}{The name of the column to be added to the metadata storing
-the classification labels, default is 'CIA_prediction'.}
+the classification labels, default is "CIA_prediction".}
 
 \item{unassigned_label}{The label to assign to the cells where no clear majority
-signature is identified, default is 'Unassigned'.}
+signature is identified, default is "Unassigned".}
 }
 \value{
 Modifies the input data object by adding the classification labels to
