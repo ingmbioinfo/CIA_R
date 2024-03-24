@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   eval = TRUE,
@@ -38,11 +38,11 @@ TODO: set up structure
 
 
 
-```{r setup}
+```{r loadcia}
 library("CIA")
 ```
 
-```{r}
+```{r loadpkgs}
 library("Seurat")
 library("data.table")
 library("future")
@@ -61,17 +61,17 @@ In this example, we will use the CIA method to classify cells from the [Middle T
 Note: "Chandelier" and "Pax6" cells in the MTG dataset, which are not represented by the Motor Cortex cell type signatures. Since the Azimuth signatures are not meant to distinguish "Chandelier" or "Pax6" cells from the others they have been removed to avoid the misinterpretation of results. We filtered out also cells that don"t pass QC, using only cells present in ["AnnData Object (QC"ed data, metadata, and more)"](https://portal.brain-map.org/atlases-and-data/rnaseq/human-mtg-10x_sea-ad).
 
 
-```{r, eval=FALSE}
+```{r retrievefile, eval=FALSE}
 # To download the dataset. It could take a while (4.78 Gb)
 download.file(url = "https://sea-ad-single-cell-profiling.s3.us-west-2.amazonaws.com/MTG/RNAseq/Reference_MTG_RNAseq_all-nuclei.2022-06-07.rds", 
               destfile = "MTG_cia.rds")
 ```
 
-```{r}
+```{r loaddata}
 MTG <- readRDS(file = "~/Development/CIA_R/MTG_cia.rds")
 ```
 
-```{r}
+```{r labels}
 cat("Old labels:", unique(MTG@meta.data$subclass_label),"\n", "\n")
 
 MTG@meta.data$celltype <- MTG@meta.data$subclass_label
@@ -95,23 +95,23 @@ Idents(MTG)<- MTG@meta.data$celltype
 MTG[["umap"]] <- CreateDimReducObject(embeddings = readRDS("umap.rds"), key = "UMAP_")
 ```
 
-```{r}
+```{r normalization}
 MTG <- NormalizeData(MTG, 
                      normalization.method = "LogNormalize", 
                      scale.factor = 10000)
 MTG
 ```
 
-```{r}
+```{r tosce}
 MTG_SE <- as.SingleCellExperiment(MTG)
 MTG_SE
 ```
 
-```{r}
+```{r celltypes}
 levels(MTG@meta.data$celltype)
 ```
 
-```{r, fig.width=10, fig.height=8}
+```{r plot1, fig.width=10, fig.height=8}
 DimPlot(MTG, raster = FALSE)
 ```
 
@@ -120,7 +120,7 @@ DimPlot(MTG, raster = FALSE)
 The `load_signatures` function is used to load gene signatures from a TSV file or a named list. 
 Each signature consists of a name and a set of associated genes.
 
-```{r}
+```{r loadgmt}
 gmt <- load_signatures("azimuth_human_motor_cortex.gmt")
 gmt
 ```
@@ -133,7 +133,7 @@ of gene set activities across the dataset. This function accepts as input a gene
 a `SeuratObject`, or a `SingleCellExperiment`. For `SeuratObject` and `SingleCellExperiment`, 
 the specific matrix of interest (like raw counts, normalized data, etc.) can be selected for analysis.
 
-```{r}
+```{r compsignatures}
 scores <- compute_signature_scores(data = MTG, 
                                    seurat_assay = "RNA", 
                                    matrix = "data", 
@@ -141,7 +141,7 @@ scores <- compute_signature_scores(data = MTG,
 head(scores)
 ```
 
-```{r}
+```{r compsig2}
 scores <- compute_signature_scores(data = MTG_SE, 
                                    matrix = "logcounts", 
                                    geneset = gmt$Astro)
@@ -154,11 +154,11 @@ The `signature_score` function calculates the signature scores across all given 
 utilizing parallel processing to enhance efficiency. It can compute either raw or transformed scores, based on the specified parameters. 
 When working with `SeuratObject` and `SingleCellExperiment`, the function automatically updates the objects by adding the calculated scores into their respective `meta.data` and `colData` slots.
 
-```{r}
+```{r setopts}
 options(future.globals.maxSize = 10 * 1024^3)  # Increase to 10 GiB, adjust according to your needs
 ```
 
-```{r}
+```{r sigscore1}
 MTG <- signature_score(data = MTG, 
                        signatures_input = gmt, 
                        return_score = FALSE, 
@@ -166,11 +166,11 @@ MTG <- signature_score(data = MTG,
                        n_cpus = 10)
 ```
 
-```{r}
+```{r metadata}
 head(MTG@meta.data)
 ```
 
-```{r}
+```{r sigscore2}
 MTG_SE <- signature_score(data = MTG_SE, 
                           signatures_input = gmt, 
                           return_score = FALSE, 
@@ -178,11 +178,11 @@ MTG_SE <- signature_score(data = MTG_SE,
                           n_cpus = 10)
 ```
 
-```{r}
+```{r metadata2}
 head(data.frame(colData(MTG_SE)))
 ```
 
-```{r, fig.width=16, fig.height=6}
+```{r plotastrovips, fig.width=16, fig.height=6}
 DimPlot(MTG, raster = FALSE)|
   FeaturePlot(MTG, features = "Astro", raster = FALSE)|
   FeaturePlot(MTG, features = "Vip", raster = FALSE)
@@ -194,25 +194,25 @@ Using the `signature_based_classification` function, cells are classified based 
 The function determines the most representative gene signature for each cell, 
 which aids in the phenotypic characterization of the cells.
 
-```{r}
+```{r wrappedrun}
 MTG <- signature_based_classification(data = MTG, 
                                       signatures_input = gmt,
                                       n_cpus = 10,
                                       similarity_threshold = 0)
 ```
 
-```{r}
+```{r mdwrapped}
 head(MTG@meta.data)
 ```
 
-```{r fig.width=16, fig.height=8}
+```{r plotgrouped, fig.width=16, fig.height=8}
 DimPlot(MTG, raster = FALSE) | 
   DimPlot(MTG, raster = FALSE, group.by = "CIA_prediction")
 ```
 
 To evaluate the performance and relevance of the classification, the `compute_metrics` function can be used. This function calculates classification metrics such as sensitivity (SE), specificity (SP), precision (PR), accuracy (ACC), and F1-score (F1) for given classification results
 
-```{r}
+```{r compmetrics}
 compute_metrics(MTG@meta.data, 
                 classification_col = c("CIA_prediction"), 
                 groups_cols = "celltype")
@@ -226,11 +226,9 @@ Cells whose signature scores do not meet this threshold are labeled as "Unassign
 
 To demonstrate the efficacy of this threshold, we removed the "Astro" signature, anticipating that astrocytes would not be identified thereafter. 
 
-```{r}
+```{r astrogone}
 gmt$Astro <- NULL
-```
 
-```{r}
 MTG<-signature_based_classification(data = MTG, 
                                     signatures_input = gmt,
                                     n_cpus = 10,
@@ -238,14 +236,14 @@ MTG<-signature_based_classification(data = MTG,
                                     column_name = "CIA_prediction_t=0.1")
 ```
 
-```{r fig.width=16, fig.height=8}
+```{r plotnoastro, fig.width=16, fig.height=8}
 DimPlot(MTG, raster = FALSE) | 
   DimPlot(MTG, raster = FALSE, group.by = "CIA_prediction_t=0.1")
 ```
 
 As expected, all the astrocytes, along with any cells previously misclassified, are now labeled as "Unassigned". This outcome confirms the importance of setting an appropriate similarity threshold to enhance the classification"s accuracy and reliability.
 
-```{r}
+```{r metricsnoastro}
 # considering unassigned as "misclassified"
 compute_metrics(MTG@meta.data,
                 classification_col = c("CIA_prediction","CIA_prediction_t=0.1"), 
@@ -267,7 +265,7 @@ These processes are key to analyzing and understanding gene expression patterns 
 
 # Session info {-}
 
-```{r}
+```{r sessioninfo}
 sessionInfo()
 ```
 
