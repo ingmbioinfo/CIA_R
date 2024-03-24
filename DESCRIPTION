@@ -1,0 +1,36 @@
+Package: CIA
+Title: What the Package Does (One Line, Title Case)
+Version: 0.1.0
+Authors@R: 
+    c(
+        person(
+            given = "a1", family = "a2", role = c("aut", "cre"), 
+            email = "ab@c.d", comment = c(ORCID = "0000-0001-0002-0003")
+        ),
+        person(
+            given = "a1", family = "a2", role = c("aut"), 
+            email = "ab@c.d", comment = c(ORCID = "0000-0001-0002-0003")
+        ),
+        person(
+            given = "a1", family = "a2", role = c("aut"), 
+            email = "ab@c.d", comment = c(ORCID = "0000-0001-0002-0003")
+        ),
+        person(
+            given = "Federico", family = "Marini", role = c("aut"), 
+            email = "marinif@uni-mainz.de", comment = c(ORCID = "0000-0003-3252-7758")
+        )
+    )
+Description: What the package does (one paragraph). TODO TODO.
+    TODO TODO final sentence.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+Imports:
+    
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3
