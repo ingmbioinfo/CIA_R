@@ -101,10 +101,11 @@ compute_signature_scores <- function(data, geneset, seurat_assay="RNA", matrix="
 #' @return Matrix of signature scores if return_score=TRUE or if data is a
 #' matrix/data,frame. Otherwise, updates the input object's metadata with scores.
 #'
-#' @importFrom future plan
+#' @importFrom future plan availableCores multicore
 #' @importFrom future.apply future_lapply
 #' @importFrom data.table fread
 #' @importFrom sparseMatrixStats colSums2
+#' @importFrom SingleCellExperiment assay colData colData<-
 #'
 #' @export
 #'

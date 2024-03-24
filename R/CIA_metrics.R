@@ -47,7 +47,7 @@ classification_metrics <- function(data, classification_col, groups_col, unassig
       F1 <- 2 * TP / (2 * TP + FP + FN)
 
       c(SE = SE, SP = SP, PR = PR, ACC = ACC, F1 = F1)
-    }) %>% dplyr::bind_rows(.f = mean)
+    }) |> dplyr::bind_rows(.f = mean)
 
     c(metrics, `%UN` = percent_unassigned)
   }, .id = "Method")
