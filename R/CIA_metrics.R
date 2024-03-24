@@ -77,13 +77,13 @@ classification_metrics <- function(data, classification_col, groups_col, unassig
 #' ## TODO: probably have a pre-computed set of labels
 #' ## TODO: define-describe the process to get there in inst/scripts or so?
 #'
-#' # Assuming data is a data frame with true labels and classification results
-#' data <- read.csv('your_data_file.csv')
-#' classification_col <- c('classifier1', 'classifier2')
-#' groups_cols <- 'true_group'
-#' unassigned_label <- 'Unassigned' # Specify the label that denotes unassigned samples
-#' metrics_report <- compute_metrics(data, classification_col, groups_cols, unassigned_label)
-#' print(metrics_report)
+#' ## # Assuming data is a data frame with true labels and classification results
+#' ## data <- read.csv('your_data_file.csv')
+#' ## classification_col <- c('classifier1', 'classifier2')
+#' ## groups_cols <- 'true_group'
+#' ## unassigned_label <- 'Unassigned' # Specify the label that denotes unassigned samples
+#' ## metrics_report <- compute_metrics(data, classification_col, groups_cols, unassigned_label)
+#' ## print(metrics_report)
 compute_metrics <- function(data, classification_col, groups_cols, unassigned_label = '') {
   report <- list()
 
