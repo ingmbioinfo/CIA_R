@@ -57,8 +57,8 @@ load_signatures <- function(signatures_input) {
 #' ## TODO
 compute_signature_scores <- function(data,
                                      geneset,
-                                     seurat_assay="RNA",
-                                     matrix="data",
+                                     seurat_assay = "RNA",
+                                     matrix = "data",
                                      total_col_sums = NULL) {
   # TODO: checks on arg
 
@@ -122,9 +122,9 @@ compute_signature_scores <- function(data,
 #' ## TODO
 signature_score <- function(data,
                             signatures_input,
-                            return_score=FALSE,
-                            seurat_assay="RNA",
-                            matrix="data",
+                            return_score = FALSE,
+                            seurat_assay = "RNA",
+                            matrix = "data",
                             score_mode = "raw",
                             n_cpus = NULL) {
   # TODO: checks on arg
@@ -228,10 +228,10 @@ signature_based_classification <- function(data,
                                            signatures_input,
                                            n_cpus = NULL,
                                            similarity_threshold = 0.1,
-                                           seurat_assay="RNA",
-                                           matrix="data",
-                                           column_name="CIA_prediction",
-                                           unassigned_label="Unassigned") {
+                                           seurat_assay = "RNA",
+                                           matrix = "data",
+                                           column_name = "CIA_prediction",
+                                           unassigned_label = "Unassigned") {
   # TODO: checks on arg
 
   start_time <- Sys.time()  # Capture start time
