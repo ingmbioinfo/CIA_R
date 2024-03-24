@@ -10,7 +10,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  eval = FALSE,
+  eval = TRUE,
   comment = "#>"
 )
 ```
@@ -63,7 +63,8 @@ Note: "Chandelier" and "Pax6" cells in the MTG dataset, which are not represente
 
 ```{r, eval=FALSE}
 # To download the dataset. It could take a while (4.78 Gb)
-download.file("https://sea-ad-single-cell-profiling.s3.us-west-2.amazonaws.com/MTG/RNAseq/Reference_MTG_RNAseq_all-nuclei.2022-06-07.rds", destfile = "MTG_cia.rds")
+download.file(url = "https://sea-ad-single-cell-profiling.s3.us-west-2.amazonaws.com/MTG/RNAseq/Reference_MTG_RNAseq_all-nuclei.2022-06-07.rds", 
+              destfile = "MTG_cia.rds")
 ```
 
 ```{r}
@@ -77,7 +78,7 @@ MTG@meta.data$celltype <- MTG@meta.data$subclass_label
 
 # filter cells
 cells <- readRDS("barcodes_after_QC.rds")
-MTG <- MTG[,colnames(MTG)%in%cells]
+MTG <- MTG[ ,colnames(MTG) %in% cells]
 
 # Rename the specified cell types
 MTG@meta.data$celltype <- gsub("Astrocyte", "Astro", MTG@meta.data$celltype)
@@ -85,11 +86,11 @@ MTG@meta.data$celltype <- gsub("Oligodendrocyte", "Oligo", MTG@meta.data$celltyp
 MTG@meta.data$celltype <- gsub("Microglia-PVM", "Micro-PVM", MTG@meta.data$celltype)
 MTG@meta.data$celltype <- gsub("Lamp5 Lhx6", "Lamp5", MTG@meta.data$celltype)
 MTG@meta.data$celltype <- gsub("Endothelial", "Endo", MTG@meta.data$celltype)
+
 cat("New labels:", unique(MTG@meta.data$celltype))
 MTG@meta.data$celltype<- as.factor(MTG@meta.data$celltype)
 
 Idents(MTG)<- MTG@meta.data$celltype
-
 
 MTG[["umap"]] <- CreateDimReducObject(embeddings = readRDS("umap.rds"), key = "UMAP_")
 ```
@@ -111,7 +112,7 @@ levels(MTG@meta.data$celltype)
 ```
 
 ```{r, fig.width=10, fig.height=8}
-DimPlot(MTG, raster=FALSE)
+DimPlot(MTG, raster = FALSE)
 ```
 
 ## Loading Gene Signatures
@@ -182,7 +183,7 @@ head(data.frame(colData(MTG_SE)))
 ```
 
 ```{r, fig.width=16, fig.height=6}
-DimPlot(MTG, raster=FALSE)|
+DimPlot(MTG, raster = FALSE)|
   FeaturePlot(MTG, features = "Astro", raster = FALSE)|
   FeaturePlot(MTG, features = "Vip", raster = FALSE)
 ```
@@ -205,8 +206,8 @@ head(MTG@meta.data)
 ```
 
 ```{r fig.width=16, fig.height=8}
-DimPlot(MTG, raster=FALSE) | 
-  DimPlot(MTG, raster=FALSE, group.by = "CIA_prediction")
+DimPlot(MTG, raster = FALSE) | 
+  DimPlot(MTG, raster = FALSE, group.by = "CIA_prediction")
 ```
 
 To evaluate the performance and relevance of the classification, the `compute_metrics` function can be used. This function calculates classification metrics such as sensitivity (SE), specificity (SP), precision (PR), accuracy (ACC), and F1-score (F1) for given classification results
@@ -226,13 +227,13 @@ Cells whose signature scores do not meet this threshold are labeled as "Unassign
 To demonstrate the efficacy of this threshold, we removed the "Astro" signature, anticipating that astrocytes would not be identified thereafter. 
 
 ```{r}
-gmt$Astro <-NULL
+gmt$Astro <- NULL
 ```
 
 ```{r}
 MTG<-signature_based_classification(data = MTG, 
                                     signatures_input = gmt,
-                                    n_cpus =10,
+                                    n_cpus = 10,
                                     similarity_threshold = 0.1,
                                     column_name = "CIA_prediction_t=0.1")
 ```
@@ -255,7 +256,7 @@ compute_metrics(MTG@meta.data,
 compute_metrics(MTG@meta.data,  
                 classification_col = c("CIA_prediction","CIA_prediction_t=0.1"), 
                 groups_cols = "celltype",
-                unassigned_label="Unassigned")
+                unassigned_label = "Unassigned")
 ```
 
 # Conclusion
