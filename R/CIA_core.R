@@ -18,6 +18,8 @@
 #' @examples
 #' ## TODO
 load_signatures <- function(signatures_input) {
+  # TODO: checks on arg
+
   if (is.character(signatures_input)) {
     df <- fread(signatures_input, sep = "\t", header = FALSE)
     signatures <- split(df[, -1], df[[1]])
@@ -53,7 +55,13 @@ load_signatures <- function(signatures_input) {
 #'
 #' @examples
 #' ## TODO
-compute_signature_scores <- function(data, geneset, seurat_assay="RNA", matrix="data", total_col_sums = NULL) {
+compute_signature_scores <- function(data,
+                                     geneset,
+                                     seurat_assay="RNA",
+                                     matrix="data",
+                                     total_col_sums = NULL) {
+  # TODO: checks on arg
+
   if (inherits(data, "Seurat")) {
     datam <- slot(data[[seurat_assay]],matrix)
   } else if (inherits(data, "SingleCellExperiment")) {
@@ -112,7 +120,15 @@ compute_signature_scores <- function(data, geneset, seurat_assay="RNA", matrix="
 #'
 #' @examples
 #' ## TODO
-signature_score <- function(data, signatures_input, return_score=FALSE, seurat_assay="RNA",matrix="data", score_mode = "raw", n_cpus = NULL) {
+signature_score <- function(data,
+                            signatures_input,
+                            return_score=FALSE,
+                            seurat_assay="RNA",
+                            matrix="data",
+                            score_mode = "raw",
+                            n_cpus = NULL) {
+  # TODO: checks on arg
+
   signatures <- load_signatures(signatures_input)
     # Check the type of data and extract expression matrix accordingly
   if (inherits(data, "Seurat")) {
@@ -208,9 +224,16 @@ if (inherits(data, "Seurat")) {
 #'
 #' @examples
 #' ## TODO
-signature_based_classification <- function(data, signatures_input, n_cpus = NULL, similarity_threshold = 0.1,
-                                           seurat_assay="RNA",matrix="data",column_name="CIA_prediction",
+signature_based_classification <- function(data,
+                                           signatures_input,
+                                           n_cpus = NULL,
+                                           similarity_threshold = 0.1,
+                                           seurat_assay="RNA",
+                                           matrix="data",
+                                           column_name="CIA_prediction",
                                            unassigned_label="Unassigned") {
+  # TODO: checks on arg
+
   start_time <- Sys.time()  # Capture start time
 
   get_label <- function(row) {
