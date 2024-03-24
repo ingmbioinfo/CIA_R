@@ -26,7 +26,10 @@
 #'
 #' @examples
 #' ## TODO
-classification_metrics <- function(data, classification_col, groups_col, unassigned_label = '') {
+classification_metrics <- function(data,
+                                   classification_col,
+                                   groups_col,
+                                   unassigned_label = "") {
   report <- purrr::map_dfr(classification_col, function(m) {
     total_cells <- nrow(data)
     unassigned_count <- sum(data[[m]] == unassigned_label)
@@ -84,7 +87,10 @@ classification_metrics <- function(data, classification_col, groups_col, unassig
 #' ## unassigned_label <- 'Unassigned' # Specify the label that denotes unassigned samples
 #' ## metrics_report <- compute_metrics(data, classification_col, groups_cols, unassigned_label)
 #' ## print(metrics_report)
-compute_metrics <- function(data, classification_col, groups_cols, unassigned_label = '') {
+compute_metrics <- function(data,
+                            classification_col,
+                            groups_cols,
+                            unassigned_label = "") {
   report <- list()
 
   for (m in classification_col) {
@@ -114,8 +120,8 @@ compute_metrics <- function(data, classification_col, groups_cols, unassigned_la
   }
 
   report <- t(as.data.frame(report))
-  colnames(report) <- c('SE', 'SP', 'PR', 'ACC', 'F1', '%UN')
-  if (sum(report[,'%UN'])==0){
+  colnames(report) <- c("SE", "SP", "PR", "ACC", "F1", "%UN")
+  if (sum(report[,"%UN"])==0){
     report <- report[,1:5]
   }
   return(report)
