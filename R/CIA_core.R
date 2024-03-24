@@ -105,7 +105,7 @@ compute_signature_scores <- function(data, geneset, seurat_assay="RNA", matrix="
 #' @importFrom future.apply future_lapply
 #' @importFrom data.table fread
 #' @importFrom sparseMatrixStats colSums2
-#' @importFrom SingleCellExperiment assay colData colData<-
+#' @importFrom SummarizedExperiment assay colData colData<-
 #'
 #' @export
 #'
