@@ -1,4 +1,3 @@
-
 #' Compute Classification Metrics
 #'
 #' @description
@@ -21,6 +20,12 @@
 #' method compared to the reference method.
 #'
 #' @export
+#'
+#' @importFrom purrr map_dfr
+#' @importFrom dplyr bind_rows
+#'
+#' @examples
+#' ## TODO
 classification_metrics <- function(data, classification_col, groups_col, unassigned_label = '') {
   report <- purrr::map_dfr(classification_col, function(m) {
     total_cells <- nrow(data)
@@ -66,7 +71,12 @@ classification_metrics <- function(data, classification_col, groups_col, unassig
 #' @return A matrix with classification metrics (SE, SP, PR, ACC, F1) for each classifier.
 #' If unassigned_label is specified and present in the data, an additional '%UN' column is included in the output.
 #'
+#' @export
+#'
 #' @examples
+#' ## TODO: probably have a pre-computed set of labels
+#' ## TODO: define-describe the process to get there in inst/scripts or so?
+#'
 #' # Assuming data is a data frame with true labels and classification results
 #' data <- read.csv('your_data_file.csv')
 #' classification_col <- c('classifier1', 'classifier2')
@@ -74,8 +84,6 @@ classification_metrics <- function(data, classification_col, groups_col, unassig
 #' unassigned_label <- 'Unassigned' # Specify the label that denotes unassigned samples
 #' metrics_report <- compute_metrics(data, classification_col, groups_cols, unassigned_label)
 #' print(metrics_report)
-#'
-#' @export
 compute_metrics <- function(data, classification_col, groups_cols, unassigned_label = '') {
   report <- list()
 
