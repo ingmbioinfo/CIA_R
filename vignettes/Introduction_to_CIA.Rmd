@@ -182,7 +182,7 @@ MTG_SE <- signature_score(data = MTG_SE,
 head(data.frame(colData(MTG_SE)))
 ```
 
-```{r plotastrovips, fig.width=16, fig.height=6}
+```{r plotastrovips, fig.width=12, fig.height=5}
 DimPlot(MTG, raster = FALSE)|
   FeaturePlot(MTG, features = "Astro", raster = FALSE)|
   FeaturePlot(MTG, features = "Vip", raster = FALSE)
@@ -205,7 +205,7 @@ MTG <- signature_based_classification(data = MTG,
 head(MTG@meta.data)
 ```
 
-```{r plotgrouped, fig.width=16, fig.height=8}
+```{r plotgrouped, fig.width=12, fig.height=5}
 DimPlot(MTG, raster = FALSE) | 
   DimPlot(MTG, raster = FALSE, group.by = "CIA_prediction")
 ```
@@ -236,7 +236,7 @@ MTG<-signature_based_classification(data = MTG,
                                     column_name = "CIA_prediction_t=0.1")
 ```
 
-```{r plotnoastro, fig.width=16, fig.height=8}
+```{r plotnoastro, fig.width=12, fig.height=5}
 DimPlot(MTG, raster = FALSE) | 
   DimPlot(MTG, raster = FALSE, group.by = "CIA_prediction_t=0.1")
 ```
