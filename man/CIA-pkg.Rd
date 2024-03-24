@@ -13,7 +13,14 @@ Cluster Independent Annotation
 This package provides functionality to ... TODO
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: a1 a2 \email{ab@c.d} (\href{https://orcid.org/0000-0001-0002-0003}{ORCID})
+
+Authors:
+\itemize{
+  \item a1 a2 \email{ab@c.d} (\href{https://orcid.org/0000-0001-0002-0003}{ORCID})
+  \item a1 a2 \email{ab@c.d} (\href{https://orcid.org/0000-0001-0002-0003}{ORCID})
+  \item Federico Marini \email{marinif@uni-mainz.de} (\href{https://orcid.org/0000-0003-3252-7758}{ORCID})
+}
 
 }
 \keyword{internal}
