@@ -10,22 +10,46 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  eval = FALSE,
   comment = "#>"
 )
 ```
 
+TODO: set up structure
+
+# Introduction
+
+# Getting started
+
+# Running CIA
+
+## Demo data
+
+## Running
+
+## Additional functionality
+
+## Performance and metrics
+
+# Additional information
+
+# Q&As, if needed
+
+
+
+
 ```{r setup}
-library(CIA)
+library("CIA")
 ```
 
 ```{r}
-library(Seurat)
-library(data.table)
-library(future)
-library(future.apply)
-library(Matrix)
-library(sparseMatrixStats)
-library(SingleCellExperiment)
+library("Seurat")
+library("data.table")
+library("future")
+library("future.apply")
+library("Matrix")
+library("sparseMatrixStats")
+library("SingleCellExperiment")
 ```
 
 # CIA Vignette
@@ -36,17 +60,14 @@ In this example, we will use the CIA method to classify cells from the [Middle T
 
 Note: "Chandelier" and "Pax6" cells in the MTG dataset, which are not represented by the Motor Cortex cell type signatures. Since the Azimuth signatures are not meant to distinguish "Chandelier" or "Pax6" cells from the others they have been removed to avoid the misinterpretation of results. We filtered out also cells that don't pass QC, using only cells present in ["AnnData Object (QC'ed data, metadata, and more)"](https://portal.brain-map.org/atlases-and-data/rnaseq/human-mtg-10x_sea-ad).
 
-```{r}
-source('CIA.R')
-```
 
-```{r}
+```{r, eval=FALSE}
 # To download the dataset. It could take a while (4.78 Gb)
-system('wget -O MTG_cia.rds https://sea-ad-single-cell-profiling.s3.us-west-2.amazonaws.com/MTG/RNAseq/Reference_MTG_RNAseq_all-nuclei.2022-06-07.rds')
+download.file("https://sea-ad-single-cell-profiling.s3.us-west-2.amazonaws.com/MTG/RNAseq/Reference_MTG_RNAseq_all-nuclei.2022-06-07.rds", destfile = "MTG_cia.rds")
 ```
 
 ```{r}
-MTG <- readRDS(file ='MTG_cia.rds')
+MTG <- readRDS(file = "MTG_cia.rds")
 ```
 
 ```{r}
