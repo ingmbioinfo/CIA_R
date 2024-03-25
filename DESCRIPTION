@@ -39,6 +39,8 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
+    Seurat,
+    Matrix,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
