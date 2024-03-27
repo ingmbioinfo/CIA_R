@@ -1,23 +1,26 @@
 #' Compute Classification Metrics
 #'
 #' @description
-#' Computes the main metrics of classification by comparing the labels of cells classified
-#' by given methods to labels assigned by a reference method. Cells labeled as `unassigned_label`
-#' are excluded from the metrics calculation. Additionally, the percentage of unassigned cells
-#' for each classification method is reported.
+#' Computes the main metrics of classification by comparing the labels of cells
+#' classified by given methods to labels assigned by a reference method. Cells
+#' labeled as `unassigned_label` are excluded from the metrics calculation.
+#' Additionally, the percentage of unassigned cells for each classification
+#' method is reported.
 #'
-#' @param data A data frame or matrix representing the cell data, typically an AnnData object in R.
-#' @param classification_col A vector of strings specifying the column names in `data` where the
-#' labels assigned by the methods of interest are stored.
-#' @param groups_col A string specifying the column name in `data` where the labels assigned by
-#' the reference method are stored.
-#' @param unassigned_label A string representing the label used to mark unassigned cells in the
-#' classification columns. Default is an empty string, which means no cells are excluded based on
-#' their label.
+#' @param data A data frame or matrix representing the cell data, typically an
+#' AnnData object in R.
+#' @param classification_col A vector of strings specifying the column names in
+#' `data` where the labels assigned by the methods of interest are stored.
+#' @param groups_col A string specifying the column name in `data` where the
+#' labels assigned by the reference method are stored.
+#' @param unassigned_label A string representing the label used to mark
+#' unassigned cells in the classification columns. Default is an empty string,
+#' which means no cells are excluded based on their label.
 #'
-#' @return A data frame containing the overall sensitivity (SE), specificity (SP), precision (PR),
-#' accuracy (ACC), F1-score (F1), and percentage of unassigned cells (%UN) for each classification
-#' method compared to the reference method.
+#' @return A data frame containing the overall sensitivity (SE), specificity
+#' (SP), precision (PR), accuracy (ACC), F1-score (F1), and percentage of
+#' unassigned cells (%UN) for each classification method compared to the
+#' reference method.
 #'
 #' @export
 #'
@@ -62,17 +65,23 @@ classification_metrics <- function(data,
 #' Compute Classification Metrics
 #'
 #' Calculates classification metrics such as sensitivity (SE), specificity (SP),
-#' precision (PR), accuracy (ACC), F1-score (F1), and the percentage of 'Unassigned' cells (%UN)
-#' for given classification results, based on the specified unassigned label.
+#' precision (PR), accuracy (ACC), F1-score (F1), and the percentage of
+#' 'Unassigned' cells (%UN) for given classification results, based on the
+#' specified unassigned label.
 #'
-#' @param data Data frame containing the observed data including classification and true group labels.
-#' @param classification_col Character vector of column names in `data` that contain the classification results to evaluate.
-#' @param groups_cols Character string specifying the column in `data` that contains the true group labels.
-#' @param unassigned_label The label used in `classification_col` to denote unclassified or unassigned samples.
+#' @param data Data frame containing the observed data including classification
+#' and true group labels.
+#' @param classification_col Character vector of column names in `data` that
+#' contain the classification results to evaluate.
+#' @param groups_cols Character string specifying the column in `data` that
+#' contains the true group labels.
+#' @param unassigned_label The label used in `classification_col` to denote
+#' unclassified or unassigned samples.
 #' If this label is present, %UN will be calculated and included in the metrics.
 #'
-#' @return A matrix with classification metrics (SE, SP, PR, ACC, F1) for each classifier.
-#' If unassigned_label is specified and present in the data, an additional '%UN' column is included in the output.
+#' @return A matrix with classification metrics (SE, SP, PR, ACC, F1) for each
+#' classifier. If unassigned_label is specified and present in the data, an
+#' additional '%UN' column is included in the output.
 #'
 #' @export
 #'

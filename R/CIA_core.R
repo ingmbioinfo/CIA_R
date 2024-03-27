@@ -7,9 +7,12 @@
 #'
 #' @param signatures_input A character string representing the file path to the
 #' TSV file containing the gene signatures, or a list where each element is a
-#' vector of gene names with names of the list elements representing signature names.
+#' vector of gene names with names of the list elements representing signature
+#' names.
 #'
-#' @return A list where each element is a character vector of gene names, named by the signature names.
+#' @return A list where each element is a character vector of gene names, named
+#' by the signature names.
+#'
 #' @importFrom data.table fread
 #' @importFrom stats na.omit
 #'
@@ -35,15 +38,18 @@ load_signatures <- function(signatures_input) {
 
 #' Compute Signature Scores
 #'
-#' Calculates signature scores for a given set of genes by comparing their expression levels
-#' in the provided data. The score for each gene set is calculated as the product of the
-#' count of genes expressed (presence) in a given cell and their relative expression levels (expression),
-#' normalized by the total expression of the cell.
+#' Calculates signature scores for a given set of genes by comparing their
+#' expression levels in the provided data. The score for each gene set is
+#' calculated as the product of the count of genes expressed (presence) in a
+#' given cell and their relative expression levels (expression), normalized by
+#' the total expression of the cell.
 #'
-#' @param data Numeric matrix, data frame, SeuratObject, or SingleCellExperiment with genes in rows and cells in columns.
+#' @param data Numeric matrix, data frame, SeuratObject, or SingleCellExperiment
+#' with genes in rows and cells in columns.
 #' @param geneset Vector of gene names to compute the scores for.
 #' @param seurat_assay Assay to use for SeuratObject objects (default "RNA").
-#' @param matrix Slot to use for Seurat or SingleCellExperiment objects (default "data" for SO, "logcounts" for SCE).
+#' @param matrix Slot to use for Seurat or SingleCellExperiment objects
+#' (default "data" for SO, "logcounts" for SCE).
 #' @param total_col_sums Optional precomputed column sums for normalization.
 #'
 #' @return Vector of signature scores for each column (cell) in the data.
@@ -87,16 +93,17 @@ compute_signature_scores <- function(data,
 
 #' Calculate Signature Scores
 #'
-#' This function calculates the signature scores for each gene set in the provided data.
-#' It loads the gene signatures from an input source and computes the scores based on
-#' the expression levels of these genes in the data.
+#' This function calculates the signature scores for each gene set in the
+#' provided data. It loads the gene signatures from an input source and computes
+#' the scores based on the expression levels of these genes in the data.
 #'
 #' @param data A numeric matrix, data frame, SeuratObject, or
 #' SingleCellExperiment with genes in rows and cells in columns,
 #' representing the expression level of each gene in each cell.
 #' @param signatures_input A character string representing the file path to the
 #' TSV file containing the gene signatures, or a list where each element is a
-#' vector of gene names with names of the list elements representing signature names.
+#' vector of gene names with names of the list elements representing signature
+#' names.
 #' @param return_score Boolean to return scores directly (default FALSE).
 #' @param seurat_assay Assay for Seurat objects (default "RNA").
 #' @param matrix Slot to use for Seurat or SingleCellExperiment objects
@@ -151,7 +158,9 @@ signature_score <- function(data,
   tot <- colSums2(datam)
   plan(multicore, workers = n_cpus)
 
-  scores <- future_lapply(names(signatures), future.seed=TRUE, FUN =function(name) {
+  scores <- future_lapply(names(signatures),
+                          future.seed=TRUE,
+                          FUN = function(name) {
     geneset <- signatures[[name]]
     compute_signature_scores(datam, geneset, tot)
   })
@@ -172,7 +181,7 @@ signature_score <- function(data,
     return(scores_df)
   }
 
-if (inherits(data, "Seurat")) {
+  if (inherits(data, "Seurat")) {
     data@meta.data[, colnames(scores_df)] <- scores_df
     cat("Scores have been added in data@meta.data", "\n")
     return(data)
@@ -245,8 +254,14 @@ signature_based_classification <- function(data,
     }
   }
 
-  score_matrix <- signature_score(data, signatures_input, score_mode = "scaled",seurat_assay=seurat_assay,
-                                  matrix=matrix, return_score=T, n_cpus = n_cpus)
+  score_matrix <- signature_score(data,
+                                  signatures_input,
+                                  score_mode = "scaled",
+                                  seurat_assay = seurat_assay,
+                                  matrix=matrix,
+                                  return_score = TRUE,
+                                  n_cpus = n_cpus)
+
   labels <- apply(score_matrix, 1, get_label)
 
   end_time <- Sys.time()  # Capture end time
