@@ -105,7 +105,7 @@ compute_metrics <- function(data,
   for (m in classification_col) {
     TP_l <- TN_l <- FP_l <- FN_l <- numeric()
     UN <- round(100 * sum(data[[m]] == unassigned_label) / nrow(data), 2)
-    datam <- data[data[,m] != unassigned_label,]
+    datam <- data[data[, m] != unassigned_label, ]
 
     for (i in unique(datam[[groups_cols]])) {
       TP_l <- c(TP_l, sum(datam[[m]] == i & datam[[groups_cols]] == i))
@@ -130,8 +130,8 @@ compute_metrics <- function(data,
 
   report <- t(as.data.frame(report))
   colnames(report) <- c("SE", "SP", "PR", "ACC", "F1", "%UN")
-  if (sum(report[,"%UN"])==0){
-    report <- report[,1:5]
+  if (sum(report[, "%UN"]) == 0) {
+    report <- report[, 1:5]
   }
   return(report)
 }

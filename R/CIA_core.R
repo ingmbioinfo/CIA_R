@@ -69,11 +69,15 @@ compute_signature_scores <- function(data,
   # TODO: checks on arg
 
   if (inherits(data, "Seurat")) {
-    datam <- slot(data[[seurat_assay]],matrix)
+    datam <- slot(data[[seurat_assay]], matrix)
   } else if (inherits(data, "SingleCellExperiment")) {
-    if(matrix=="data"){matrix<-"logcounts"}
+    if (matrix == "data") {
+      matrix <- "logcounts"
+    }
     datam <- assay(data, matrix)
-  } else {datam <- data}
+  } else {
+    datam <- data
+  }
   geneset <- intersect(geneset, rownames(datam))
   if (length(geneset) == 0) {
     return(rep(0, ncol(datam)))
@@ -137,13 +141,17 @@ signature_score <- function(data,
   # TODO: checks on arg
 
   signatures <- load_signatures(signatures_input)
-    # Check the type of data and extract expression matrix accordingly
+  # Check the type of data and extract expression matrix accordingly
   if (inherits(data, "Seurat")) {
-    datam <- slot(data[[seurat_assay]],matrix)
+    datam <- slot(data[[seurat_assay]], matrix)
   } else if (inherits(data, "SingleCellExperiment")) {
-    if(matrix=="data"){matrix<-"logcounts"}
+    if (matrix == "data") {
+      matrix <- "logcounts"
+    }
     datam <- assay(data, matrix)
-  } else {datam <- data}
+  } else {
+    datam <- data
+  }
 
   cat("Checking if genes are in the dataset matrix...", "\n")
   result <- sapply(names(signatures), function(x) {
@@ -151,19 +159,24 @@ signature_score <- function(data,
     l <- sum(signatures[[x]] %in% rownames(data))
     message <- sprintf("%s: %d / %d", x, l, lt)
     cat(message, "\n")
-    invisible(message)  # Use invisible to avoid printing the return value of cat
-})
+    invisible(message) # Use invisible to avoid printing the return value of cat
+  })
 
-  n_cpus <- if (is.null(n_cpus)) { ceiling(availableCores() / 4) } else { n_cpus }
+  n_cpus <- if (is.null(n_cpus)) {
+    ceiling(availableCores() / 4)
+  } else {
+    n_cpus
+  }
   tot <- colSums2(datam)
   plan(multicore, workers = n_cpus)
 
   scores <- future_lapply(names(signatures),
-                          future.seed=TRUE,
-                          FUN = function(name) {
-    geneset <- signatures[[name]]
-    compute_signature_scores(datam, geneset, tot)
-  })
+    future.seed = TRUE,
+    FUN = function(name) {
+      geneset <- signatures[[name]]
+      compute_signature_scores(datam, geneset, tot)
+    }
+  )
 
   scores_df <- do.call(cbind, scores)
   colnames(scores_df) <- names(signatures)
@@ -177,7 +190,7 @@ signature_score <- function(data,
   }
 
 
-  if (return_score){
+  if (return_score) {
     return(scores_df)
   }
 
@@ -185,13 +198,13 @@ signature_score <- function(data,
     data@meta.data[, colnames(scores_df)] <- scores_df
     cat("Scores have been added in data@meta.data", "\n")
     return(data)
-
   } else if (inherits(data, "SingleCellExperiment")) {
     colData(data)[, colnames(scores_df)] <- scores_df
     cat("Scores have been added in colData(data)", "\n")
     return(data)
-  } else {return(scores_df)}
-
+  } else {
+    return(scores_df)
+  }
 }
 
 
@@ -243,7 +256,7 @@ signature_based_classification <- function(data,
                                            unassigned_label = "Unassigned") {
   # TODO: checks on arg
 
-  start_time <- Sys.time()  # Capture start time
+  start_time <- Sys.time() # Capture start time
 
   get_label <- function(row) {
     order_scores <- order(row, decreasing = TRUE)
@@ -255,30 +268,33 @@ signature_based_classification <- function(data,
   }
 
   score_matrix <- signature_score(data,
-                                  signatures_input,
-                                  score_mode = "scaled",
-                                  seurat_assay = seurat_assay,
-                                  matrix=matrix,
-                                  return_score = TRUE,
-                                  n_cpus = n_cpus)
+    signatures_input,
+    score_mode = "scaled",
+    seurat_assay = seurat_assay,
+    matrix = matrix,
+    return_score = TRUE,
+    n_cpus = n_cpus
+  )
 
   labels <- apply(score_matrix, 1, get_label)
 
-  end_time <- Sys.time()  # Capture end time
+  end_time <- Sys.time() # Capture end time
 
   # Format and print the message correctly
-  cat("\nClassification complete!    Start:", format(start_time, "%H:%M:%S"),
-      "    End:", format(end_time, "%H:%M:%S"), "\n")
+  cat(
+    "\nClassification complete!    Start:", format(start_time, "%H:%M:%S"),
+    "    End:", format(end_time, "%H:%M:%S"), "\n"
+  )
 
-if (inherits(data, "Seurat")) {
-    data@meta.data[,column_name] <-as.factor(labels)
-    cat(column_name,"has been added in data@meta.data", "\n")
+  if (inherits(data, "Seurat")) {
+    data@meta.data[, column_name] <- as.factor(labels)
+    cat(column_name, "has been added in data@meta.data", "\n")
     return(data)
   } else if (is(data, "SingleCellExperiment")) {
-    colData(data)[,column_name]<- as.data.frame(labels)
-    cat(column_name,"has been added in colData(data)", "\n")
+    colData(data)[, column_name] <- as.data.frame(labels)
+    cat(column_name, "has been added in colData(data)", "\n")
     return(data)
+  } else {
+    return(as.factor(labels))
   }
-  else {return(as.factor(labels))}
 }
-
