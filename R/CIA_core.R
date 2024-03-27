@@ -6,9 +6,7 @@
 #' being the signature name and the remaining columns containing the genes.
 #'
 #' @param signatures_input A character string representing the file path to the
-#' TSV file containing the gene signatures, or a list where each element is a
-#' vector of gene names with names of the list elements representing signature
-#' names.
+#' TSV file containing the gene signatures.
 #'
 #' @return A list where each element is a character vector of gene names, named
 #' by the signature names.
@@ -24,6 +22,7 @@ load_signatures <- function(signatures_input) {
   # TODO: checks on arg
 
   if (is.character(signatures_input)) {
+    # TODO: does this handle the signatures of different length?
     df <- fread(signatures_input, sep = "\t", header = FALSE)
     signatures <- split(df[, -1], df[[1]])
     signatures <- lapply(signatures, na.omit)
@@ -131,6 +130,9 @@ compute_signature_scores <- function(data,
 #'
 #' @examples
 #' ## TODO
+#'
+#' ## TODO: rename this function? This actually does more than the previous one.
+#' ## Probably swapping the names is even a sensible choice?
 signature_score <- function(data,
                             signatures_input,
                             return_score = FALSE,
@@ -193,6 +195,14 @@ signature_score <- function(data,
   if (return_score) {
     return(scores_df)
   }
+
+
+  # TODO: call the column names in a clever way to make people notice where
+  # these come from
+
+  # ideally: CIA_signatureid_celltype
+  # CIA_azimuth_Vip, for example
+
 
   if (inherits(data, "Seurat")) {
     data@meta.data[, colnames(scores_df)] <- scores_df
