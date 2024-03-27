@@ -33,6 +33,8 @@ classification_metrics <- function(data,
                                    classification_col,
                                    groups_col,
                                    unassigned_label = "") {
+  # TODO: checks on arg
+
   report <- purrr::map_dfr(classification_col, function(m) {
     total_cells <- nrow(data)
     unassigned_count <- sum(data[[m]] == unassigned_label)
@@ -100,6 +102,8 @@ compute_metrics <- function(data,
                             classification_col,
                             groups_cols,
                             unassigned_label = "") {
+  # TODO: checks on arg
+
   report <- list()
 
   for (m in classification_col) {
