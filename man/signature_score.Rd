@@ -21,7 +21,8 @@ representing the expression level of each gene in each cell.}
 
 \item{signatures_input}{A character string representing the file path to the
 TSV file containing the gene signatures, or a list where each element is a
-vector of gene names with names of the list elements representing signature names.}
+vector of gene names with names of the list elements representing signature
+names.}
 
 \item{return_score}{Boolean to return scores directly (default FALSE).}
 
@@ -41,9 +42,9 @@ Matrix of signature scores if return_score=TRUE or if data is a
 matrix/data,frame. Otherwise, updates the input object's metadata with scores.
 }
 \description{
-This function calculates the signature scores for each gene set in the provided data.
-It loads the gene signatures from an input source and computes the scores based on
-the expression levels of these genes in the data.
+This function calculates the signature scores for each gene set in the
+provided data. It loads the gene signatures from an input source and computes
+the scores based on the expression levels of these genes in the data.
 }
 \examples{
 ## TODO

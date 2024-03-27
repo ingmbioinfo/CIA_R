@@ -9,10 +9,12 @@ load_signatures(signatures_input)
 \arguments{
 \item{signatures_input}{A character string representing the file path to the
 TSV file containing the gene signatures, or a list where each element is a
-vector of gene names with names of the list elements representing signature names.}
+vector of gene names with names of the list elements representing signature
+names.}
 }
 \value{
-A list where each element is a character vector of gene names, named by the signature names.
+A list where each element is a character vector of gene names, named
+by the signature names.
 }
 \description{
 This function loads gene signatures from a given input, which can either be a

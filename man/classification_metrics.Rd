@@ -12,28 +12,31 @@ classification_metrics(
 )
 }
 \arguments{
-\item{data}{A data frame or matrix representing the cell data, typically an AnnData object in R.}
+\item{data}{A data frame or matrix representing the cell data, typically an
+AnnData object in R.}
 
-\item{classification_col}{A vector of strings specifying the column names in \code{data} where the
-labels assigned by the methods of interest are stored.}
+\item{classification_col}{A vector of strings specifying the column names in
+\code{data} where the labels assigned by the methods of interest are stored.}
 
-\item{groups_col}{A string specifying the column name in \code{data} where the labels assigned by
-the reference method are stored.}
+\item{groups_col}{A string specifying the column name in \code{data} where the
+labels assigned by the reference method are stored.}
 
-\item{unassigned_label}{A string representing the label used to mark unassigned cells in the
-classification columns. Default is an empty string, which means no cells are excluded based on
-their label.}
+\item{unassigned_label}{A string representing the label used to mark
+unassigned cells in the classification columns. Default is an empty string,
+which means no cells are excluded based on their label.}
 }
 \value{
-A data frame containing the overall sensitivity (SE), specificity (SP), precision (PR),
-accuracy (ACC), F1-score (F1), and percentage of unassigned cells (\%UN) for each classification
-method compared to the reference method.
+A data frame containing the overall sensitivity (SE), specificity
+(SP), precision (PR), accuracy (ACC), F1-score (F1), and percentage of
+unassigned cells (\%UN) for each classification method compared to the
+reference method.
 }
 \description{
-Computes the main metrics of classification by comparing the labels of cells classified
-by given methods to labels assigned by a reference method. Cells labeled as \code{unassigned_label}
-are excluded from the metrics calculation. Additionally, the percentage of unassigned cells
-for each classification method is reported.
+Computes the main metrics of classification by comparing the labels of cells
+classified by given methods to labels assigned by a reference method. Cells
+labeled as \code{unassigned_label} are excluded from the metrics calculation.
+Additionally, the percentage of unassigned cells for each classification
+method is reported.
 }
 \examples{
 ## TODO

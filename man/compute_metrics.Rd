@@ -7,23 +7,29 @@
 compute_metrics(data, classification_col, groups_cols, unassigned_label = "")
 }
 \arguments{
-\item{data}{Data frame containing the observed data including classification and true group labels.}
+\item{data}{Data frame containing the observed data including classification
+and true group labels.}
 
-\item{classification_col}{Character vector of column names in \code{data} that contain the classification results to evaluate.}
+\item{classification_col}{Character vector of column names in \code{data} that
+contain the classification results to evaluate.}
 
-\item{groups_cols}{Character string specifying the column in \code{data} that contains the true group labels.}
+\item{groups_cols}{Character string specifying the column in \code{data} that
+contains the true group labels.}
 
-\item{unassigned_label}{The label used in \code{classification_col} to denote unclassified or unassigned samples.
+\item{unassigned_label}{The label used in \code{classification_col} to denote
+unclassified or unassigned samples.
 If this label is present, \%UN will be calculated and included in the metrics.}
 }
 \value{
-A matrix with classification metrics (SE, SP, PR, ACC, F1) for each classifier.
-If unassigned_label is specified and present in the data, an additional '\%UN' column is included in the output.
+A matrix with classification metrics (SE, SP, PR, ACC, F1) for each
+classifier. If unassigned_label is specified and present in the data, an
+additional '\%UN' column is included in the output.
 }
 \description{
 Calculates classification metrics such as sensitivity (SE), specificity (SP),
-precision (PR), accuracy (ACC), F1-score (F1), and the percentage of 'Unassigned' cells (\%UN)
-for given classification results, based on the specified unassigned label.
+precision (PR), accuracy (ACC), F1-score (F1), and the percentage of
+'Unassigned' cells (\%UN) for given classification results, based on the
+specified unassigned label.
 }
 \examples{
 ## TODO: probably have a pre-computed set of labels

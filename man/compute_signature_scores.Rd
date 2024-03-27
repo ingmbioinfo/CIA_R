@@ -13,13 +13,15 @@ compute_signature_scores(
 )
 }
 \arguments{
-\item{data}{Numeric matrix, data frame, SeuratObject, or SingleCellExperiment with genes in rows and cells in columns.}
+\item{data}{Numeric matrix, data frame, SeuratObject, or SingleCellExperiment
+with genes in rows and cells in columns.}
 
 \item{geneset}{Vector of gene names to compute the scores for.}
 
 \item{seurat_assay}{Assay to use for SeuratObject objects (default "RNA").}
 
-\item{matrix}{Slot to use for Seurat or SingleCellExperiment objects (default "data" for SO, "logcounts" for SCE).}
+\item{matrix}{Slot to use for Seurat or SingleCellExperiment objects
+(default "data" for SO, "logcounts" for SCE).}
 
 \item{total_col_sums}{Optional precomputed column sums for normalization.}
 }
@@ -27,10 +29,11 @@ compute_signature_scores(
 Vector of signature scores for each column (cell) in the data.
 }
 \description{
-Calculates signature scores for a given set of genes by comparing their expression levels
-in the provided data. The score for each gene set is calculated as the product of the
-count of genes expressed (presence) in a given cell and their relative expression levels (expression),
-normalized by the total expression of the cell.
+Calculates signature scores for a given set of genes by comparing their
+expression levels in the provided data. The score for each gene set is
+calculated as the product of the count of genes expressed (presence) in a
+given cell and their relative expression levels (expression), normalized by
+the total expression of the cell.
 }
 \examples{
 ## TODO
