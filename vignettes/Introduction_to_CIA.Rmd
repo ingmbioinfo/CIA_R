@@ -169,7 +169,7 @@ MTG <- signature_score(
   signatures_input = gmt,
   return_score = FALSE,
   score_mode = "scaled",
-  n_cpus = 10
+  n_cpus = 2
 )
 ```
 
@@ -183,7 +183,7 @@ MTG_SE <- signature_score(
   signatures_input = gmt,
   return_score = FALSE,
   score_mode = "scaled",
-  n_cpus = 10
+  n_cpus = 2
 )
 ```
 
@@ -206,7 +206,7 @@ The function determines the most representative gene signature for each cell, wh
 MTG <- signature_based_classification(
   data = MTG,
   signatures_input = gmt,
-  n_cpus = 10,
+  n_cpus = 2,
   similarity_threshold = 0
 )
 ```
@@ -247,7 +247,7 @@ gmt$Astro <- NULL
 MTG <- signature_based_classification(
   data = MTG,
   signatures_input = gmt,
-  n_cpus = 10,
+  n_cpus = 2,
   similarity_threshold = 0.1,
   column_name = "CIA_prediction_t=0.1"
 )
@@ -276,6 +276,9 @@ compute_metrics(MTG@meta.data,
   unassigned_label = "Unassigned"
 )
 ```
+
+TODO: we never used so far `classification_metrics()`...
+
 
 # Conclusion
 
