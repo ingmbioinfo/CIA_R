@@ -159,17 +159,46 @@ signature_score <- function(data,
                             n_cpus = NULL) {
   # TODO: checks on arg
 
-  signatures <- load_signatures(signatures_input)
+  if (is.character(signatures_input)) {
+    signatures <- load_signatures(signatures_input)
+  } else if (is.list(signatures_input)){
+    signatures <- signatures_input
+  }
+
+  stopifnot(is.logical(return_score))
+  stopifnot(is.character(seurat_assay))
+  stopifnot(is.character(matrix))
+  stopifnot(is.character(score_mode))
+
+  score_mode <- match.arg(score_mode, c('raw', 'scaled', 'log', 'log2', 'log10'))
+
+
   # Check the type of data and extract expression matrix accordingly
-  if (inherits(data, "Seurat")) {
+
+
+  if (is(data, "Seurat")) {
+    # TODO: checks on arg, specific for Seurat
+
+
     datam <- slot(data[[seurat_assay]], matrix)
-  } else if (inherits(data, "SingleCellExperiment")) {
+  } else if (is(data, "SingleCellExperiment")) {
+    # TODO: checks on arg, specific for sce
+
+
+
     if (matrix == "data") {
       matrix <- "logcounts"
     }
     datam <- assay(data, matrix)
-  } else {
+  } else if (is(data, "matrix") | is(data, "Matrix")) {
+    # TODO: checks on arg, to make sure it is a proper matrix
+
+
+
     datam <- data
+  } else {
+    stop("You need to provide either a SingleCellExperiment object, ",
+         "a Seurat object or a matrix-like object")
   }
 
   cat("Checking if genes are in the dataset matrix...", "\n")
