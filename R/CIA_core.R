@@ -187,14 +187,14 @@ signature_score <- function(data,
     n_cpus
   }
   tot <- colSums2(datam)
-  plan(multicore, workers = n_cpus)
+  # plan(multicore, workers = n_cpus)
 
-  scores <- future_lapply(names(signatures),
-    future.seed = TRUE,
+  scores <- BiocParallel::bplapply(names(signatures),
+    # future.seed = TRUE,
     FUN = function(name) {
       geneset <- signatures[[name]]
       compute_signature_scores(datam, geneset, tot)
-    }
+    }, BPPARAM = BiocParallel::MulticoreParam(n_cpus)
   )
 
   scores_df <- do.call(cbind, scores)
