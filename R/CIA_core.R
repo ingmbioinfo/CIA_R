@@ -55,11 +55,11 @@ load_signatures <- function(signatures_input) {
 #'
 #' @examples
 #' ## TODO
-compute_signature_scores <- function(data,
-                                     geneset,
-                                     seurat_assay = "RNA",
-                                     matrix = "data",
-                                     total_col_sums = NULL) {
+score_signature <- function(data,
+                            geneset,
+                            seurat_assay = "RNA",
+                            matrix = "data",
+                            total_col_sums = NULL) {
   # TODO: checks on arg
 
   if (is(data, "Seurat")) {
@@ -149,7 +149,7 @@ compute_signature_scores <- function(data,
 #'
 #' ## TODO: rename this function? This actually does more than the previous one.
 #' ## Probably swapping the names is even a sensible choice?
-signature_score <- function(data,
+score_all_signatures <- function(data,
                             signatures_input,
                             return_score = FALSE,
                             seurat_assay = "RNA",
@@ -220,7 +220,7 @@ signature_score <- function(data,
   scores <- BiocParallel::bplapply(names(signatures),
     FUN = function(name) {
       geneset <- signatures[[name]]
-      compute_signature_scores(datam, geneset, tot)
+      score_signature(datam, geneset, tot)
     }, BPPARAM = BiocParallel::MulticoreParam(n_cpus)
   )
 
@@ -307,15 +307,15 @@ signature_score <- function(data,
 #' ## TODO
 #'
 #' ## A thought: rename it to CIA_classify? it is somehow catchy?
-signature_based_classification <- function(data,
-                                           signatures_input,
-                                           n_cpus = NULL,
-                                           similarity_threshold = 0.1,
-                                           seurat_assay = "RNA",
-                                           matrix = "data",
-                                           score_mode = "scaled",
-                                           column_name = "CIA_prediction",
-                                           unassigned_label = "Unassigned") {
+CIA_classify <- function(data,
+                         signatures_input,
+                         n_cpus = NULL,
+                         similarity_threshold = 0.1,
+                         seurat_assay = "RNA",
+                         matrix = "data",
+                         score_mode = "scaled",
+                         column_name = "CIA_prediction",
+                         unassigned_label = "Unassigned") {
   # TODO: checks on arg
 
   if (is.character(signatures_input)) {
@@ -346,7 +346,7 @@ signature_based_classification <- function(data,
     }
   }
 
-  score_matrix <- signature_score(data,
+  score_matrix <- score_all_signatures(data,
     signatures_input,
     score_mode = score_mode,
     seurat_assay = seurat_assay,

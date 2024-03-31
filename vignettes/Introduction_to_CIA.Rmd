@@ -152,12 +152,12 @@ gmt
 
 ## Computing Signature Scores
 
-The `compute_signature_scores` function calculates the signature scores based on gene expression data. 
+The `score_signature` function calculates the signature scores based on gene expression data. 
 It evaluates the expression level of each gene within individual cells, facilitating the quantification of gene set activities across the dataset. 
 This function accepts as input a gene-by-cell expression matrix, a `SeuratObject`, or a `SingleCellExperiment`. For `SeuratObject` and `SingleCellExperiment`, the specific matrix of interest (like raw counts, normalized data, etc.) can be selected for analysis.
 
 ```{r compsignatures}
-scores <- compute_signature_scores(
+scores <- score_signature(
   data = MTG,
   seurat_assay = "RNA",
   matrix = "data",
@@ -167,7 +167,7 @@ head(scores)
 ```
 
 ```{r compsig2}
-scores <- compute_signature_scores(
+scores <- score_signature(
   data = MTG_SE,
   matrix = "logcounts",
   geneset = gmt$Astro
@@ -177,12 +177,12 @@ head(scores)
 
 ## Calculating Signature Scores Across a Dataset
 
-The `signature_score` function calculates the signature scores across all given signatures and cells, utilizing parallel processing to enhance efficiency. 
+The `score_all_signatures` function calculates the signature scores across all given signatures and cells, utilizing parallel processing to enhance efficiency. 
 It can compute either raw or transformed scores, based on the specified parameters. 
 When working with `SeuratObject` and `SingleCellExperiment`, the function automatically updates the objects by adding the calculated scores into their respective `meta.data` and `colData` slots.
 
 ```{r sigscore1}
-MTG <- signature_score(
+MTG <- score_all_signatures(
   data = MTG,
   signatures_input = gmt,
   return_score = FALSE,
@@ -196,7 +196,7 @@ head(MTG@meta.data)
 ```
 
 ```{r sigscore2}
-MTG_SE <- signature_score(
+MTG_SE <- score_all_signatures(
   data = MTG_SE,
   signatures_input = gmt,
   return_score = FALSE,
@@ -217,11 +217,11 @@ DimPlot(MTG, raster = FALSE) |
 
 ## Classification Based on Signature Scores
 
-Using the `signature_based_classification` function, cells are classified based on their signature scores. 
+Using the `CIA_classify` function, cells are classified based on their signature scores. 
 The function determines the most representative gene signature for each cell, which aids in the phenotypic characterization of the cells.
 
 ```{r wrappedrun}
-MTG <- signature_based_classification(
+MTG <- CIA_classify(
   data = MTG,
   signatures_input = gmt,
   n_cpus = 2,
@@ -250,7 +250,7 @@ compute_classification_metrics(MTG@meta.data,
 
 ## Applying Similarity Threshold
 
-The similarity threshold is a critical parameter in the classification process, utilized within the `signature_based_classification` function. 
+The similarity threshold is a critical parameter in the classification process, utilized within the `CIA_classify` function. 
 It sets the minimum required difference between the highest and second-highest signature scores for a cell to be confidently classified into a specific category. 
 This threshold prevents ambiguous classifications and ensures that cells are distinctly assigned to the most appropriate categories based on their signature expression levels.
 
@@ -262,7 +262,7 @@ To demonstrate the efficacy of this threshold, we removed the "Astro" signature,
 ```{r astrogone}
 gmt$Astro <- NULL
 
-MTG <- signature_based_classification(
+MTG <- CIA_classify(
   data = MTG,
   signatures_input = gmt,
   n_cpus = 2,
