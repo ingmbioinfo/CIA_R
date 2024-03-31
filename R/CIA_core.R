@@ -11,29 +11,24 @@
 #' @return A list where each element is a character vector of gene names, named
 #' by the signature names.
 #'
-#' @importFrom data.table fread
-#' @importFrom stats na.omit
-#'
 #' @export
+#'
+#' @importFrom utils head tail
 #'
 #' @examples
 #' ## TODO
 load_signatures <- function(signatures_input) {
-  # TODO: checks on arg
-
-  if (is.character(signatures_input)) {
-    # TODO: does this handle the signatures of different length?
-    df <- fread(signatures_input, sep = "\t", header = FALSE)
-    signatures <- split(df[, -1], df[[1]])
-    signatures <- lapply(signatures, na.omit)
-    signatures <- lapply(signatures, as.character)
-  } else if (is.list(signatures_input)) {
-    signatures <- signatures_input
-  } else {
+  if (!is.character(signatures_input))
     stop("signatures_input must be either a list or a string path to a TSV file.")
-  }
+  stopifnot(file.exists(signatures_input))
+
+  input_lines <- strsplit(readLines(signatures_input), "\t")
+  signatures <- lapply(input_lines, tail, -2)
+  names(signatures) <- lapply(input_lines, head, 1)
+
   return(signatures)
 }
+
 
 #' Compute Signature Scores
 #'
