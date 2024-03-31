@@ -44,7 +44,7 @@ library("CIA")
 
 ```{r loadpkgs}
 library("Seurat")
-library("data.table")
+# library("SeuratDisk")
 library("future")
 library("future.apply")
 library("Matrix")
@@ -69,8 +69,32 @@ download.file(
 )
 ```
 
+```{r tryingotherformats, eval=FALSE}
+
+# TODO: to revisit: this can speed up quite a lot the runtime of the vignette
+## ideally: start directly with a sce object, and potentially move it to seurat then
+
+MTG <- readRDS(file = "~/Development/CIA_R/MTG_cia.rds")
+SaveH5Seurat(MTG, "../CIA_R/mtg.h5Seurat")
+
+library("SingleCellExperiment")
+MTG_SE <- as.SingleCellExperiment(MTG)
+
+library("HDF5Array")
+HDF5Array::saveHDF5SummarizedExperiment(MTG_SE, dir = "../CIA_R/se_mtg")
+sce_MTG <- HDF5Array::loadHDF5SummarizedExperiment(dir = "../CIA_R/se_mtg")
+```
+
+
 ```{r loaddata}
 MTG <- readRDS(file = "~/Development/CIA_R/MTG_cia.rds")
+
+# message("loading from h5")
+# MTGloaded <- SeuratDisk::LoadH5Seurat(file = "~/Development/CIA_R/mtg.h5Seurat")
+# MTG <- MTGloaded
+# message("done loading from h5")
+
+
 ```
 
 ```{r labels}
