@@ -30,12 +30,9 @@ Imports:
     SingleCellExperiment,
     SummarizedExperiment,
     sparseMatrixStats,
-    dplyr,
+    parallel,
     BiocParallel,
-    future,
-    future.apply,
-    methods,
-    purrr
+    methods
 Suggests: 
     knitr,
     rmarkdown,

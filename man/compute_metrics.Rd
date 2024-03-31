@@ -7,18 +7,20 @@
 compute_metrics(data, classification_col, groups_cols, unassigned_label = "")
 }
 \arguments{
-\item{data}{Data frame containing the observed data including classification
-and true group labels.}
+\item{data}{Data frame containing the observed data including the labels
+assigned by the classification algorithm(s) and the true group labels.}
 
-\item{classification_col}{Character vector of column names in \code{data} that
-contain the classification results to evaluate.}
+\item{classification_col}{A vector of character strings specifying the column
+names in \code{data} where the labels assigned by the methods of interest are
+stored.}
 
 \item{groups_cols}{Character string specifying the column in \code{data} that
-contains the true group labels.}
+contains the true group labels (or the ones assigned by the reference method).}
 
 \item{unassigned_label}{The label used in \code{classification_col} to denote
 unclassified or unassigned samples.
-If this label is present, \%UN will be calculated and included in the metrics.}
+If this parameter is specified and detected in the data, \%UN will be
+calculated and included in the output metrics.}
 }
 \value{
 A matrix with classification metrics (SE, SP, PR, ACC, F1) for each
@@ -29,7 +31,22 @@ additional '\%UN' column is included in the output.
 Calculates classification metrics such as sensitivity (SE), specificity (SP),
 precision (PR), accuracy (ACC), F1-score (F1), and the percentage of
 'Unassigned' cells (\%UN) for given classification results, based on the
-specified unassigned label.
+specified unassigned label. Cells labeled as specified by the value of
+\code{unassigned_label} can be excluded from the metrics calculation.
+Additionally, the percentage of unassigned cells for each classification
+method is reported.
+}
+\details{
+The classification metrics reported in the output object are;
+\itemize{
+\item the overall sensitivity (SE)
+\item the specificity (SP)
+\item the precision (PR)
+\item the accuracy (ACC)
+\item the F1-score (F1)
+\item the percentage of unassigned cells (\%UN) for each classification method,
+compared to the reference method.
+}
 }
 \examples{
 ## TODO: probably have a pre-computed set of labels
