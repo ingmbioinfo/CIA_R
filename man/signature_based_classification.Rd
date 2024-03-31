@@ -11,6 +11,7 @@ signature_based_classification(
   similarity_threshold = 0.1,
   seurat_assay = "RNA",
   matrix = "data",
+  score_mode = "scaled",
   column_name = "CIA_prediction",
   unassigned_label = "Unassigned"
 )
@@ -38,6 +39,8 @@ this threshold, the cell is labeled as unassigned.}
 \item{matrix}{Slot to use for Seurat or SingleCellExperiment objects (default
 "data" for SO, "logcounts" for SCE).}
 
+\item{score_mode}{TODO defaults to scaled}
+
 \item{column_name}{The name of the column to be added to the metadata storing
 the classification labels, default is "CIA_prediction".}
 
@@ -57,4 +60,6 @@ otherwise, it is marked as unassigned.
 }
 \examples{
 ## TODO
+
+## A thought: rename it to CIA_classify? it is somehow catchy?
 }

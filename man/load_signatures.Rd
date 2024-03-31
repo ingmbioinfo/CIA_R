@@ -8,9 +8,7 @@ load_signatures(signatures_input)
 }
 \arguments{
 \item{signatures_input}{A character string representing the file path to the
-TSV file containing the gene signatures, or a list where each element is a
-vector of gene names with names of the list elements representing signature
-names.}
+TSV file containing the gene signatures.}
 }
 \value{
 A list where each element is a character vector of gene names, named

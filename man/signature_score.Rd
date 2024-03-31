@@ -48,4 +48,7 @@ the scores based on the expression levels of these genes in the data.
 }
 \examples{
 ## TODO
+
+## TODO: rename this function? This actually does more than the previous one.
+## Probably swapping the names is even a sensible choice?
 }
