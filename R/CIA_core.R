@@ -255,6 +255,7 @@ signature_score <- function(data,
 #' @param seurat_assay Assay for Seurat objects (default "RNA").
 #' @param matrix Slot to use for Seurat or SingleCellExperiment objects (default
 #' "data" for SO, "logcounts" for SCE).
+#' @param score_mode TODO defaults to scaled
 #' @param n_cpus An optional integer indicating the number of CPU cores to use
 #' for parallel computation. If NULL, the function will decide the number based on
 #' available system resources.
@@ -320,7 +321,7 @@ signature_based_classification <- function(data,
 
   score_matrix <- signature_score(data,
     signatures_input,
-    score_mode = "scaled",
+    score_mode = score_mode,
     seurat_assay = seurat_assay,
     matrix = matrix,
     return_score = TRUE,
