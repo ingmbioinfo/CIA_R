@@ -45,8 +45,6 @@ library("CIA")
 ```{r loadpkgs}
 library("Seurat")
 # library("SeuratDisk")
-library("future")
-library("future.apply")
 library("Matrix")
 library("sparseMatrixStats")
 library("SingleCellExperiment")
@@ -182,10 +180,6 @@ head(scores)
 The `signature_score` function calculates the signature scores across all given signatures and cells, utilizing parallel processing to enhance efficiency. 
 It can compute either raw or transformed scores, based on the specified parameters. 
 When working with `SeuratObject` and `SingleCellExperiment`, the function automatically updates the objects by adding the calculated scores into their respective `meta.data` and `colData` slots.
-
-```{r setopts}
-options(future.globals.maxSize = 10 * 1024^3) # Increase to 10 GiB, adjust according to your needs
-```
 
 ```{r sigscore1}
 MTG <- signature_score(
