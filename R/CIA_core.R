@@ -62,16 +62,36 @@ compute_signature_scores <- function(data,
                                      total_col_sums = NULL) {
   # TODO: checks on arg
 
-  if (inherits(data, "Seurat")) {
+  if (is(data, "Seurat")) {
+    # TODO: checks on arg, specific for Seurat
+
+
+
     datam <- slot(data[[seurat_assay]], matrix)
-  } else if (inherits(data, "SingleCellExperiment")) {
+  } else if (is(data, "SingleCellExperiment")) {
+    # TODO: checks on arg, specific for sce
+
+
+
     if (matrix == "data") {
       matrix <- "logcounts"
     }
     datam <- assay(data, matrix)
-  } else {
+  } else if (is(data, "matrix") | is(data, "Matrix")) {
+
+      # TODO: checks on arg, to make sure it is a proper matrix
+
+
+
     datam <- data
+  } else {
+    stop("You need to provide either a SingleCellExperiment object, ",
+         "a Seurat object or a matrix-like object")
   }
+
+
+
+
   geneset <- intersect(geneset, rownames(datam))
   if (length(geneset) == 0) {
     return(rep(0, ncol(datam)))
@@ -85,7 +105,9 @@ compute_signature_scores <- function(data,
   count <- colSums2(subdata > 0)
   exp <- colSums2(subdata) / total_col_sums
 
-  return(count * exp)
+  sigscore <- count * exp
+
+  return(sigscore)
 }
 
 
@@ -116,7 +138,7 @@ compute_signature_scores <- function(data,
 #'
 #' @importFrom future plan availableCores multicore
 #' @importFrom future.apply future_lapply
-#' @importFrom data.table fread
+#' @importFrom BiocParallel bplapply MulticoreParam SerialParam
 #' @importFrom sparseMatrixStats colSums2
 #' @importFrom SummarizedExperiment assay colData<- colData
 #' @importFrom SingleCellExperiment SingleCellExperiment counts logcounts
@@ -199,13 +221,17 @@ signature_score <- function(data,
   # CIA_azimuth_Vip, for example
 
 
-  if (inherits(data, "Seurat")) {
+  if (is(data, "Seurat")) {
     data@meta.data[, colnames(scores_df)] <- scores_df
+
     cat("Scores have been added in data@meta.data", "\n")
+
     return(data)
-  } else if (inherits(data, "SingleCellExperiment")) {
+  } else if (is(data, "SingleCellExperiment")) {
     colData(data)[, colnames(scores_df)] <- scores_df
+
     cat("Scores have been added in colData(data)", "\n")
+
     return(data)
   } else {
     return(scores_df)
@@ -251,18 +277,38 @@ signature_score <- function(data,
 #'
 #' @examples
 #' ## TODO
+#'
+#' ## A thought: rename it to CIA_classify? it is somehow catchy?
 signature_based_classification <- function(data,
                                            signatures_input,
                                            n_cpus = NULL,
                                            similarity_threshold = 0.1,
                                            seurat_assay = "RNA",
                                            matrix = "data",
+                                           score_mode = "scaled",
                                            column_name = "CIA_prediction",
                                            unassigned_label = "Unassigned") {
   # TODO: checks on arg
 
+  if (is.character(signatures_input)) {
+    signatures <- load_signatures(signatures_input)
+  } else if (is.list(signatures_input)){
+    signatures <- signatures_input
+  }
+
+  stopifnot(is.character(seurat_assay))
+  stopifnot(is.character(matrix))
+  stopifnot(is.character(score_mode))
+  stopifnot(is.numeric(similarity_threshold))
+  stopifnot(similarity_threshold >=0 & similarity_threshold <= 1)
+  stopifnot(is.character(column_name))
+  stopifnot(length(column_name) > 0)
+  stopifnot(is.character(unassigned_label))
+
   start_time <- Sys.time() # Capture start time
 
+
+  # TODO - shall we move out this one and keep it internal? makes it a bit tidier in the body here
   get_label <- function(row) {
     order_scores <- order(row, decreasing = TRUE)
     if (row[order_scores[1]] - row[order_scores[2]] <= similarity_threshold) {
@@ -291,15 +337,21 @@ signature_based_classification <- function(data,
     "    End:", format(end_time, "%H:%M:%S"), "\n"
   )
 
-  if (inherits(data, "Seurat")) {
+  if (is(data, "Seurat")) {
     data@meta.data[, column_name] <- as.factor(labels)
+
     cat(column_name, "has been added in data@meta.data", "\n")
+
     return(data)
   } else if (is(data, "SingleCellExperiment")) {
+
     colData(data)[, column_name] <- as.data.frame(labels)
+
     cat(column_name, "has been added in colData(data)", "\n")
+
     return(data)
   } else {
+
     return(as.factor(labels))
   }
 }
