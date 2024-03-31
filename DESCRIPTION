@@ -31,7 +31,7 @@ Imports:
     SummarizedExperiment,
     sparseMatrixStats,
     dplyr,
-    data.table,
+    BiocParallel,
     future,
     future.apply,
     methods,
