@@ -136,9 +136,8 @@ compute_signature_scores <- function(data,
 #' @return Matrix of signature scores if return_score=TRUE or if data is a
 #' matrix/data,frame. Otherwise, updates the input object's metadata with scores.
 #'
-#' @importFrom future plan availableCores multicore
-#' @importFrom future.apply future_lapply
 #' @importFrom BiocParallel bplapply MulticoreParam SerialParam
+#' @importFrom parallel detectCores
 #' @importFrom sparseMatrixStats colSums2
 #' @importFrom SummarizedExperiment assay colData<- colData
 #' @importFrom SingleCellExperiment SingleCellExperiment counts logcounts
@@ -211,7 +210,7 @@ signature_score <- function(data,
   })
 
   n_cpus <- if (is.null(n_cpus)) {
-    ceiling(availableCores() / 4)
+    ceiling(parallel::detectCores() / 4)
   } else {
     n_cpus
   }
@@ -219,7 +218,6 @@ signature_score <- function(data,
   # plan(multicore, workers = n_cpus)
 
   scores <- BiocParallel::bplapply(names(signatures),
-    # future.seed = TRUE,
     FUN = function(name) {
       geneset <- signatures[[name]]
       compute_signature_scores(datam, geneset, tot)
