@@ -242,7 +242,7 @@ To evaluate the performance and relevance of the classification, the `compute_me
 This function calculates classification metrics such as sensitivity (SE), specificity (SP), precision (PR), accuracy (ACC), and F1-score (F1) for given classification results.
 
 ```{r compmetrics}
-compute_metrics(MTG@meta.data,
+compute_classification_metrics(MTG@meta.data,
   classification_col = c("CIA_prediction"),
   groups_cols = "celltype"
 )
@@ -281,14 +281,14 @@ This outcome confirms the importance of setting an appropriate similarity thresh
 
 ```{r metricsnoastro}
 # considering unassigned as "misclassified"
-compute_metrics(MTG@meta.data,
+compute_classification_metrics(MTG@meta.data,
   classification_col = c("CIA_prediction", "CIA_prediction_t=0.1"),
   groups_cols = "celltype"
 )
 
 
 # removing unassigned from metrics calculation
-compute_metrics(MTG@meta.data,
+compute_classification_metrics(MTG@meta.data,
   classification_col = c("CIA_prediction", "CIA_prediction_t=0.1"),
   groups_cols = "celltype",
   unassigned_label = "Unassigned"

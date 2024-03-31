@@ -45,12 +45,12 @@
 #' ## classification_col <- c('classifier1', 'classifier2')
 #' ## groups_cols <- 'true_group'
 #' ## unassigned_label <- 'Unassigned' # Specify the label that denotes unassigned samples
-#' ## metrics_report <- compute_metrics(data, classification_col, groups_cols, unassigned_label)
+#' ## metrics_report <- compute_classification_metrics(data, classification_col, groups_cols, unassigned_label)
 #' ## print(metrics_report)
-compute_metrics <- function(data,
-                            classification_col,
-                            groups_cols,
-                            unassigned_label = "") {
+compute_classification_metrics <- function(data,
+                                           classification_col,
+                                           groups_cols,
+                                           unassigned_label = "") {
   # TODO: checks on arg
 
   report <- list()
