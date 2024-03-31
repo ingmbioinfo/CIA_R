@@ -150,12 +150,12 @@ score_signature <- function(data,
 #' ## TODO: rename this function? This actually does more than the previous one.
 #' ## Probably swapping the names is even a sensible choice?
 score_all_signatures <- function(data,
-                            signatures_input,
-                            return_score = FALSE,
-                            seurat_assay = "RNA",
-                            matrix = "data",
-                            score_mode = "raw",
-                            n_cpus = NULL) {
+                                 signatures_input,
+                                 return_score = FALSE,
+                                 seurat_assay = "RNA",
+                                 matrix = "data",
+                                 score_mode = "raw",
+                                 n_cpus = NULL) {
   # TODO: checks on arg
 
   if (is.character(signatures_input)) {
@@ -217,8 +217,9 @@ score_all_signatures <- function(data,
   tot <- colSums2(datam)
   # plan(multicore, workers = n_cpus)
 
-  scores <- BiocParallel::bplapply(names(signatures),
-    FUN = function(name) {
+  scores <- BiocParallel::bplapply(
+    names(signatures),
+    function(name) {
       geneset <- signatures[[name]]
       score_signature(datam, geneset, tot)
     }, BPPARAM = BiocParallel::MulticoreParam(n_cpus)
@@ -335,17 +336,6 @@ CIA_classify <- function(data,
 
   start_time <- Sys.time() # Capture start time
 
-
-  # TODO - shall we move out this one and keep it internal? makes it a bit tidier in the body here
-  get_label <- function(row) {
-    order_scores <- order(row, decreasing = TRUE)
-    if (row[order_scores[1]] - row[order_scores[2]] <= similarity_threshold) {
-      return(unassigned_label)
-    } else {
-      return(names(row)[order_scores[1]])
-    }
-  }
-
   score_matrix <- score_all_signatures(data,
     signatures_input,
     score_mode = score_mode,
@@ -355,7 +345,10 @@ CIA_classify <- function(data,
     n_cpus = n_cpus
   )
 
-  labels <- apply(score_matrix, 1, get_label)
+  labels <- apply(score_matrix, 1,
+                  get_label,
+                  similarity_threshold = similarity_threshold,
+                  unassigned_label = unassigned_label)
 
   end_time <- Sys.time() # Capture end time
 
@@ -381,5 +374,25 @@ CIA_classify <- function(data,
   } else {
 
     return(as.factor(labels))
+  }
+}
+
+# TODO - shall we move out this one and keep it internal? makes it a bit tidier in the body here
+
+#' Label extraction from the CIA score matrix
+#'
+#' @param row The vector of values, by row
+#' @param similarity_threshold Numeric vector, to control the behavior of the
+#' assignment of the labels.
+#' @param unassigned_label The label to assign to the cells where no clear majority
+#' signature is identified, default is "Unassigned" - handled via `CIA_classify`.
+get_label <- function(row,
+                      similarity_threshold,
+                      unassigned_label) {
+  order_scores <- order(row, decreasing = TRUE)
+  if (row[order_scores[1]] - row[order_scores[2]] <= similarity_threshold) {
+    return(unassigned_label)
+  } else {
+    return(names(row)[order_scores[1]])
   }
 }
