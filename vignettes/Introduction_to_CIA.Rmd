@@ -101,7 +101,8 @@ cat("Old labels:", unique(MTG@meta.data$subclass_label), "\n", "\n")
 MTG@meta.data$celltype <- MTG@meta.data$subclass_label
 
 # filter cells
-cells <- readRDS("barcodes_after_QC.rds")
+cells <- readRDS(system.file("extdata", "barcodes_after_QC.rds",
+                             package = "CIA"))
 MTG <- MTG[, colnames(MTG) %in% cells]
 
 # Rename the specified cell types
@@ -116,7 +117,10 @@ MTG@meta.data$celltype <- as.factor(MTG@meta.data$celltype)
 
 Idents(MTG) <- MTG@meta.data$celltype
 
-MTG[["umap"]] <- CreateDimReducObject(embeddings = readRDS("umap.rds"), key = "UMAP_")
+MTG[["umap"]] <- CreateDimReducObject(
+  embeddings = readRDS(system.file("extdata", "umap.rds",
+                                   package = "CIA")), 
+  key = "UMAP_")
 ```
 
 ```{r normalization}
@@ -146,7 +150,8 @@ The `load_signatures` function is used to load gene signatures from a TSV file o
 Each signature consists of a name and a set of associated genes.
 
 ```{r loadgmt}
-gmt <- load_signatures("azimuth_human_motor_cortex.gmt")
+gmt <- load_signatures(system.file("extdata", "azimuth_human_motor_cortex.gmt",
+                                   package = "CIA"))
 gmt
 ```
 
@@ -160,19 +165,19 @@ This function accepts as input a gene-by-cell expression matrix, a `SeuratObject
 scores <- score_signature(
   data = MTG,
   seurat_assay = "RNA",
-  matrix = "data",
+  seurat_layer = "data",
   geneset = gmt$Astro
 )
 head(scores)
 ```
 
 ```{r compsig2}
-scores <- score_signature(
+scores_se <- score_signature(
   data = MTG_SE,
-  matrix = "logcounts",
+  sce_assay = "logcounts",
   geneset = gmt$Astro
 )
-head(scores)
+head(scores_se)
 ```
 
 ## Calculating Signature Scores Across a Dataset
@@ -294,8 +299,6 @@ compute_classification_metrics(MTG@meta.data,
   unassigned_label = "Unassigned"
 )
 ```
-
-TODO: we never used so far `classification_metrics()`...
 
 
 # Conclusion
