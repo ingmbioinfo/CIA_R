@@ -8,7 +8,8 @@ score_signature(
   data,
   geneset,
   seurat_assay = "RNA",
-  matrix = "data",
+  seurat_layer = "data",
+  sce_assay = "logcounts",
   total_col_sums = NULL
 )
 }
@@ -20,8 +21,9 @@ with genes in rows and cells in columns.}
 
 \item{seurat_assay}{Assay to use for SeuratObject objects (default "RNA").}
 
-\item{matrix}{Slot to use for Seurat or SingleCellExperiment objects
-(default "data" for SO, "logcounts" for SCE).}
+\item{seurat_layer}{TODO}
+
+\item{sce_assay}{TODO}
 
 \item{total_col_sums}{Optional precomputed column sums for normalization.}
 }

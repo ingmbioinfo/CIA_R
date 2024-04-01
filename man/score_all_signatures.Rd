@@ -9,7 +9,8 @@ score_all_signatures(
   signatures_input,
   return_score = FALSE,
   seurat_assay = "RNA",
-  matrix = "data",
+  seurat_layer = "data",
+  sce_assay = "logcounts",
   score_mode = "raw",
   n_cpus = NULL
 )
@@ -28,8 +29,9 @@ names.}
 
 \item{seurat_assay}{Assay for Seurat objects (default "RNA").}
 
-\item{matrix}{Slot to use for Seurat or SingleCellExperiment objects
-(default "data" for SO, "logcounts" for SCE).}
+\item{seurat_layer}{TODO}
+
+\item{sce_assay}{TODO}
 
 \item{score_mode}{Calculation mode for scores: "raw", "scaled", or
 log-transformed ("log", "log2", "log10").}

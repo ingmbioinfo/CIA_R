@@ -21,5 +21,8 @@ Each signature in the file should be in a separate row with the first column
 being the signature name and the remaining columns containing the genes.
 }
 \examples{
-## TODO
+gmt_file <- system.file("extdata", "azimuth_human_motor_cortex.gmt",
+                        package = "CIA")
+signatures <- load_signatures(gmt_file)
+signatures
 }

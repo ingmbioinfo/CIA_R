@@ -10,7 +10,8 @@ CIA_classify(
   n_cpus = NULL,
   similarity_threshold = 0.1,
   seurat_assay = "RNA",
-  matrix = "data",
+  seurat_layer = "data",
+  sce_assay = "logcounts",
   score_mode = "scaled",
   column_name = "CIA_prediction",
   unassigned_label = "Unassigned"
@@ -36,8 +37,9 @@ this threshold, the cell is labeled as unassigned.}
 
 \item{seurat_assay}{Assay for Seurat objects (default "RNA").}
 
-\item{matrix}{Slot to use for Seurat or SingleCellExperiment objects (default
-"data" for SO, "logcounts" for SCE).}
+\item{seurat_layer}{TODO}
+
+\item{sce_assay}{TODO}
 
 \item{score_mode}{TODO defaults to scaled}
 
