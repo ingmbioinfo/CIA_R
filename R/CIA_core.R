@@ -16,7 +16,10 @@
 #' @importFrom utils head tail
 #'
 #' @examples
-#' ## TODO
+#' gmt_file <- system.file("extdata", "azimuth_human_motor_cortex.gmt",
+#'                         package = "CIA")
+#' signatures <- load_signatures(gmt_file)
+#' signatures
 load_signatures <- function(signatures_input) {
   if (!is.character(signatures_input))
     stop("signatures_input must be either a list or a string path to a TSV file.")
@@ -42,8 +45,8 @@ load_signatures <- function(signatures_input) {
 #' with genes in rows and cells in columns.
 #' @param geneset Vector of gene names to compute the scores for.
 #' @param seurat_assay Assay to use for SeuratObject objects (default "RNA").
-#' @param matrix Slot to use for Seurat or SingleCellExperiment objects
-#' (default "data" for SO, "logcounts" for SCE).
+#' @param seurat_layer TODO
+#' @param sce_assay TODO
 #' @param total_col_sums Optional precomputed column sums for normalization.
 #'
 #' @return Vector of signature scores for each column (cell) in the data.
@@ -58,25 +61,45 @@ load_signatures <- function(signatures_input) {
 score_signature <- function(data,
                             geneset,
                             seurat_assay = "RNA",
-                            matrix = "data",
+                            seurat_layer = "data",
+                            sce_assay = "logcounts",
                             total_col_sums = NULL) {
-  # TODO: checks on arg
+
+  ## Checks on arguments
+  allowed_formats <- c("SingleCellExperiment", "Seurat", "matrix", "Matrix")
+  if (!any(unlist((lapply(allowed_formats, function(arg) is(data, arg))))))
+    stop("The data provided should be in one of the following formats: ",
+         paste(allowed_formats, collapse = "|"))
+
+  stopifnot(is.character(geneset))
+  stopifnot(length(geneset) > 0)
+  stopifnot(is.character(seurat_assay))
+  stopifnot(length(seurat_assay) == 1)
+  stopifnot(is.character(seurat_layer))
+  stopifnot(length(seurat_layer) == 1)
+  stopifnot(is.character(sce_assay))
+  stopifnot(length(sce_assay) == 1)
+
+  if (!is.null(total_col_sums)) {
+    stopifnot(length(total_col_sums) == ncol(data))
+  }
 
   if (is(data, "Seurat")) {
     # TODO: checks on arg, specific for Seurat
 
 
 
-    datam <- slot(data[[seurat_assay]], matrix)
+    datam <- slot(data[[seurat_assay]], seurat_layer)
   } else if (is(data, "SingleCellExperiment")) {
     # TODO: checks on arg, specific for sce
 
 
 
-    if (matrix == "data") {
-      matrix <- "logcounts"
-    }
-    datam <- assay(data, matrix)
+    # if (matrix == "data") {
+    #   matrix <- "logcounts"
+    # }
+
+    datam <- assay(data, sce_assay)
   } else if (is(data, "matrix") | is(data, "Matrix")) {
 
       # TODO: checks on arg, to make sure it is a proper matrix
@@ -126,12 +149,12 @@ score_signature <- function(data,
 #' names.
 #' @param return_score Boolean to return scores directly (default FALSE).
 #' @param seurat_assay Assay for Seurat objects (default "RNA").
-#' @param matrix Slot to use for Seurat or SingleCellExperiment objects
-#' (default "data" for SO, "logcounts" for SCE).
 #' @param score_mode Calculation mode for scores: "raw", "scaled", or
 #' log-transformed ("log", "log2", "log10").
 #' @param n_cpus Number of CPU cores for parallel computation (default uses a
 #' quarter of available cores).
+#' @param sce_assay TODO
+#' @param seurat_layer TODO
 #'
 #' @return Matrix of signature scores if return_score=TRUE or if data is a
 #' matrix/data,frame. Otherwise, updates the input object's metadata with scores.
@@ -153,10 +176,15 @@ score_all_signatures <- function(data,
                                  signatures_input,
                                  return_score = FALSE,
                                  seurat_assay = "RNA",
-                                 matrix = "data",
+                                 seurat_layer = "data",
+                                 sce_assay = "logcounts",
                                  score_mode = "raw",
                                  n_cpus = NULL) {
-  # TODO: checks on arg
+  ## Checks on arguments
+  allowed_formats <- c("SingleCellExperiment", "Seurat", "matrix", "Matrix")
+  if (!any(unlist((lapply(allowed_formats, function(arg) is(data, arg))))))
+    stop("The data provided should be in one of the following formats: ",
+         paste(allowed_formats, collapse = "|"))
 
   if (is.character(signatures_input)) {
     signatures <- load_signatures(signatures_input)
@@ -165,12 +193,23 @@ score_all_signatures <- function(data,
   }
 
   stopifnot(is.logical(return_score))
-  stopifnot(is.character(seurat_assay))
-  stopifnot(is.character(matrix))
-  stopifnot(is.character(score_mode))
+  stopifnot(length(return_score) == 1)
 
+  stopifnot(is.character(seurat_assay))
+  stopifnot(length(seurat_assay) == 1)
+  stopifnot(is.character(seurat_layer))
+  stopifnot(length(seurat_layer) == 1)
+  stopifnot(is.character(sce_assay))
+  stopifnot(length(sce_assay) == 1)
+
+  stopifnot(is.character(score_mode))
   score_mode <- match.arg(score_mode, c('raw', 'scaled', 'log', 'log2', 'log10'))
 
+  if (!is.null(n_cpus)) {
+    stopifnot(is.numeric(n_cpus))
+    stopifnot(n_cpus > 0)
+    stopifnot(length(n_cpus) == 1)
+  }
 
   # Check the type of data and extract expression matrix accordingly
 
@@ -179,16 +218,16 @@ score_all_signatures <- function(data,
     # TODO: checks on arg, specific for Seurat
 
 
-    datam <- slot(data[[seurat_assay]], matrix)
+    datam <- slot(data[[seurat_assay]], seurat_layer)
   } else if (is(data, "SingleCellExperiment")) {
     # TODO: checks on arg, specific for sce
 
 
 
-    if (matrix == "data") {
-      matrix <- "logcounts"
-    }
-    datam <- assay(data, matrix)
+    # if (matrix == "data") {
+    #   matrix <- "logcounts"
+    # }
+    datam <- assay(data, sce_assay)
   } else if (is(data, "matrix") | is(data, "Matrix")) {
     # TODO: checks on arg, to make sure it is a proper matrix
 
@@ -221,7 +260,9 @@ score_all_signatures <- function(data,
     names(signatures),
     function(name) {
       geneset <- signatures[[name]]
-      score_signature(datam, geneset, tot)
+      score_signature(data = datam,
+                      geneset = geneset,
+                      total_col_sums = tot)
     }, BPPARAM = BiocParallel::MulticoreParam(n_cpus)
   )
 
@@ -281,8 +322,6 @@ score_all_signatures <- function(data,
 #' TSV file containing the gene signatures, or a list where each element is a
 #' vector of gene names with names of the list elements representing signature names.
 #' @param seurat_assay Assay for Seurat objects (default "RNA").
-#' @param matrix Slot to use for Seurat or SingleCellExperiment objects (default
-#' "data" for SO, "logcounts" for SCE).
 #' @param score_mode TODO defaults to scaled
 #' @param n_cpus An optional integer indicating the number of CPU cores to use
 #' for parallel computation. If NULL, the function will decide the number based on
@@ -295,6 +334,8 @@ score_all_signatures <- function(data,
 #' the classification labels, default is "CIA_prediction".
 #' @param unassigned_label The label to assign to the cells where no clear majority
 #' signature is identified, default is "Unassigned".
+#' @param seurat_layer TODO
+#' @param sce_assay TODO
 #'
 #' @return Modifies the input data object by adding the classification labels to
 #' its metadata and returns the modified data object.
@@ -313,11 +354,16 @@ CIA_classify <- function(data,
                          n_cpus = NULL,
                          similarity_threshold = 0.1,
                          seurat_assay = "RNA",
-                         matrix = "data",
+                         seurat_layer = "data",
+                         sce_assay = "logcounts",
                          score_mode = "scaled",
                          column_name = "CIA_prediction",
                          unassigned_label = "Unassigned") {
-  # TODO: checks on arg
+  ## Checks on arguments
+  allowed_formats <- c("SingleCellExperiment", "Seurat", "matrix", "Matrix")
+  if (!any(unlist((lapply(allowed_formats, function(arg) is(data, arg))))))
+    stop("The data provided should be in one of the following formats: ",
+         paste(allowed_formats, collapse = "|"))
 
   if (is.character(signatures_input)) {
     signatures <- load_signatures(signatures_input)
@@ -325,13 +371,29 @@ CIA_classify <- function(data,
     signatures <- signatures_input
   }
 
-  stopifnot(is.character(seurat_assay))
-  stopifnot(is.character(matrix))
-  stopifnot(is.character(score_mode))
+  if (!is.null(n_cpus)) {
+    stopifnot(is.numeric(n_cpus))
+    stopifnot(n_cpus > 0)
+    stopifnot(length(n_cpus) == 1)
+  }
+
   stopifnot(is.numeric(similarity_threshold))
   stopifnot(similarity_threshold >=0 & similarity_threshold <= 1)
+
+  stopifnot(is.character(seurat_assay))
+  stopifnot(length(seurat_assay) == 1)
+  stopifnot(is.character(seurat_layer))
+  stopifnot(length(seurat_layer) == 1)
+
+  stopifnot(is.character(sce_assay))
+  stopifnot(length(sce_assay) == 1)
+
+  stopifnot(is.character(score_mode))
+  score_mode <- match.arg(score_mode, c('raw', 'scaled', 'log', 'log2', 'log10'))
+
   stopifnot(is.character(column_name))
   stopifnot(length(column_name) > 0)
+
   stopifnot(is.character(unassigned_label))
 
   start_time <- Sys.time() # Capture start time
@@ -340,7 +402,8 @@ CIA_classify <- function(data,
     signatures_input,
     score_mode = score_mode,
     seurat_assay = seurat_assay,
-    matrix = matrix,
+    seurat_layer = seurat_layer,
+    sce_assay = sce_assay,
     return_score = TRUE,
     n_cpus = n_cpus
   )
@@ -376,8 +439,6 @@ CIA_classify <- function(data,
     return(as.factor(labels))
   }
 }
-
-# TODO - shall we move out this one and keep it internal? makes it a bit tidier in the body here
 
 #' Label extraction from the CIA score matrix
 #'
