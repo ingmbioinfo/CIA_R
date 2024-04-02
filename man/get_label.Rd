@@ -15,6 +15,10 @@ assignment of the labels.}
 \item{unassigned_label}{The label to assign to the cells where no clear majority
 signature is identified, default is "Unassigned" - handled via \code{CIA_classify}.}
 }
+\value{
+The string label for the cell of interest, defined with the simple
+heuristics on the similarity threshold.
+}
 \description{
 Label extraction from the CIA score matrix
 }

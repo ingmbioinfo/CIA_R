@@ -12,6 +12,14 @@ Cluster Independent Annotation
 \details{
 This package provides functionality to ... TODO
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/ingmbioinfo/CIA_R/}
+  \item Report bugs at \url{https://github.com/ingmbioinfo/CIA_R/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: a1 a2 \email{ab@c.d} (\href{https://orcid.org/0000-0001-0002-0003}{ORCID})
 

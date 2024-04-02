@@ -239,12 +239,12 @@ score_all_signatures <- function(data,
          "a Seurat object or a matrix-like object")
   }
 
-  cat("Checking if genes are in the dataset matrix...", "\n")
+  message("Checking if genes are in the dataset matrix...", "\n")
   result <- sapply(names(signatures), function(x) {
     lt <- length(signatures[[x]])
     l <- sum(signatures[[x]] %in% rownames(data))
     message <- sprintf("%s: %d / %d", x, l, lt)
-    cat(message, "\n")
+    message(message, "\n")
     invisible(message) # Use invisible to avoid printing the return value of cat
   })
 
@@ -293,13 +293,13 @@ score_all_signatures <- function(data,
   if (is(data, "Seurat")) {
     data@meta.data[, colnames(scores_df)] <- scores_df
 
-    cat("Scores have been added in data@meta.data", "\n")
+    message("Scores have been added in data@meta.data", "\n")
 
     return(data)
   } else if (is(data, "SingleCellExperiment")) {
     colData(data)[, colnames(scores_df)] <- scores_df
 
-    cat("Scores have been added in colData(data)", "\n")
+    message("Scores have been added in colData(data)", "\n")
 
     return(data)
   } else {
@@ -416,7 +416,7 @@ CIA_classify <- function(data,
   end_time <- Sys.time() # Capture end time
 
   # Format and print the message correctly
-  cat(
+  message(
     "\nClassification complete!    Start:", format(start_time, "%H:%M:%S"),
     "    End:", format(end_time, "%H:%M:%S"), "\n"
   )
@@ -424,14 +424,14 @@ CIA_classify <- function(data,
   if (is(data, "Seurat")) {
     data@meta.data[, column_name] <- as.factor(labels)
 
-    cat(column_name, "has been added in data@meta.data", "\n")
+    message(column_name, "has been added in data@meta.data", "\n")
 
     return(data)
   } else if (is(data, "SingleCellExperiment")) {
 
     colData(data)[, column_name] <- as.data.frame(labels)
 
-    cat(column_name, "has been added in colData(data)", "\n")
+    message(column_name, "has been added in colData(data)", "\n")
 
     return(data)
   } else {
@@ -447,6 +447,9 @@ CIA_classify <- function(data,
 #' assignment of the labels.
 #' @param unassigned_label The label to assign to the cells where no clear majority
 #' signature is identified, default is "Unassigned" - handled via `CIA_classify`.
+#'
+#' @return The string label for the cell of interest, defined with the simple
+#' heuristics on the similarity threshold.
 get_label <- function(row,
                       similarity_threshold,
                       unassigned_label) {
