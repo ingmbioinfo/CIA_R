@@ -232,6 +232,14 @@ MTG <- CIA_classify(
   n_cpus = 2,
   similarity_threshold = 0
 )
+
+## Similarly, for a SingleCellExperiment...
+MTG_SE <- CIA_classify(
+  data = MTG_SE,
+  signatures_input = gmt,
+  n_cpus = 2,
+  similarity_threshold = 0
+)
 ```
 
 ```{r mdwrapped}
@@ -248,6 +256,12 @@ This function calculates classification metrics such as sensitivity (SE), specif
 
 ```{r compmetrics}
 compute_classification_metrics(MTG@meta.data,
+  classification_col = c("CIA_prediction"),
+  groups_cols = "celltype"
+)
+
+## On an SCE object...
+compute_classification_metrics(colData(MTG_SE),
   classification_col = c("CIA_prediction"),
   groups_cols = "celltype"
 )
@@ -274,6 +288,16 @@ MTG <- CIA_classify(
   similarity_threshold = 0.1,
   column_name = "CIA_prediction_t=0.1"
 )
+
+
+
+MTG_SE <- CIA_classify(
+  data = MTG_SE,
+  signatures_input = gmt,
+  n_cpus = 2,
+  similarity_threshold = 0.1,
+  column_name = "CIA_prediction_t=0.1"
+)
 ```
 
 ```{r plotnoastro, fig.width=12, fig.height=5}
@@ -294,6 +318,14 @@ compute_classification_metrics(MTG@meta.data,
 
 # removing unassigned from metrics calculation
 compute_classification_metrics(MTG@meta.data,
+  classification_col = c("CIA_prediction", "CIA_prediction_t=0.1"),
+  groups_cols = "celltype",
+  unassigned_label = "Unassigned"
+)
+
+
+## Doing the same on a SingleCellExperiment
+compute_classification_metrics(colData(MTG_SE),
   classification_col = c("CIA_prediction", "CIA_prediction_t=0.1"),
   groups_cols = "celltype",
   unassigned_label = "Unassigned"
