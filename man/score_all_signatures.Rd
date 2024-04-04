@@ -29,12 +29,15 @@ names.}
 
 \item{seurat_assay}{Assay for Seurat objects (default "RNA").}
 
-\item{seurat_layer}{TODO}
+\item{seurat_layer}{Character string, indicating which layer to use of the
+Seurat object. Defaults to \code{data}.}
 
-\item{sce_assay}{TODO}
+\item{sce_assay}{Character string, indicating which assay to use of the
+SingleCellExperiment object. Defaults to \code{logcounts}.}
 
-\item{score_mode}{Calculation mode for scores: "raw", "scaled", or
-log-transformed ("log", "log2", "log10").}
+\item{score_mode}{Character string, specifying the calculation mode to be
+used for scores: "raw", "scaled", or log-transformed ("log", "log2", "log10").
+In the scope of this function, this defaults to "raw".}
 
 \item{n_cpus}{Number of CPU cores for parallel computation (default uses a
 quarter of available cores).}
@@ -49,8 +52,6 @@ provided data. It loads the gene signatures from an input source and computes
 the scores based on the expression levels of these genes in the data.
 }
 \examples{
-## TODO
+## TODO example
 
-## TODO: rename this function? This actually does more than the previous one.
-## Probably swapping the names is even a sensible choice?
 }

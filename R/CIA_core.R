@@ -45,8 +45,10 @@ load_signatures <- function(signatures_input) {
 #' with genes in rows and cells in columns.
 #' @param geneset Vector of gene names to compute the scores for.
 #' @param seurat_assay Assay to use for SeuratObject objects (default "RNA").
-#' @param seurat_layer TODO
-#' @param sce_assay TODO
+#' @param seurat_layer Character string, indicating which layer to use of the
+#' Seurat object. Defaults to `data`.
+#' @param sce_assay Character string, indicating which assay to use of the
+#' SingleCellExperiment object. Defaults to `logcounts`.
 #' @param total_col_sums Optional precomputed column sums for normalization.
 #'
 #' @return Vector of signature scores for each column (cell) in the data.
@@ -57,7 +59,7 @@ load_signatures <- function(signatures_input) {
 #' @export
 #'
 #' @examples
-#' ## TODO
+#' ## TODO example
 score_signature <- function(data,
                             geneset,
                             seurat_assay = "RNA",
@@ -149,12 +151,16 @@ score_signature <- function(data,
 #' names.
 #' @param return_score Boolean to return scores directly (default FALSE).
 #' @param seurat_assay Assay for Seurat objects (default "RNA").
-#' @param score_mode Calculation mode for scores: "raw", "scaled", or
-#' log-transformed ("log", "log2", "log10").
+#' @param seurat_layer Character string, indicating which layer to use of the
+#' Seurat object. Defaults to `data`.
+#' @param sce_assay Character string, indicating which assay to use of the
+#' SingleCellExperiment object. Defaults to `logcounts`.
+#' @param score_mode Character string, specifying the calculation mode to be
+#' used for scores: "raw", "scaled", or log-transformed ("log", "log2", "log10").
+#' In the scope of this function, this defaults to "raw".
+#'
 #' @param n_cpus Number of CPU cores for parallel computation (default uses a
 #' quarter of available cores).
-#' @param sce_assay TODO
-#' @param seurat_layer TODO
 #'
 #' @return Matrix of signature scores if return_score=TRUE or if data is a
 #' matrix/data,frame. Otherwise, updates the input object's metadata with scores.
@@ -168,10 +174,8 @@ score_signature <- function(data,
 #' @export
 #'
 #' @examples
-#' ## TODO
+#' ## TODO example
 #'
-#' ## TODO: rename this function? This actually does more than the previous one.
-#' ## Probably swapping the names is even a sensible choice?
 score_all_signatures <- function(data,
                                  signatures_input,
                                  return_score = FALSE,
@@ -322,7 +326,13 @@ score_all_signatures <- function(data,
 #' TSV file containing the gene signatures, or a list where each element is a
 #' vector of gene names with names of the list elements representing signature names.
 #' @param seurat_assay Assay for Seurat objects (default "RNA").
-#' @param score_mode TODO defaults to scaled
+#' @param seurat_layer Character string, indicating which layer to use of the
+#' Seurat object. Defaults to `data`.
+#' @param sce_assay Character string, indicating which assay to use of the
+#' SingleCellExperiment object. Defaults to `logcounts`.
+#' @param score_mode Character string, specifying the calculation mode to be
+#' used for scores: "raw", "scaled", or log-transformed ("log", "log2", "log10").
+#' In the scope of this function, this defaults to "scaled".
 #' @param n_cpus An optional integer indicating the number of CPU cores to use
 #' for parallel computation. If NULL, the function will decide the number based on
 #' available system resources.
@@ -334,8 +344,6 @@ score_all_signatures <- function(data,
 #' the classification labels, default is "CIA_prediction".
 #' @param unassigned_label The label to assign to the cells where no clear majority
 #' signature is identified, default is "Unassigned".
-#' @param seurat_layer TODO
-#' @param sce_assay TODO
 #'
 #' @return Modifies the input data object by adding the classification labels to
 #' its metadata and returns the modified data object.
@@ -346,7 +354,7 @@ score_all_signatures <- function(data,
 #' @export
 #'
 #' @examples
-#' ## TODO
+#' ## TODO example
 #'
 #' ## A thought: rename it to CIA_classify? it is somehow catchy?
 CIA_classify <- function(data,

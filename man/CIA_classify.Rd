@@ -37,11 +37,15 @@ this threshold, the cell is labeled as unassigned.}
 
 \item{seurat_assay}{Assay for Seurat objects (default "RNA").}
 
-\item{seurat_layer}{TODO}
+\item{seurat_layer}{Character string, indicating which layer to use of the
+Seurat object. Defaults to \code{data}.}
 
-\item{sce_assay}{TODO}
+\item{sce_assay}{Character string, indicating which assay to use of the
+SingleCellExperiment object. Defaults to \code{logcounts}.}
 
-\item{score_mode}{TODO defaults to scaled}
+\item{score_mode}{Character string, specifying the calculation mode to be
+used for scores: "raw", "scaled", or log-transformed ("log", "log2", "log10").
+In the scope of this function, this defaults to "scaled".}
 
 \item{column_name}{The name of the column to be added to the metadata storing
 the classification labels, default is "CIA_prediction".}
@@ -61,7 +65,7 @@ provided the difference between the top two scores exceeds a given threshold,
 otherwise, it is marked as unassigned.
 }
 \examples{
-## TODO
+## TODO example
 
 ## A thought: rename it to CIA_classify? it is somehow catchy?
 }
