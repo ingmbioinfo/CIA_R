@@ -39,8 +39,8 @@
 #' @export
 #'
 #' @examples
-#' ## TODO: probably have a pre-computed set of labels
-#' ## TODO: define-describe the process to get there in inst/scripts or so?
+#'
+#' ## TODO example
 #'
 #' ## # Assuming cells_info is a data frame with true labels and classification results
 #' ## cells_info <- read.csv('your_data_file.csv')
@@ -54,7 +54,19 @@ compute_classification_metrics <- function(cells_info,
                                            classification_cols,
                                            ref_labels,
                                            unassigned_label = "") {
-  # TODO: checks on arg
+  stopifnot(is(cells_info, "DataFrame") || is.data.frame(cells_info))
+  stopifnot(is.character(classification_cols),
+            length(classification_cols) > 0)
+  stopifnot(is.character(ref_labels),
+            length(ref_labels) == 1)
+  stopifnot(is.character(unassigned_label),
+            length(unassigned_label) == 1)
+
+  if (!all(classification_cols %in% colnames(cells_info)))
+    stop("Some column names for the classification were not found in the `cells_info`")
+
+  if (!ref_labels %in% colnames(cells_info))
+    stop("The value specified for `ref_labels` was not found as a column name in the `cells_info`")
 
   report <- list()
 

@@ -56,8 +56,8 @@ compared to the reference method.
 }
 }
 \examples{
-## TODO: probably have a pre-computed set of labels
-## TODO: define-describe the process to get there in inst/scripts or so?
+
+## TODO example
 
 ## # Assuming cells_info is a data frame with true labels and classification results
 ## cells_info <- read.csv('your_data_file.csv')
