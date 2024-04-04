@@ -255,15 +255,17 @@ To evaluate the performance and relevance of the classification, the `compute_me
 This function calculates classification metrics such as sensitivity (SE), specificity (SP), precision (PR), accuracy (ACC), and F1-score (F1) for given classification results.
 
 ```{r compmetrics}
-compute_classification_metrics(MTG@meta.data,
-  classification_col = c("CIA_prediction"),
-  groups_cols = "celltype"
+compute_classification_metrics(
+  cells_info = MTG@meta.data,
+  classification_cols = c("CIA_prediction"),
+  ref_labels = "celltype"
 )
 
 ## On an SCE object...
-compute_classification_metrics(colData(MTG_SE),
-  classification_col = c("CIA_prediction"),
-  groups_cols = "celltype"
+compute_classification_metrics(
+  cells_info = colData(MTG_SE),
+  classification_cols = c("CIA_prediction"),
+  ref_labels = "celltype"
 )
 ```
 
@@ -310,24 +312,27 @@ This outcome confirms the importance of setting an appropriate similarity thresh
 
 ```{r metricsnoastro}
 # considering unassigned as "misclassified"
-compute_classification_metrics(MTG@meta.data,
-  classification_col = c("CIA_prediction", "CIA_prediction_t=0.1"),
-  groups_cols = "celltype"
+compute_classification_metrics(
+  cells_info = MTG@meta.data,
+  classification_cols = c("CIA_prediction", "CIA_prediction_t=0.1"),
+  ref_labels = "celltype"
 )
 
 
 # removing unassigned from metrics calculation
-compute_classification_metrics(MTG@meta.data,
-  classification_col = c("CIA_prediction", "CIA_prediction_t=0.1"),
-  groups_cols = "celltype",
+compute_classification_metrics(
+  cells_info = MTG@meta.data,
+  classification_cols = c("CIA_prediction", "CIA_prediction_t=0.1"),
+  ref_labels = "celltype",
   unassigned_label = "Unassigned"
 )
 
 
 ## Doing the same on a SingleCellExperiment
-compute_classification_metrics(colData(MTG_SE),
-  classification_col = c("CIA_prediction", "CIA_prediction_t=0.1"),
-  groups_cols = "celltype",
+compute_classification_metrics(
+  cells_info = colData(MTG_SE),
+  classification_cols = c("CIA_prediction", "CIA_prediction_t=0.1"),
+  ref_labels = "celltype",
   unassigned_label = "Unassigned"
 )
 ```
