@@ -8,21 +8,23 @@
 #' Additionally, the percentage of unassigned cells for each classification
 #' method is reported.
 #'
-#' @param data Data frame containing the observed data including the labels
+#' @param cells_info Data frame containing the observed data including the labels
 #' assigned by the classification algorithm(s) and the true group labels.
-#' @param classification_col A vector of character strings specifying the column
-#' names in `data` where the labels assigned by the methods of interest are
+#' Typically, this is the output of `colData()` for a SingleCellExperiment
+#' object, and the `meta.data` slot for a Seurat object.
+#' @param classification_cols A vector of character strings specifying the column
+#' names in `cells_info` where the labels assigned by the methods of interest are
 #' stored.
-#' @param groups_cols Character string specifying the column in `data` that
+#' @param ref_labels Character string specifying the column in `cells_info` that
 #' contains the true group labels (or the ones assigned by the reference method).
-#' @param unassigned_label The label used in `classification_col` to denote
+#' @param unassigned_label The label used in `classification_cols` to denote
 #' unclassified or unassigned samples.
-#' If this parameter is specified and detected in the data, %UN will be
-#' calculated and included in the output metrics.
+#' If this parameter is specified and detected in the `cells_info` data, %UN
+#' will be calculated and included in the output metrics.
 #'
 #' @return A matrix with classification metrics (SE, SP, PR, ACC, F1) for each
-#' classifier. If unassigned_label is specified and present in the data, an
-#' additional '%UN' column is included in the output.
+#' classifier. If unassigned_label is specified and present in the `cells_info```
+#' data, an additional '%UN' column is included in the output.
 #'
 #' @details
 #' The classification metrics reported in the output object are;
@@ -40,32 +42,32 @@
 #' ## TODO: probably have a pre-computed set of labels
 #' ## TODO: define-describe the process to get there in inst/scripts or so?
 #'
-#' ## # Assuming data is a data frame with true labels and classification results
-#' ## data <- read.csv('your_data_file.csv')
-#' ## classification_col <- c('classifier1', 'classifier2')
-#' ## groups_cols <- 'true_group'
+#' ## # Assuming cells_info is a data frame with true labels and classification results
+#' ## cells_info <- read.csv('your_data_file.csv')
+#' ## classification_cols <- c('classifier1', 'classifier2')
+#' ## ref_labels <- 'true_group'
 #' ## unassigned_label <- 'Unassigned' # Specify the label that denotes unassigned samples
 #' ## metrics_report <-
-#' ##   compute_classification_metrics(data, classification_col, groups_cols, unassigned_label)
+#' ##   compute_classification_metrics(cells_info, classification_cols, ref_labels, unassigned_label)
 #' ## print(metrics_report)
-compute_classification_metrics <- function(data,
-                                           classification_col,
-                                           groups_cols,
+compute_classification_metrics <- function(cells_info,
+                                           classification_cols,
+                                           ref_labels,
                                            unassigned_label = "") {
   # TODO: checks on arg
 
   report <- list()
 
-  for (m in classification_col) {
+  for (m in classification_cols) {
     TP_l <- TN_l <- FP_l <- FN_l <- numeric()
-    UN <- round(100 * sum(data[[m]] == unassigned_label) / nrow(data), 2)
-    datam <- data[data[, m] != unassigned_label, ]
+    UN <- round(100 * sum(cells_info[[m]] == unassigned_label) / nrow(cells_info), 2)
+    datam <- cells_info[cells_info[, m] != unassigned_label, ]
 
-    for (i in unique(datam[[groups_cols]])) {
-      TP_l <- c(TP_l, sum(datam[[m]] == i & datam[[groups_cols]] == i))
-      TN_l <- c(TN_l, sum(datam[[m]] != i & datam[[groups_cols]] != i))
-      FP_l <- c(FP_l, sum(datam[[m]] == i & datam[[groups_cols]] != i))
-      FN_l <- c(FN_l, sum(datam[[m]] != i & datam[[groups_cols]] == i))
+    for (i in unique(datam[[ref_labels]])) {
+      TP_l <- c(TP_l, sum(datam[[m]] == i & datam[[ref_labels]] == i))
+      TN_l <- c(TN_l, sum(datam[[m]] != i & datam[[ref_labels]] != i))
+      FP_l <- c(FP_l, sum(datam[[m]] == i & datam[[ref_labels]] != i))
+      FN_l <- c(FN_l, sum(datam[[m]] != i & datam[[ref_labels]] == i))
     }
 
     TP <- sum(TP_l)

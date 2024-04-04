@@ -5,32 +5,34 @@
 \title{Compute Classification Metrics}
 \usage{
 compute_classification_metrics(
-  data,
-  classification_col,
-  groups_cols,
+  cells_info,
+  classification_cols,
+  ref_labels,
   unassigned_label = ""
 )
 }
 \arguments{
-\item{data}{Data frame containing the observed data including the labels
-assigned by the classification algorithm(s) and the true group labels.}
+\item{cells_info}{Data frame containing the observed data including the labels
+assigned by the classification algorithm(s) and the true group labels.
+Typically, this is the output of \code{colData()} for a SingleCellExperiment
+object, and the \code{meta.data} slot for a Seurat object.}
 
-\item{classification_col}{A vector of character strings specifying the column
-names in \code{data} where the labels assigned by the methods of interest are
+\item{classification_cols}{A vector of character strings specifying the column
+names in \code{cells_info} where the labels assigned by the methods of interest are
 stored.}
 
-\item{groups_cols}{Character string specifying the column in \code{data} that
+\item{ref_labels}{Character string specifying the column in \code{cells_info} that
 contains the true group labels (or the ones assigned by the reference method).}
 
-\item{unassigned_label}{The label used in \code{classification_col} to denote
+\item{unassigned_label}{The label used in \code{classification_cols} to denote
 unclassified or unassigned samples.
-If this parameter is specified and detected in the data, \%UN will be
-calculated and included in the output metrics.}
+If this parameter is specified and detected in the \code{cells_info} data, \%UN
+will be calculated and included in the output metrics.}
 }
 \value{
 A matrix with classification metrics (SE, SP, PR, ACC, F1) for each
-classifier. If unassigned_label is specified and present in the data, an
-additional '\%UN' column is included in the output.
+classifier. If unassigned_label is specified and present in the `cells_info```
+data, an additional '\%UN' column is included in the output.
 }
 \description{
 Calculates classification metrics such as sensitivity (SE), specificity (SP),
@@ -57,12 +59,12 @@ compared to the reference method.
 ## TODO: probably have a pre-computed set of labels
 ## TODO: define-describe the process to get there in inst/scripts or so?
 
-## # Assuming data is a data frame with true labels and classification results
-## data <- read.csv('your_data_file.csv')
-## classification_col <- c('classifier1', 'classifier2')
-## groups_cols <- 'true_group'
+## # Assuming cells_info is a data frame with true labels and classification results
+## cells_info <- read.csv('your_data_file.csv')
+## classification_cols <- c('classifier1', 'classifier2')
+## ref_labels <- 'true_group'
 ## unassigned_label <- 'Unassigned' # Specify the label that denotes unassigned samples
 ## metrics_report <-
-##   compute_classification_metrics(data, classification_col, groups_cols, unassigned_label)
+##   compute_classification_metrics(cells_info, classification_cols, ref_labels, unassigned_label)
 ## print(metrics_report)
 }
