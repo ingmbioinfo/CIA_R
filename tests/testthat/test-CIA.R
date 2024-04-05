@@ -2,6 +2,10 @@ test_that("Loading signature files", {
   expect_error(
     load_signatures("file_not_found")
   )
+
+  expect_error(
+    load_signatures(42)
+  )
 })
 
 
@@ -54,6 +58,15 @@ test_that("Individual scores computations", {
     )
   )
 
+  # individual - Seurat -----------------------------------------------------
+  ssc <- score_signature(
+    data = so,
+    seurat_assay = "endogenous",
+    seurat_layer = "data",
+    geneset = gmt$`L5 ET`
+  )
+  expect_vector(ssc)
+  expect_true(identical(scores, ssc))
 
   # individual - matrix -----------------------------------------------------
   dim(mat_logcounts)
@@ -163,6 +176,19 @@ test_that("All scores at once computations", {
   )
 
 
+  # all signatures - Seurat -------------------------------------------------
+  so_cia <- score_all_signatures(
+    data = so,
+    signatures_input = gmt,
+    seurat_assay = "endogenous",
+    seurat_layer = "data",
+    return_score = FALSE,
+    score_mode = "scaled",
+    n_cpus = 2
+  )
+
+
+
   # all signatures - matrix -------------------------------------------------
   # TODO
 
@@ -203,6 +229,37 @@ test_that("All scores at once computations", {
     column_name = "CIA_prediction_t=0.1"
   )
 
+
+  so_aio <- CIA_classify(
+    data = so_cia,
+    signatures_input = gmt,
+    seurat_assay = "endogenous",
+    seurat_layer = "data",
+    n_cpus = 2,
+    similarity_threshold = 0.1,
+    column_name = "CIA_prediction_t=0.1"
+  )
+
+
+  expect_error(
+    CIA_classify(
+      data = 42,
+      signatures_input = gmt,
+      n_cpus = 2,
+      similarity_threshold = 0.1,
+      column_name = "CIA_prediction_t=0.1"
+    )
+  )
+
+  expect_error(
+    CIA_classify(
+      data = sce_cia,
+      signatures_input = "file_not_found",
+      n_cpus = 2,
+      similarity_threshold = 0.1,
+      column_name = "CIA_prediction_t=0.1"
+    )
+  )
 
   plotTSNE(sce_aio, colour_by = "CIA_prediction_t=0.1")
 
