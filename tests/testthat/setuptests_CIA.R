@@ -26,3 +26,4 @@ gmt <- load_signatures(system.file("extdata", "azimuth_human_motor_cortex.gmt",
                                    package = "CIA"))
 gmt
 
+mat_logcounts <- logcounts(sce)
