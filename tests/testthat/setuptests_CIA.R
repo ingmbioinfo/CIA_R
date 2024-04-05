@@ -22,8 +22,11 @@ rowData(sce)$n_cells <- rowSums(assay(sce, "tophat_counts") > 0)
 sce
 rownames(sce) <- toupper(rownames(sce))
 
-gmt <- load_signatures(system.file("extdata", "azimuth_human_motor_cortex.gmt",
-                                   package = "CIA"))
+gmt <- CIA::load_signatures(system.file("extdata", "azimuth_human_motor_cortex.gmt",
+                                        package = "CIA"))
 gmt
 
 mat_logcounts <- logcounts(sce)
+
+altExps(sce) <- NULL
+so <- as.Seurat(sce, counts = "tophat_counts")
