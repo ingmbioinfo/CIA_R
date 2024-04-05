@@ -55,6 +55,7 @@ load_signatures <- function(signatures_input) {
 #'
 #' @importFrom sparseMatrixStats colSums2
 #' @importFrom methods slot
+#' @importFrom SeuratObject Layers
 #'
 #' @export
 #'
@@ -87,34 +88,26 @@ score_signature <- function(data,
   }
 
   if (is(data, "Seurat")) {
-    # TODO: checks on arg, specific for Seurat
-
-
+    stopifnot(is(data[[seurat_assay]], "Assay"))
+    stopifnot(seurat_layer %in% Layers(data))
 
     datam <- slot(data[[seurat_assay]], seurat_layer)
   } else if (is(data, "SingleCellExperiment")) {
-    # TODO: checks on arg, specific for sce
-
-
-
-    # if (matrix == "data") {
-    #   matrix <- "logcounts"
-    # }
+    stopifnot(sce_assay %in% assayNames(data))
 
     datam <- assay(data, sce_assay)
   } else if (is(data, "matrix") | is(data, "Matrix")) {
-
-      # TODO: checks on arg, to make sure it is a proper matrix
-
-
+    stopifnot(!is.null(dim(data)) & all(dim(data) > 0))
+    if (is(data, "matrix"))
+      stopifnot(is.numeric(data))
+    if (is(data, "Matrix"))
+      stopifnot(is.numeric(data[1,1]))
 
     datam <- data
   } else {
     stop("You need to provide either a SingleCellExperiment object, ",
          "a Seurat object or a matrix-like object")
   }
-
-
 
 
   geneset <- intersect(geneset, rownames(datam))
@@ -168,7 +161,7 @@ score_signature <- function(data,
 #' @importFrom BiocParallel bplapply MulticoreParam SerialParam
 #' @importFrom parallel detectCores
 #' @importFrom sparseMatrixStats colSums2
-#' @importFrom SummarizedExperiment assay colData<- colData
+#' @importFrom SummarizedExperiment assay colData<- colData assayNames
 #' @importFrom SingleCellExperiment SingleCellExperiment counts logcounts
 #'
 #' @export
@@ -219,23 +212,20 @@ score_all_signatures <- function(data,
 
 
   if (is(data, "Seurat")) {
-    # TODO: checks on arg, specific for Seurat
-
+    stopifnot(is(data[[seurat_assay]], "Assay"))
+    stopifnot(seurat_layer %in% Layers(data))
 
     datam <- slot(data[[seurat_assay]], seurat_layer)
   } else if (is(data, "SingleCellExperiment")) {
-    # TODO: checks on arg, specific for sce
+    stopifnot(sce_assay %in% assayNames(data))
 
-
-
-    # if (matrix == "data") {
-    #   matrix <- "logcounts"
-    # }
     datam <- assay(data, sce_assay)
   } else if (is(data, "matrix") | is(data, "Matrix")) {
-    # TODO: checks on arg, to make sure it is a proper matrix
-
-
+    stopifnot(!is.null(dim(data)) & all(dim(data) > 0))
+    if (is(data, "matrix"))
+      stopifnot(is.numeric(data))
+    if (is(data, "Matrix"))
+      stopifnot(is.numeric(data[1,1]))
 
     datam <- data
   } else {
