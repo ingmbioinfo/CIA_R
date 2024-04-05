@@ -1,13 +1,34 @@
+test_that("Loading signature files", {
+  expect_error(
+    load_signatures("file_not_found")
+  )
+})
+
+
 test_that("Individual scores computations", {
+  # individual - SCE --------------------------------------------------------
   scores <- score_signature(
     data = sce,
     sce_assay = "logcounts",
     geneset = gmt$`L5 ET`
   )
   colData(sce)$score_L5et <- scores
-
-
   expect_vector(scores)
+
+  nullscores <- score_signature(
+    data = sce,
+    sce_assay = "logcounts",
+    geneset = ""
+  )
+  expect_true(all(nullscores == 0))
+
+  expect_error(
+    score_signature(
+      data = "my_data",
+      sce_assay = "logcounts",
+      geneset = gmt$`L5 ET`
+    )
+  )
 
   expect_error(
     score_signature(
@@ -34,11 +55,53 @@ test_that("Individual scores computations", {
   )
 
 
+  # individual - matrix -----------------------------------------------------
+  dim(mat_logcounts)
+  sc2 <- score_signature(
+    data = mat_logcounts,
+    geneset = gmt$`L5 ET`
+  )
+
+  expect_vector(sc2)
+  expect_true(identical(scores, sc2))
+
+  # Empty matrix
+  expect_error(
+    score_signature(
+      data = matrix(),
+      geneset = gmt$`L5 ET`
+    )
+  )
+
+  expect_error(
+    score_signature(
+      data = as.matrix(numeric(0)),
+      geneset = gmt$`L5 ET`
+    )
+  )
+
+  expect_error(
+    score_signature(
+      data = Matrix(),
+      geneset = gmt$`L5 ET`
+    )
+  )
+
+  # Matrix of chars...
+  expect_error(
+    score_signature(
+      data = matrix(data = letters),
+      geneset = gmt$`L5 ET`
+    )
+  )
+
 })
 
 
 
 test_that("All scores at once computations", {
+
+  # all signatures - SCE ----------------------------------------------------
   sce_cia <- score_all_signatures(
     data = sce,
     signatures_input = gmt,
@@ -100,6 +163,35 @@ test_that("All scores at once computations", {
   )
 
 
+  # all signatures - matrix -------------------------------------------------
+  # TODO
+
+  allsigs_cia <- score_all_signatures(
+    data = mat_logcounts,
+    signatures_input = gmt,
+    return_score = FALSE,
+    score_mode = "scaled",
+    n_cpus = 2
+  )
+
+  expect_true(is.matrix(allsigs_cia))
+  expect_identical(
+    dim(allsigs_cia),
+    c(ncol(mat_logcounts), length(gmt))
+  )
+
+  allsigs_cia_logged <- score_all_signatures(
+    data = mat_logcounts,
+    signatures_input = gmt,
+    return_score = FALSE,
+    score_mode = "log10",
+    n_cpus = 2
+  )
+  expect_true(is.matrix(allsigs_cia_logged))
+  expect_identical(
+    dim(allsigs_cia_logged),
+    c(ncol(mat_logcounts), length(gmt))
+  )
 
   # Running the all in one function...
 
