@@ -210,8 +210,7 @@ test_that("All scores at once computations", {
     data = mat_logcounts,
     signatures_input = gmt,
     return_score = FALSE,
-    score_mode = "log10",
-    n_cpus = 2
+    score_mode = "log10"
   )
   expect_true(is.matrix(allsigs_cia_logged))
   expect_identical(
@@ -239,6 +238,16 @@ test_that("All scores at once computations", {
     similarity_threshold = 0.1,
     column_name = "CIA_prediction_t=0.1"
   )
+
+  vec_labels <- CIA_classify(
+    data = mat_logcounts,
+    signatures_input = gmt,
+    n_cpus = 2
+  )
+
+  expect_vector(vec_labels)
+  expect_true(length(vec_labels) == 379)
+  expect_true(length(levels(vec_labels)) == 20)
 
 
   expect_error(
