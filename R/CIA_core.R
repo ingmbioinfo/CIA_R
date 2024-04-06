@@ -104,11 +104,7 @@ score_signature <- function(data,
       stopifnot(is.numeric(data[1,1]))
 
     datam <- data
-  } else {
-    stop("You need to provide either a SingleCellExperiment object, ",
-         "a Seurat object or a matrix-like object")
   }
-
 
   geneset <- intersect(geneset, rownames(datam))
   if (length(geneset) == 0) {
@@ -228,9 +224,6 @@ score_all_signatures <- function(data,
       stopifnot(is.numeric(data[1,1]))
 
     datam <- data
-  } else {
-    stop("You need to provide either a SingleCellExperiment object, ",
-         "a Seurat object or a matrix-like object")
   }
 
   message("Checking if genes are in the dataset matrix...", "\n")
