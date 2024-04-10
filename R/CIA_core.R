@@ -69,7 +69,7 @@ score_signature <- function(data,
                             total_col_sums = NULL) {
 
   ## Checks on arguments
-  allowed_formats <- c("SingleCellExperiment", "Seurat", "matrix", "Matrix")
+  allowed_formats <- c("SingleCellExperiment", "Seurat", "matrix", "Matrix", "DelayedMatrix")
   if (!any(unlist((lapply(allowed_formats, function(arg) is(data, arg))))))
     stop("The data provided should be in one of the following formats: ",
          paste(allowed_formats, collapse = "|"))
@@ -96,7 +96,7 @@ score_signature <- function(data,
     stopifnot(sce_assay %in% assayNames(data))
 
     datam <- assay(data, sce_assay)
-  } else if (is(data, "matrix") | is(data, "Matrix")) {
+  } else if (is(data, "matrix") | is(data, "Matrix") | is(data, "DelayedMatrix")) {
     stopifnot(!is.null(dim(data)) & all(dim(data) > 0))
     if (is(data, "matrix"))
       stopifnot(is.numeric(data))
@@ -216,7 +216,7 @@ score_all_signatures <- function(data,
     stopifnot(sce_assay %in% assayNames(data))
 
     datam <- assay(data, sce_assay)
-  } else if (is(data, "matrix") | is(data, "Matrix")) {
+  } else if (is(data, "matrix") | is(data, "Matrix") | is(data, "DelayedMatrix")) {
     stopifnot(!is.null(dim(data)) & all(dim(data) > 0))
     if (is(data, "matrix"))
       stopifnot(is.numeric(data))
