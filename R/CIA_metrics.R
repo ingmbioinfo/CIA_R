@@ -76,16 +76,16 @@ compute_classification_metrics <- function(cells_info,
     datam <- cells_info[cells_info[, m] != unassigned_label, ]
 
     for (i in unique(datam[[ref_labels]])) {
-      TP_l <- c(TP_l, sum(datam[[m]] == i & datam[[ref_labels]] == i))
-      TN_l <- c(TN_l, sum(datam[[m]] != i & datam[[ref_labels]] != i))
-      FP_l <- c(FP_l, sum(datam[[m]] == i & datam[[ref_labels]] != i))
-      FN_l <- c(FN_l, sum(datam[[m]] != i & datam[[ref_labels]] == i))
+      TP_l <- c(TP_l, sum(datam[[m]] == i & datam[[ref_labels]] == i, na.rm = TRUE))
+      TN_l <- c(TN_l, sum(datam[[m]] != i & datam[[ref_labels]] != i, na.rm = TRUE))
+      FP_l <- c(FP_l, sum(datam[[m]] == i & datam[[ref_labels]] != i, na.rm = TRUE))
+      FN_l <- c(FN_l, sum(datam[[m]] != i & datam[[ref_labels]] == i, na.rm = TRUE))
     }
 
-    TP <- sum(TP_l)
-    TN <- sum(TN_l)
-    FP <- sum(FP_l)
-    FN <- sum(FN_l)
+    TP <- sum(TP_l, na.rm = TRUE)
+    TN <- sum(TN_l, na.rm = TRUE)
+    FP <- sum(FP_l, na.rm = TRUE)
+    FN <- sum(FN_l, na.rm = TRUE)
 
     SE <- TP / (TP + FN)
     SP <- TN / (TN + FP)
