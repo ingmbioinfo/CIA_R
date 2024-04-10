@@ -231,7 +231,7 @@ score_all_signatures <- function(data,
     lt <- length(signatures[[x]])
     l <- sum(signatures[[x]] %in% rownames(data))
     message <- sprintf("%s: %d / %d", x, l, lt)
-    message(message, "\n")
+    message(message)
     invisible(message) # Use invisible to avoid printing the return value of cat
   })
 
