@@ -210,7 +210,8 @@ test_that("All scores at once computations", {
     data = mat_logcounts,
     signatures_input = gmt,
     return_score = FALSE,
-    score_mode = "log10"
+    score_mode = "log10",
+    n_cpus = 2
   )
   expect_true(is.matrix(allsigs_cia_logged))
   expect_identical(
