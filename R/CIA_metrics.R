@@ -99,7 +99,7 @@ compute_classification_metrics <- function(cells_info,
   report <- t(as.data.frame(report))
   colnames(report) <- c("SE", "SP", "PR", "ACC", "F1", "%UN")
   if (sum(report[, "%UN"]) == 0) {
-    report <- report[, 1:5]
+    report <- report[, 1:5, drop = FALSE]
   }
   return(report)
 }
