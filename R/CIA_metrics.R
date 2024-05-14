@@ -182,8 +182,8 @@ grouped_classification_metrics <- function(cells_info,
     PR <- TP_l / (TP_l + FP_l)
     ACC <- (TP_l + TN_l) / (TP_l + TN_l + FP_l + FN_l)
     F1 <- 2 * TP_l / (2 * TP_l + FP_l + FN_l)
-  
-       
+
+
   report <- cbind(SE, SP, PR, ACC, F1, UN_l)
   report <- as.data.frame(report)
   rownames(report)<- unique(datam[[ref_labels]])
@@ -196,7 +196,7 @@ grouped_classification_metrics <- function(cells_info,
 
 #' Plot Group Composition
 #'
-#' This function plots the composition of each reference group as a horizontal stacked bar plot. 
+#' This function plots the composition of each reference group as a horizontal stacked bar plot.
 #' The composition can be shown either as raw counts or as percentages.
 #'
 #' @param df DataFrame containing the data to be plotted.
@@ -218,7 +218,7 @@ plot_group_composition <- function(df, ref_col, comp_col,
 
   # Create a contingency table of counts
   pivot_table <- table(df[[ref_col]], df[[comp_col]])
-  
+
   # Convert to DataFrame for plotting
   plot_data <- as.data.frame.matrix(pivot_table)
   plot_data <- cbind(Cluster = rownames(plot_data), plot_data)
@@ -226,21 +226,21 @@ plot_group_composition <- function(df, ref_col, comp_col,
 
   # Calculate percentages if required
   if (plot_type == "percentage") {
-    plot_data <- plot_data %>%
-      group_by(Cluster) %>%
-      mutate(Value = Count / sum(Count) * 100) %>%
+    plot_data <- plot_data |>
+      group_by(Cluster) |>
+      mutate(Value = Count / sum(Count) * 100) |>
       ungroup()
     y_label <- "Percentage"
   } else if (plot_type == "raw") {
-    plot_data <- plot_data %>%
-      group_by(Cluster) %>%
-      mutate(Value = Count) %>%
+    plot_data <- plot_data |>
+      group_by(Cluster) |>
+      mutate(Value = Count) |>
       ungroup()
     y_label <- "Count"
   } else {
     stop("plot_type must be 'percentage' or 'raw'")
   }
-  
+
   # Plotting
   p <- ggplot(plot_data, aes(x = Cluster, y = Value, fill = Group)) +
     geom_bar(stat = 'identity', position = 'stack') +
