@@ -25,4 +25,10 @@ gmt_file <- system.file("extdata", "azimuth_human_motor_cortex.gmt",
                         package = "CIA")
 signatures <- load_signatures(gmt_file)
 signatures
+
+gmt_url <-
+  "https://data.wikipathways.org/current/gmt/wikipathways-20240510-gmt-Homo_sapiens.gmt"
+
+sig_wikipathways <- load_signatures(gmt_url)
+head(names(sig_wikipathways))
 }
