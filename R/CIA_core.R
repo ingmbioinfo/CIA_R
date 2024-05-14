@@ -20,10 +20,19 @@
 #'                         package = "CIA")
 #' signatures <- load_signatures(gmt_file)
 #' signatures
+#'
+#' gmt_url <-
+#'   "https://data.wikipathways.org/current/gmt/wikipathways-20240510-gmt-Homo_sapiens.gmt"
+#'
+#' sig_wikipathways <- load_signatures(gmt_url)
+#' head(names(sig_wikipathways))
 load_signatures <- function(signatures_input) {
   if (!is.character(signatures_input))
-    stop("signatures_input must be either a list or a string path to a TSV file.")
-  stopifnot(file.exists(signatures_input))
+    stop("signatures_input must be either a URL or a string path to a local TSV file.")
+
+  if (!grepl("^http", signatures_input)) {
+    stopifnot(file.exists(signatures_input))
+  }
 
   input_lines <- strsplit(readLines(signatures_input), "\t")
   signatures <- lapply(input_lines, tail, -2)
