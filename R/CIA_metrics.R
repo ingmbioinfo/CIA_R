@@ -335,12 +335,17 @@ group_composition <- function(data, classification_obs, ref_obs, columns_order=N
 #'
 #' @return None. The function either saves the heatmap to a file or prints it.
 #'
-#' @examples
-#' grouped_distributions(data, columns_obs = c('feature1', 'feature2'), ref_obs = 'group_column')
+#' @export
 #'
 #' @import ggplot2
 #' @importFrom reshape2 melt
-#' @importFrom stats wilcox.test
+#' @importFrom stats wilcox.test median
+#' @importFrom utils combn
+#'
+#' @examples
+#' # TODO
+#' # grouped_distributions(data, columns_obs = c('feature1', 'feature2'), ref_obs = 'group_column')
+#'
 grouped_distributions <- function(data, columns_obs, ref_obs, color_map = 'Reds', scale_medians = NULL, save = NULL) {
   # Compute median values for each group
   unique_groups <- levels(data[[ref_obs]])

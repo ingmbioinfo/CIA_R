@@ -33,6 +33,7 @@ None. The function either saves the heatmap to a file or prints it.
 This function plots a heatmap of median values for selected columns in a dataframe across cell groups and performs statistical tests to evaluate the differences in distributions. The Wilcoxon test checks if each group's signature score is significantly higher than others in the same group. The Mann-Whitney U test checks if each signature has the highest score values in the corresponding group compared to all other groups.
 }
 \examples{
-grouped_distributions(data, columns_obs = c('feature1', 'feature2'), ref_obs = 'group_column')
+# TODO
+# grouped_distributions(data, columns_obs = c('feature1', 'feature2'), ref_obs = 'group_column')
 
 }
