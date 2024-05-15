@@ -314,3 +314,136 @@ group_composition <- function(data, classification_obs, ref_obs, columns_order=N
   print(p)
 }
 
+#' Plot Grouped Distributions and Perform Statistical Tests
+#'
+#' This function plots a heatmap of median values for selected columns in a dataframe across cell groups and performs statistical tests to evaluate the differences in distributions. The Wilcoxon test checks if each group's signature score is significantly higher than others in the same group. The Mann-Whitney U test checks if each signature has the highest score values in the corresponding group compared to all other groups.
+#'
+#' @param data DataFrame containing the cell data.
+#' @param columns_obs Character vector. Column names in the dataframe where the values of interest are stored.
+#' @param ref_obs Character. Column name in the dataframe where the cell group labels are stored.
+#' @param color_map Character. Colormap for the heatmap. Defaults to 'Reds'.
+#' @param scale_medians Character. How to scale the median values in the heatmap. Options: 'row-wise', 'column-wise', or NULL. Defaults to NULL.
+#' @param save Character. Filename to save the heatmap. If provided, saves the heatmap in 'figures' directory with 'CIA_' prefix. Defaults to NULL.
+#' 
+#' @return None. The function either saves the heatmap to a file or prints it.
+#' 
+#' @examples
+#' grouped_distributions(data, columns_obs = c('feature1', 'feature2'), ref_obs = 'group_column')
+#' 
+#' @import ggplot2
+#' @import reshape2
+#' @importFrom stats wilcox.test
+grouped_distributions <- function(data, columns_obs, ref_obs, color_map = 'Reds', scale_medians = NULL, save = NULL) {
+  # Compute median values for each group
+  unique_groups <- levels(data[[ref_obs]])
+  grouped_df <- do.call(rbind, lapply(unique_groups, function(group) {
+    group_data <- data[data[[ref_obs]] == group, columns_obs, drop = FALSE]
+    medians <- apply(group_data, 2, median, na.rm = TRUE)
+    c(group, medians)
+  }))
+  colnames(grouped_df) <- c(ref_obs, columns_obs)
+  grouped_df <- as.data.frame(grouped_df)
+  
+  if (!is.null(scale_medians)) {
+    if (scale_medians == 'row-wise') {
+      grouped_df[columns_obs] <- t(apply(grouped_df[columns_obs], 1, function(x) x / sum(x, na.rm = TRUE)))
+    } else if (scale_medians == 'column-wise') {
+      grouped_df[columns_obs] <- sweep(grouped_df[columns_obs], 2, colSums(grouped_df[columns_obs], na.rm = TRUE), `/`)
+    }
+  }
+  # Convert to long format for plotting
+  df_long <- melt(grouped_df, id.vars = ref_obs, variable.name = "Column", value.name = "Value")
+  # Wilcoxon test
+  print('Performing Wilcoxon test on each cell group ...')
+  count <- 0
+  subsets <- list()
+  
+  for (group in unique_groups) {
+    subset_data <- data[data[[ref_obs]] == group, columns_obs, drop = FALSE]
+    subsets[[group]] <- subset_data
+    medians <- apply(subset_data, 2, median, na.rm = TRUE)
+    pos <- which.max(medians)
+    
+    combs <- combn(columns_obs, 2, simplify = FALSE)
+    for (comb in combs) {
+      if (all(subset_data[[comb[1]]] == 0) || all(subset_data[[comb[2]]] == 0)) {
+        next
+      }
+      result <- tryCatch({
+        wilcox.test(subset_data[[comb[1]]], subset_data[[comb[2]]], paired = TRUE, alternative = "two.sided")
+      }, warning = function(w) {
+        return(NULL)
+      }, error = function(e) {
+        return(NULL)
+      })
+      
+      if (!is.null(result) && !is.na(result$p.value) && (result$p.value >= 0.01) && (comb[1] == names(medians)[pos])) {
+        count <- count + 1
+        print(paste('WARNING in cell group', group, ':', comb[1], 'values are not significantly different from', comb[2], 'values.'))
+        print(paste('(p=', result$p.value, ')'))
+      }
+    }
+  }
+  
+  if (count == 0) {
+    print('For each cell group there is a distribution significantly higher than the others (p<0.01)')
+  }
+  
+  # Mann-Whitney U test
+  print('Performing Mann-Whitney U test on each selected AnnData.obs column ...')
+  count <- 0
+  for (column in columns_obs) {
+    sign <- lapply(unique_groups, function(group) data[data[[ref_obs]] == group, column])
+    names(sign) <- unique_groups
+    sign_medians <- sapply(sign, median, na.rm = TRUE)
+    pos <- which.max(sign_medians)
+    
+    combs <- combn(unique_groups, 2, simplify = FALSE)
+    for (comb in combs) {
+      group1_values <- sign[[comb[1]]]
+      group2_values <- sign[[comb[2]]]
+      
+      if (all(is.na(group1_values)) || all(is.na(group2_values)) || all(group1_values == 0) || all(group2_values == 0)) {
+        next
+      }
+      
+      result <- tryCatch({
+        wilcox.test(group1_values, group2_values, alternative = "two.sided", paired = FALSE)
+      }, warning = function(w) {
+        return(NULL)
+      }, error = function(e) {
+        return(NULL)
+      })
+      
+      if (!is.null(result) && !is.na(result$p.value) && (result$p.value >= 0.01) && (comb[1] == names(sign_medians)[pos])) {
+        count <- count + 1
+        print(paste('WARNING in', column, 'distribution: values in', comb[1], 'group are not significantly different from values in', comb[2], 'group'))
+        print(paste('(p=', result$p.value, ')'))
+      }
+    }
+  }
+  
+  if (count == 0) {
+    print('For each distribution, there is only a cell group in which values are higher with respect to all the other groups (p<0.01)')
+  }
+  
+  # Plotting
+# If the columns are not already factors, convert them
+df_long$ref <- as.factor(df_long[,ref_obs])
+df_long$Column <- as.factor(df_long$Column)
+df_long$Value <- as.numeric(df_long$Value)
+
+  p <- ggplot(df_long, aes(x = ref, y = Column, fill = Value)) +
+    geom_tile() +
+    scale_fill_gradientn(name = "", colors = colorRampPalette(brewer.pal(9, color_map))(100)) +
+    theme_minimal() +
+    labs(title = "Median score values", x = ref_obs, y = "Signatures")
+  
+  # Save or display plot
+  if (!is.null(save)) {
+    if (!dir.exists("figures")) dir.create("figures")
+    ggsave(paste0("figures/CIA_", save), plot = p, width = 10, height = 8)
+  } else {
+    print(p)
+  }
+}
