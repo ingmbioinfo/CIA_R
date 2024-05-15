@@ -38,6 +38,7 @@ Imports:
     ggplot2,
     tidyr,
     dplyr,
+    reshape2,
     grDevices,
     stats,
     utils,
