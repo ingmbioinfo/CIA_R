@@ -34,6 +34,12 @@ Imports:
     sparseMatrixStats,
     parallel,
     BiocParallel,
+    RColorBrewer,
+    ggplot2,
+    tidyr,
+    dplyr,
+    grDevices,
+    stats,
     utils,
     methods
 Suggests: 

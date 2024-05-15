@@ -207,6 +207,9 @@ grouped_classification_metrics <- function(cells_info,
 #' @param show_legend Logical. Whether to display the legend on the plot. Defaults to TRUE.
 #'
 #' @return A horizontal stacked bar plot showing the composition of each reference group.
+#'
+#' @importFrom dplyr group_by mutate ungroup
+#'
 #' @export
 plot_group_composition <- function(df, ref_col, comp_col,
                                    plot_type = "percentage", palette = RColorBrewer::brewer.pal(8, "Set3"),
@@ -267,38 +270,43 @@ plot_group_composition <- function(df, ref_col, comp_col,
 #' @param classification_obs Character string, the name of the column in \code{data} that contains the classification data.
 #' @param ref_obs Character string, the name of the column in \code{data} that contains the reference group data.
 #' @param columns_order Optional; a character vector specifying the order of columns in the heatmap.
-#' @param color_map Optional; character string specifying the color palette to use, defaults to 'Greens'. 
+#' @param color_map Optional; character string specifying the color palette to use, defaults to 'Greens'.
 #'                  It should be one of the color palettes supported by \code{RColorBrewer}.
 #'
 #' @return A ggplot object representing the heatmap.
 #'
 #' @examples
-#' # Assuming 'data' is a data frame with columns 'Group' and 'Category'
-#' group_composition(data, 'Category', 'Group')
+#' ## Assuming 'data' is a data frame with columns 'Group' and 'Category'
+#' # group_composition(data, 'Category', 'Group')
+#' # TODO
 #'
 #' @import ggplot2 tidyr RColorBrewer
+#'
+#' @importFrom grDevices colorRampPalette
+#' @importFrom stats reshape
+#'
 #' @export
 
 group_composition <- function(data, classification_obs, ref_obs, columns_order=NULL, color_map='Greens') {
-  
+
   # Extract data
   ref_data <- data[[ref_obs]]
   class_data <- data[[classification_obs]]
-  
+
   # Create a contingency table
   contingency_table <- table(ref_data, class_data)
-  
+
   # Convert counts to percentage
   percentage_table <- prop.table(contingency_table, margin = 1) * 100
   percentage_table <- round(percentage_table, 2)
-  
+
   # Convert the table to a data frame for ggplot
   df <- as.data.frame.matrix(percentage_table)
   if (!is.null(columns_order)) {
     df <- df[, columns_order]
   }
     df$rowname <- rownames(df)
-    df <- reshape(df, varying = list(names(df)[1:(dim(df)[2]-1)]), v.names = "Value", 
+    df <- reshape(df, varying = list(names(df)[1:(dim(df)[2]-1)]), v.names = "Value",
                   timevar = "Column", times = names(df)[1:(dim(df)[2]-1)], direction = "long")
 
   # Setting up the color palette
