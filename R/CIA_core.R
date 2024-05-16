@@ -97,7 +97,7 @@ score_signature <- function(data,
   }
 
   if (is(data, "Seurat")) {
-    stopifnot(is(data[[seurat_assay]], "Assay"))
+    stopifnot(is(data[[seurat_assay]], "Assay") | is(data[[seurat_assay]], "Assay5"))
     stopifnot(seurat_layer %in% Layers(data))
 
     datam <- slot(data[[seurat_assay]], seurat_layer)
@@ -217,7 +217,7 @@ score_all_signatures <- function(data,
 
 
   if (is(data, "Seurat")) {
-    stopifnot(is(data[[seurat_assay]], "Assay"))
+    stopifnot(is(data[[seurat_assay]], "Assay") | is(data[[seurat_assay]], "Assay5"))
     stopifnot(seurat_layer %in% Layers(data))
 
     datam <- slot(data[[seurat_assay]], seurat_layer)
