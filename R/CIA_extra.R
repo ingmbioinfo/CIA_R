@@ -14,33 +14,44 @@
 #' @param unassigned_label A string specifying the label to assign to cell groups where no cell type reaches the minimum proportion. Default is 'Unassigned'.
 #'
 #' @return The modified `Seurat` or `SingleCellExperiment` object with new majority voting classification labels stored in metadata.
-#' 
+#'
 #' @details
 #' This function computes the majority voting for cell type labels within each group of cells.
 #' If `groups_obs` is not provided, the function performs over-clustering using the Leiden algorithm with a resolution adjusted based on the dataset size.
 #' The results of the majority voting are stored back in the metadata of the object, adding a column for each classification considered.
 #'
+#' @importFrom clusterExperiment ClusterExperiment
+#'
+#' @export
+#'
 #' @examples
 #' \dontrun{
 #' # Example usage with Seurat object
-#' seurat_obj <- celltypist_majority_vote(seurat_obj, classification_obs = "predicted_labels", graph = "RNA_snn", min_prop = 0.5)
+#' seurat_obj <- celltypist_majority_vote(
+#'   seurat_obj,
+#'   classification_obs = "predicted_labels",
+#'   graph = "RNA_snn",
+#'   min_prop = 0.5
+#' )
 #'
 #' # Example usage with SingleCellExperiment object
-#' sce_obj <- celltypist_majority_vote(sce_obj, classification_obs = "predicted_labels", min_prop = 0.5)
+#' sce_obj <- celltypist_majority_vote(
+#'   sce_obj,
+#'   classification_obs = "predicted_labels",
+#'   min_prop = 0.5
+#' )
 #' }
-#'
-#' @export
 celltypist_majority_vote <- function(data, classification_obs, groups_obs = NULL, graph = "RNA_snn", min_prop = 0, unassigned_label = 'Unassigned') {
   if (!is(data, "Seurat") && !is(data, "SingleCellExperiment")) {
     stop("Data must be a Seurat or SingleCellExperiment object")
   }
-  
+
   if (is(data, "Seurat")) {
     obs <- data@meta.data
   } else if (is(data, "SingleCellExperiment")) {
     obs <- as.data.frame(colData(data))
   }
-  
+
   # Determine resolution for clustering if groups_obs is not provided
   if (is.null(groups_obs)) {
     if (is(data, "Seurat")) {
@@ -53,7 +64,7 @@ celltypist_majority_vote <- function(data, classification_obs, groups_obs = NULL
       groups_obs <- paste0("seurat_clusters_", resolution)
     } else if (is(data, "SingleCellExperiment")) {
       resolution <- 5 + 5 * (nrow(colData(data)) %/% 20000)
-      data <- clusterExperiment::clusterExperiment(data, method = "Leiden", resolution = resolution)
+      data <- clusterExperiment::ClusterExperiment(data, method = "Leiden", resolution = resolution)
       groups_obs <- paste0("leiden_", resolution)
     }
     message(paste("Reference annotation not selected. Computing over-clustering with Leiden algorithm (resolution=", resolution, ") ...", sep = ""))
@@ -64,31 +75,31 @@ celltypist_majority_vote <- function(data, classification_obs, groups_obs = NULL
   }
 
   message("Extending the more represented cell type label to each cell group...\n")
-  
+
   groups <- obs[[groups_obs]]
-  
+
   # Ensure classification_obs is a list
   if (!is.list(classification_obs)) {
     classification_obs <- list(classification_obs)
   }
-  
+
   for (classification in classification_obs) {
     votes <- table(obs[[classification]], groups)
     majority <- apply(votes, 2, function(x) names(which.max(x)))
     freqs <- apply(votes, 2, max) / colSums(votes)
-    
+
     majority_labels <- ifelse(freqs >= min_prop, majority, unassigned_label)
     obs[[paste0(classification, "_majority_voting")]] <- factor(groups, levels = names(majority_labels), labels = majority_labels)
 
     message(paste0("New classification labels have been stored in metadata as " , classification, "_majority_voting."))
   }
-  
+
   if (is(data, "Seurat")) {
     data@meta.data <- obs
   } else if (is(data, "SingleCellExperiment")) {
     colData(data) <- DataFrame(obs)
   }
-  
+
   return(data)
 }
 
