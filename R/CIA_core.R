@@ -96,11 +96,12 @@ score_signature <- function(data,
     stopifnot(length(total_col_sums) == ncol(data))
   }
 
-  if (is(data, "Seurat")) {
+  if (is(data, "Seurat")) {       
+    if (Version(data)<5){message("Seurat object version is < 5.0.0 . It's suggested to run Seurat::UpdateSeuratObjec first.")}
     stopifnot(is(data[[seurat_assay]], "Assay") | is(data[[seurat_assay]], "Assay5"))
     stopifnot(seurat_layer %in% Layers(data))
 
-    datam <- slot(data[[seurat_assay]], seurat_layer)
+    datam <- LayerData(data[[seurat_assay]], seurat_layer)
   } else if (is(data, "SingleCellExperiment")) {
     stopifnot(sce_assay %in% assayNames(data))
 
@@ -217,10 +218,11 @@ score_all_signatures <- function(data,
 
 
   if (is(data, "Seurat")) {
+    if (Version(data)<5){message("Seurat object version is < 5.0.0 . It's suggested to run Seurat::UpdateSeuratObjec first.")}
     stopifnot(is(data[[seurat_assay]], "Assay") | is(data[[seurat_assay]], "Assay5"))
     stopifnot(seurat_layer %in% Layers(data))
 
-    datam <- slot(data[[seurat_assay]], seurat_layer)
+    datam <- LayerData(data[[seurat_assay]], seurat_layer)
   } else if (is(data, "SingleCellExperiment")) {
     stopifnot(sce_assay %in% assayNames(data))
 
