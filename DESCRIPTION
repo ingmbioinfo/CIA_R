@@ -30,6 +30,8 @@ RoxygenNote: 7.3.1
 Imports:
     SingleCellExperiment,
     SummarizedExperiment,
+    S4Vectors,
+    Seurat,
     SeuratObject,
     sparseMatrixStats,
     parallel,
@@ -48,7 +50,6 @@ Suggests:
     knitr,
     rmarkdown,
     Matrix,
-    Seurat,
     scRNAseq,
     scater,
     testthat (>= 3.0.0)

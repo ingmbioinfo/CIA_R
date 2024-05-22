@@ -21,6 +21,8 @@
 #' The results of the majority voting are stored back in the metadata of the object, adding a column for each classification considered.
 #'
 #' @importFrom clusterExperiment ClusterExperiment
+#' @importFrom Seurat FindClusters
+#' @importFrom S4Vectors DataFrame
 #'
 #' @export
 #'

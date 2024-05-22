@@ -64,7 +64,7 @@ load_signatures <- function(signatures_input) {
 #'
 #' @importFrom sparseMatrixStats colSums2
 #' @importFrom methods slot
-#' @importFrom SeuratObject Layers
+#' @importFrom SeuratObject Layers LayerData Version
 #'
 #' @export
 #'
