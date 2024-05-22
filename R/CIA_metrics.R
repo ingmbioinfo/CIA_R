@@ -211,8 +211,10 @@ grouped_classification_metrics <- function(cells_info,
 #' @importFrom dplyr group_by mutate ungroup
 #'
 #' @export
-plot_group_composition <- function(df, ref_col, comp_col,
-                                   plot_type = "percentage", palette = RColorBrewer::brewer.pal(8, "Set3"),
+plot_group_composition <- function(df, ref_col,
+                                   comp_col,
+                                   plot_type = "percentage",
+                                   palette = RColorBrewer::brewer.pal(8, "Set3"),
                                    show_legend = TRUE) {
   # Check if the specified columns exist in the DataFrame
   if (!(comp_col %in% names(df) && ref_col %in% names(df))) {
@@ -245,7 +247,9 @@ plot_group_composition <- function(df, ref_col, comp_col,
   }
 
   # Plotting
-  p <- ggplot(plot_data, aes(x = Cluster, y = Value, fill = Group)) +
+  p <- ggplot(plot_data, aes(x = .data$Cluster,
+                             y = .data$Value,
+                             fill = .data$Group)) +
     geom_bar(stat = 'identity', position = 'stack') +
     coord_flip() +
     scale_fill_manual(values = palette) +
@@ -287,7 +291,11 @@ plot_group_composition <- function(df, ref_col, comp_col,
 #'
 #' @export
 
-group_composition <- function(data, classification_obs, ref_obs, columns_order=NULL, color_map='Greens') {
+group_composition <- function(data,
+                              classification_obs,
+                              ref_obs,
+                              columns_order = NULL,
+                              color_map = "Greens") {
 
   # Extract data
   ref_data <- data[[ref_obs]]
@@ -313,7 +321,9 @@ group_composition <- function(data, classification_obs, ref_obs, columns_order=N
   my_palette <- colorRampPalette(brewer.pal(9, color_map))  # Customize this part for different palettes
 
   # Plot heatmap
-  p <- ggplot(df, aes(x = rowname, y = Column, fill = Value)) +
+  p <- ggplot(df, aes(x = .data$rowname,
+                      y = .data$Column,
+                      fill = .data$Value)) +
     geom_tile() +
     scale_fill_gradientn(name = "", colors = my_palette(100)) +  # Use gradient n for multiple color transitions
     scale_x_discrete(name = "") +
@@ -346,7 +356,12 @@ group_composition <- function(data, classification_obs, ref_obs, columns_order=N
 #' # TODO
 #' # grouped_distributions(data, columns_obs = c('feature1', 'feature2'), ref_obs = 'group_column')
 #'
-grouped_distributions <- function(data, columns_obs, ref_obs, color_map = 'Reds', scale_medians = NULL, save = NULL) {
+grouped_distributions <- function(data,
+                                  columns_obs,
+                                  ref_obs,
+                                  color_map = "Reds",
+                                  scale_medians = NULL,
+                                  save = NULL) {
   # Compute median values for each group
   unique_groups <- levels(data[[ref_obs]])
   grouped_df <- do.call(rbind, lapply(unique_groups, function(group) {
@@ -441,16 +456,20 @@ grouped_distributions <- function(data, columns_obs, ref_obs, color_map = 'Reds'
   }
 
   # Plotting
-# If the columns are not already factors, convert them
-df_long$ref <- as.factor(df_long[,ref_obs])
-df_long$Column <- as.factor(df_long$Column)
-df_long$Value <- as.numeric(df_long$Value)
+  # If the columns are not already factors, convert them
+  df_long$ref <- as.factor(df_long[,ref_obs])
+  df_long$Column <- as.factor(df_long$Column)
+  df_long$Value <- as.numeric(df_long$Value)
 
-  p <- ggplot(df_long, aes(x = ref, y = Column, fill = Value)) +
+  p <- ggplot(df_long, aes(x = .data$ref,
+                           y = .data$Column,
+                           fill = .data$Value)) +
     geom_tile() +
     scale_fill_gradientn(name = "", colors = colorRampPalette(brewer.pal(9, color_map))(100)) +
     theme_minimal() +
-    labs(title = "Median score values", x = ref_obs, y = "Signatures")
+    labs(title = "Median score values",
+         x = ref_obs,
+         y = "Signatures")
 
   # Save or display plot
   if (!is.null(save)) {
