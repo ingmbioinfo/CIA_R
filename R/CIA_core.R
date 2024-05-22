@@ -97,6 +97,7 @@ score_signature <- function(data,
   }
 
   if (is(data, "Seurat")) {
+
     stopifnot(is(data[[seurat_assay]], "Assay") | is(data[[seurat_assay]], "Assay5"))
     stopifnot(seurat_layer %in% Layers(data))
 
@@ -111,7 +112,6 @@ score_signature <- function(data,
     } else {
       datam <- LayerData(data[[seurat_assay]], seurat_layer)
     }
-
 
   } else if (is(data, "SingleCellExperiment")) {
     stopifnot(sce_assay %in% assayNames(data))
@@ -243,7 +243,6 @@ score_all_signatures <- function(data,
     } else {
       datam <- LayerData(data[[seurat_assay]], seurat_layer)
     }
-
 
   } else if (is(data, "SingleCellExperiment")) {
     stopifnot(sce_assay %in% assayNames(data))
