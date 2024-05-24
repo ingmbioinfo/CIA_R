@@ -16,20 +16,27 @@ plot_group_composition(
 \arguments{
 \item{df}{DataFrame containing the data to be plotted.}
 
-\item{ref_col}{Character. The name of the column representing the reference grouping variable.}
+\item{ref_col}{Character. The name of the column representing the reference
+grouping variable.}
 
-\item{comp_col}{Character. The name of the column representing the grouping to be compared.}
+\item{comp_col}{Character. The name of the column representing the grouping
+to be compared.}
 
-\item{plot_type}{Character. Indicates whether to plot 'percentage' or 'raw' counts. Defaults to 'percentage'.}
+\item{plot_type}{Character. Indicates whether to plot 'percentage' or 'raw'
+counts. Defaults to 'percentage'.}
 
-\item{palette}{Character vector. Specifies the color palette to use. Defaults to RColorBrewer::brewer.pal(8, "Dark2").}
+\item{palette}{Character vector. Specifies the color palette to use. Defaults
+to RColorBrewer::brewer.pal(8, "Dark2").}
 
-\item{show_legend}{Logical. Whether to display the legend on the plot. Defaults to TRUE.}
+\item{show_legend}{Logical. Whether to display the legend on the plot.
+Defaults to TRUE.}
 }
 \value{
-A horizontal stacked bar plot showing the composition of each reference group.
+A horizontal stacked bar plot showing the composition of each
+reference group.
 }
 \description{
-This function plots the composition of each reference group as a horizontal stacked bar plot.
-The composition can be shown either as raw counts or as percentages.
+This function plots the composition of each reference group as a horizontal
+stacked bar plot. The composition can be shown either as raw counts or as
+percentages.
 }

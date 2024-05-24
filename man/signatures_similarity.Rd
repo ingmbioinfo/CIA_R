@@ -4,26 +4,31 @@
 \alias{signatures_similarity}
 \title{Compute Similarity Between Gene Signatures}
 \usage{
-signatures_similarity(signatures_dict, show = "J")
+signatures_similarity(signatures_dict, metric_name = "jaccard")
 }
 \arguments{
-\item{signatures_dict}{A list where the keys are signature names and the values are lists of gene names (gene signatures).}
+\item{signatures_dict}{A list where the keys are signature names and the
+values are lists of gene names (gene signatures).}
 
-\item{show}{A character string specifying the metric for showing similarities: 'J' for Jaccard index or '\%' for percentages of intersection. Default is 'J'.}
+\item{metric_name}{A character string specifying the metric for showing
+similarities: "jaccard" for Jaccard index or "percentage" for percentages of
+intersection. Defaults to "jaccard".}
 }
 \value{
-A data frame containing the similarity of each pair of signatures, with signatures as both rows and columns.
+A data frame containing the similarity of each pair of signatures,
+with signatures as both rows and columns.
 }
 \description{
-Computes the similarity between gene signatures using either the Jaccard index or the percentage of intersection.
+Computes the similarity between gene signatures using either the Jaccard
+index or the percentage of intersection.
 }
 \examples{
 signatures <- list(
-  'signature1' = c('gene1', 'gene2', 'gene3'),
-  'signature2' = c('gene2', 'gene3', 'gene4'),
-  'signature3' = c('gene1', 'gene5')
+  "signature1" = c("gene1", "gene2", "gene3"),
+  "signature2" = c("gene2", "gene3", "gene4"),
+  "signature3" = c("gene1", "gene5")
 )
-similarity <- signatures_similarity(signatures, show = 'J')
+similarity <- signatures_similarity(signatures, metric_name = "jaccard")
 print(similarity)
 
 }

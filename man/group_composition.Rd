@@ -13,24 +13,29 @@ group_composition(
 )
 }
 \arguments{
-\item{data}{Data frame or matrix containing the classification and reference data.}
+\item{data}{Data frame or matrix containing the classification and reference
+data.}
 
-\item{classification_obs}{Character string, the name of the column in \code{data} that contains the classification data.}
+\item{classification_obs}{Character string, the name of the column in
+\code{data} that contains the classification data.}
 
-\item{ref_obs}{Character string, the name of the column in \code{data} that contains the reference group data.}
+\item{ref_obs}{Character string, the name of the column in \code{data} that
+contains the reference group data.}
 
-\item{columns_order}{Optional; a character vector specifying the order of columns in the heatmap.}
+\item{columns_order}{Optional; a character vector specifying the order of
+columns in the heatmap.}
 
-\item{color_map}{Optional; character string specifying the color palette to use, defaults to 'Greens'.
-It should be one of the color palettes supported by \code{RColorBrewer}.}
+\item{color_map}{Optional; character string specifying the color palette to
+use, defaults to 'Greens'. It should be one of the color palettes supported
+by \code{RColorBrewer}.}
 }
 \value{
 A ggplot object representing the heatmap.
 }
 \description{
-This function generates a heatmap showing the percentage composition of each classification
-within reference groups. It is used for visualizing how different classifications distribute
-across predefined groups.
+This function generates a heatmap showing the percentage composition of each
+classification within reference groups. It is used for visualizing how
+different classifications distribute across predefined groups.
 }
 \examples{
 ## Assuming 'data' is a data frame with columns 'Group' and 'Category'
