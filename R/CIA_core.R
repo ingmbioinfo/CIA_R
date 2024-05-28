@@ -35,7 +35,7 @@ load_signatures <- function(signatures_input) {
   }
 
   input_lines <- strsplit(readLines(signatures_input), "\t")
-  signatures <- lapply(input_lines, tail, -2)
+  signatures <- lapply(input_lines, tail, -1)
   names(signatures) <- lapply(input_lines, head, 1)
 
   return(signatures)
