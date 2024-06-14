@@ -7,6 +7,9 @@
 #'
 #' @param signatures_input A character string representing the file path to the
 #' TSV file containing the gene signatures.
+#' @param description_field_available Logical value, to accommodate for the use
+#' of "custom" gmt file formats, where the description field might not be
+#' provided. Defaults to TRUE.
 #'
 #' @return A list where each element is a character vector of gene names, named
 #' by the signature names.
@@ -26,7 +29,7 @@
 #'
 #' sig_wikipathways <- load_signatures(gmt_url)
 #' head(names(sig_wikipathways))
-load_signatures <- function(signatures_input) {
+load_signatures <- function(signatures_input, description_field_available = TRUE) {
   if (!is.character(signatures_input))
     stop("signatures_input must be either a URL or a string path to a local TSV file.")
 
@@ -35,11 +38,24 @@ load_signatures <- function(signatures_input) {
   }
 
   input_lines <- strsplit(readLines(signatures_input), "\t")
-  signatures <- lapply(input_lines, tail, -1)
+
+  if (description_field_available) {
+    signatures <- lapply(input_lines, tail, -2)
+  } else {
+    # strip only the first field
+    signatures <- lapply(input_lines, tail, -1)
+    message("You are loading a gmt file which is not entirely conform to the ",
+            "official file specification. Please consider reformatting that ",
+            "if possible.")
+  }
+
   names(signatures) <- lapply(input_lines, head, 1)
+
+  # if some fields were left empty for a conversion issue...
   for (i in names(signatures)){
-    signatures[[i]] <- signatures[[i]][signatures[[i]]!='']
-    }
+    signatures[[i]] <- signatures[[i]][signatures[[i]] != ""]
+  }
+
   return(signatures)
 }
 

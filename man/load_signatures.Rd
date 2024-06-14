@@ -4,11 +4,15 @@
 \alias{load_signatures}
 \title{Load Gene Signatures}
 \usage{
-load_signatures(signatures_input)
+load_signatures(signatures_input, description_field_available = TRUE)
 }
 \arguments{
 \item{signatures_input}{A character string representing the file path to the
 TSV file containing the gene signatures.}
+
+\item{description_field_available}{Logical value, to accommodate for the use
+of "custom" gmt file formats, where the description field might not be
+provided. Defaults to TRUE.}
 }
 \value{
 A list where each element is a character vector of gene names, named
