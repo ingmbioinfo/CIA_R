@@ -340,9 +340,11 @@ group_composition <- function(data,
                       y = .data$Column,
                       fill = .data$Value)) +
     geom_tile() +
-    scale_fill_gradientn(name = "", colors = my_palette(100)) +  # Use gradient n for multiple color transitions
-    scale_x_discrete(name = "") +
-    scale_y_discrete(name = "")
+     geom_text(aes(label = round(Value, 2)), color = "black") +
+    theme_minimal() +
+    labs(x = classification_obs,
+         y = ref_obs)+
+    scale_fill_gradientn(name = "", colors = my_palette(100)) 
 
   print(p)
 }
@@ -387,6 +389,7 @@ grouped_distributions <- function(data,
                                   scale_medians = NULL,
                                   save = NULL) {
   # Compute median values for each group
+  data[[ref_obs]] <- as.factor(data[[ref_obs]])
   unique_groups <- levels(data[[ref_obs]])
   grouped_df <- do.call(rbind, lapply(unique_groups, function(group) {
     group_data <- data[data[[ref_obs]] == group, columns_obs, drop = FALSE]
@@ -395,14 +398,15 @@ grouped_distributions <- function(data,
   }))
   colnames(grouped_df) <- c(ref_obs, columns_obs)
   grouped_df <- as.data.frame(grouped_df)
-
+  for (i in 2:dim(grouped_df)[2]){
+      grouped_df[,i] <- as.numeric(grouped_df[,i])
+      }
   if (!is.null(scale_medians)) {
     if (scale_medians == 'row-wise') {
-      grouped_df[columns_obs] <-
-        t(apply(grouped_df[columns_obs], 1, function(x) x / sum(x, na.rm = TRUE)))
+      grouped_df[,columns_obs] <- t(apply(grouped_df[,columns_obs], 1, function(x) x / sum(x, na.rm = TRUE)))
     } else if (scale_medians == 'column-wise') {
-      grouped_df[columns_obs] <- sweep(
-        grouped_df[columns_obs], 2, colSums(grouped_df[columns_obs], na.rm = TRUE), `/`
+      grouped_df[,columns_obs] <- sweep(
+        grouped_df[,columns_obs], 2, colSums(grouped_df[,columns_obs], na.rm = TRUE), `/`
       )
     }
   }
@@ -499,12 +503,13 @@ grouped_distributions <- function(data,
                            y = .data$Column,
                            fill = .data$Value)) +
     geom_tile() +
+    geom_text(aes(label = round(Value, 2)), color = "black") +
     scale_fill_gradientn(name = "",
                          colors = colorRampPalette(brewer.pal(9, color_map))(100)) +
     theme_minimal() +
     labs(title = "Median score values",
-         x = ref_obs,
-         y = "Signatures")
+         x = "Signatures",
+         y = ref_obs)
 
   # Save or display plot
   if (!is.null(save)) {
