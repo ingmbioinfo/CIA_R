@@ -1,6 +1,6 @@
 #' Perform Majority Voting on Cell Type Classifications
 #'
-#' A function that wraps Celltypist majority voting (DOI: 10.1126/science.abl5197). 
+#' A function that wraps Celltypist majority voting (DOI: 10.1126/science.abl5197).
 #' Assigns cell group labels based on the majority voting of cell type predictions within each group.
 #' If no reference cell groups are provided, an over-clustering step is performed using the Leiden algorithm.
 #'
@@ -11,7 +11,7 @@
 #' @param min_prop A numeric value specifying the minimum proportion threshold for assigning a majority vote label. Default is 0.
 #' @param unassigned_label A character string specifying the label for groups that do not meet the minimum proportion threshold. Default is 'Unassigned'.
 #' @param res A numeric value specifying the resolution parameter for the Leiden clustering algorithm. Default is 0.05.
-#' 
+#'
 #' @return A Seurat or SingleCellExperiment object with updated metadata containing the majority vote labels.
 #'
 #' @details
@@ -20,10 +20,19 @@
 #' @examples
 #' \dontrun{
 #' # Example usage with Seurat object
-#' seurat_obj <- celltypist_majority_vote(seurat_obj, classification_obs = "predicted_labels", graph = "RNA_snn", min_prop = 0.5)
+#' seurat_obj <- celltypist_majority_vote(
+#'   seurat_obj,
+#'   classification_obs = "predicted_labels",
+#'   graph = "RNA_snn",
+#'   min_prop = 0.5
+#' )
 #'
 #' # Example usage with SingleCellExperiment object
-#' sce_obj <- celltypist_majority_vote(sce_obj, classification_obs = "predicted_labels", min_prop = 0.5)
+#' sce_obj <- celltypist_majority_vote(
+#'   sce_obj,
+#'   classification_obs = "predicted_labels",
+#'   min_prop = 0.5
+#' )
 #' }
 #'
 #' @importFrom SummarizedExperiment colData
@@ -32,6 +41,7 @@
 #' @importFrom methods is
 #'
 #' @export
+#'
 celltypist_majority_vote <- function(data, classification_obs, groups_obs = NULL, graph = "RNA_snn", min_prop = 0, unassigned_label = 'Unassigned', res=0.05) {
   if (!is(data, "Seurat") && !is(data, "SingleCellExperiment")) {
     stop("Data must be a Seurat or SingleCellExperiment object")
