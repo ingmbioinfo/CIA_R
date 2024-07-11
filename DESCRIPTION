@@ -38,6 +38,7 @@ Imports:
     BiocParallel,
     RColorBrewer,
     ggplot2,
+    rlang,
     tidyr,
     dplyr,
     reshape2,

@@ -325,6 +325,7 @@ plot_group_composition <- function(df, ref_col,
 #' @importFrom ggplot2 aes coord_flip geom_bar geom_text geom_tile ggplot
 #' ggsave labs scale_fill_gradientn scale_fill_manual theme theme_minimal
 #' @importFrom tidyr pivot_longer
+#' @importFrom rlang .data
 #' @importFrom RColorBrewer brewer.pal
 #'
 #' @importFrom grDevices colorRampPalette
