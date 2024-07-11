@@ -13,14 +13,14 @@
 #' @param groups_obs A character string specifying the column name in the
 #' metadata that contains the grouping information. If `NULL`, over-clustering
 #' will be performed.
-#' @param graph A character string specifying the graph name used for clustering
-#' in Seurat. Default is "RNA_snn".
+#' @param graph_name A character string specifying the graph name used for
+#' clustering in Seurat. Default is "RNA_snn".
 #' @param min_prop A numeric value specifying the minimum proportion threshold
 #' for assigning a majority vote label. Default is 0.
 #' @param unassigned_label A character string specifying the label for groups
 #' that do not meet the minimum proportion threshold. Default is "Unassigned".
-#' @param res A numeric value specifying the resolution parameter for the Leiden
-#' clustering algorithm. Default is 0.05.
+#' @param leiden_res A numeric value specifying the resolution parameter for the
+#' Leiden clustering algorithm. Default is 0.05.
 #'
 #' @return A `Seurat` or `SingleCellExperiment` object, with updated metadata
 #' containing the majority vote labels.
@@ -44,12 +44,13 @@
 #' @export
 #'
 #' @examples
+#' # TODO we need an example to run fully
 #' \dontrun{
 #' # Example usage with Seurat object
 #' seurat_obj <- celltypist_majority_vote(
 #'   seurat_obj,
 #'   classification_obs = "predicted_labels",
-#'   graph = "RNA_snn",
+#'   graph_name = "RNA_snn",
 #'   min_prop = 0.5
 #' )
 #'
@@ -63,13 +64,25 @@
 celltypist_majority_vote <- function(data,
                                      classification_obs,
                                      groups_obs = NULL,
-                                     graph = "RNA_snn",
+                                     graph_name = "RNA_snn",
                                      min_prop = 0,
                                      unassigned_label = "Unassigned",
-                                     res = 0.05) {
+                                     leiden_res = 0.05) {
   if (!is(data, "Seurat") && !is(data, "SingleCellExperiment")) {
     stop("Data must be a Seurat or SingleCellExperiment object")
   }
+
+  stopifnot(min_prop >= 0 & min_prop <= 1)
+  stopifnot(is.numeric(min_prop))
+  stopifnot(leiden_res > 0)
+  stopifnot(is.numeric(leiden_res))
+
+  if (!is.null(groups_obs))
+    stopifnot(is.character(groups_obs))
+
+  stopifnot(is.character(classification_obs))
+  stopifnot(is.character(graph_name))
+  stopifnot(is.character(unassigned_label))
 
   if (is(data, "Seurat")) {
     obs <- data@meta.data
@@ -80,15 +93,16 @@ celltypist_majority_vote <- function(data,
   # Determine resolution for clustering if groups_obs is not provided
   if (is.null(groups_obs)) {
     if (is(data, "Seurat")) {
-      if (!(graph %in% names(data@graphs))) {
-        stop(paste("Provided graph name", graph, "not present in Seurat object. Please run FindNeighbors() first."))
+      if (!(graph_name %in% names(data@graphs))) {
+        stop(paste("Provided graph name", graph_name,
+                   "not present in Seurat object. Please run FindNeighbors() first."))
       }
-      adj <- as.matrix(data@graphs[[graph]])
+      adj <- as.matrix(data@graphs[[graph_name]])
       gr <- graph_from_adjacency_matrix(adj, mode = "undirected", weighted = TRUE)
       leid <- cluster_leiden(
         gr,
         weights = NULL,
-        resolution_parameter = res,
+        resolution_parameter = leiden_res,
         beta = 0.01,
         n_iterations = -1,
         vertex_weights = NULL
@@ -97,15 +111,16 @@ celltypist_majority_vote <- function(data,
       groups_obs <- "overclustering"
       obs <- data@meta.data
     } else if (is(data, "SingleCellExperiment")) {
-      if (!(graph %in% names(metadata(data)$graphs))) {
-        stop(paste("Provided graph name", graph, "not present in Seurat object. Please run FindNeighbors() first."))
+      if (!(graph_name %in% names(metadata(data)$graphs))) {
+        stop(paste("Provided graph name", graph_name,
+                   "not present in Seurat object. Please run FindNeighbors() first."))
       }
-      adj <- as.matrix(data@metadata$graphs[[graph]])
+      adj <- as.matrix(data@metadata$graphs[[graph_name]])
       gr <- graph_from_adjacency_matrix(adj, mode = "undirected", weighted = TRUE)
       leid <- cluster_leiden(
         gr,
         weights = NULL,
-        resolution_parameter = res,
+        resolution_parameter = leiden_res,
         beta = 0.01,
         n_iterations = -1,
         vertex_weights = NULL
@@ -143,7 +158,8 @@ celltypist_majority_vote <- function(data,
   ## Check if classification_obs columns exist
   missing_columns <- classification_obs[!(classification_obs %in% colnames(obs))]
   if (length(missing_columns) > 0) {
-    stop(paste("The following classification_obs columns are missing in metadata:", paste(missing_columns, collapse = ", ")))
+    stop(paste("The following classification_obs columns are missing in metadata:",
+               paste(missing_columns, collapse = ", ")))
   }
 
   for (classification in classification_obs) {
@@ -170,9 +186,3 @@ celltypist_majority_vote <- function(data,
 
   return(data)
 }
-
-# Example usage with Seurat object
-# seurat_obj <- celltypist_majority_vote(seurat_obj, classification_obs = "predicted_labels", graph = "RNA_snn", min_prop = 0.5)
-
-# Example usage with SingleCellExperiment object
-# sce_obj <- celltypist_majority_vote(sce_obj, classification_obs = "predicted_labels", min_prop = 0.5)
