@@ -143,7 +143,7 @@ For **SeuratObjects**, it is possible to select the matrix on which to compute t
 
 ```{r}
 SO<- score_all_signatures(SO,signatures_input = '../inst/extdata/atlas.gmt',
-                          seurat_assay = 'RNA', seurat_layer = 'data', n_cpus = 32)
+                          seurat_assay = 'RNA', seurat_layer = 'data', n_cpus = 2)
 ```
 
 ```{r}
@@ -152,7 +152,7 @@ head(SO@meta.data[, names(gmt)])
 
 For **SingleCellExperiment** objects, the same can be done by setting the `sce_assay` parameter, which is set to `logcounts` by default.
 ```{r}
-SCE<- score_all_signatures(SCE,signatures_input = '../inst/extdata/atlas.gmt',sce_assay = 'logcounts', n_cpus = 32)
+SCE<- score_all_signatures(SCE,signatures_input = '../inst/extdata/atlas.gmt',sce_assay = 'logcounts', n_cpus = 2)
 ```
 
 ```{r}
@@ -163,7 +163,7 @@ From this point in the tutorial, **we will demonstrate CIA features using data i
 ### Scaled score
 The scaled score is the **GSS divided by the maximum score value**, an operation that rescales the values from 0 to 1. This allows scaled scores of **different signatures**, even with **varying lengths**, to be **directly compared**. To compute the 'scaled' score, score_mode must be set to 'scaled'.
 ```{r}
-SO<-score_all_signatures(data=SO, signatures_input= '../inst/extdata/atlas.gmt', score_mode='scaled', n_cpus=32)
+SO<-score_all_signatures(data=SO, signatures_input= '../inst/extdata/atlas.gmt', score_mode='scaled', n_cpus=2)
 head(SO@meta.data[, names(gmt)])
 ```
 
@@ -192,7 +192,7 @@ With the evidence of the goodness of the signatures, we proceeded with the class
 To classify the PBMC3K dataset we used `CIA_classify`, which directly computes and compares scaled scores of each signature in each single cell of the dataset.
 ```{r}
 SO<- CIA_classify(data=SO, signatures_input='../inst/extdata/atlas.gmt', 
-             similarity_threshold=0, column_name= 'CIA_default', n_cpus=32)
+             similarity_threshold=0, column_name= 'CIA_default', n_cpus=2)
 ```
 
 Classification is performed by **assigning to each cell the label of the signature that has the maximum scaled score value**. Because it is based on matrix and vector operations, and given the possibility to parallelize the computation, this process is **very fast**.
@@ -221,7 +221,7 @@ Here we test 3 tresholds: 5%, 10% and 15%.
 ```{r}
 for (t in c(0.05,0.1,0.15)){
 SO<- CIA_classify(data=SO, signatures_input='../inst/extdata/atlas.gmt', unassigned_label = 'Unassigned',
-             similarity_threshold=t, column_name= paste0('CIA_t', as.character(t)), n_cpus=32)
+             similarity_threshold=t, column_name= paste0('CIA_t', as.character(t)), n_cpus=2)
     }
 ```
 
@@ -248,7 +248,7 @@ gmt$B <- NULL
 ```{r}
 for (t in c(0,0.1)){
 SO<- CIA_classify(data=SO, signatures_input=gmt, unassigned_label = 'Unassigned',
-             similarity_threshold=t, column_name= paste0('CIA_noB_t', as.character(t)), n_cpus=32)
+             similarity_threshold=t, column_name= paste0('CIA_noB_t', as.character(t)), n_cpus=2)
     }
 ```
 
@@ -306,7 +306,7 @@ head(score_signature(SO,
 
 ```{r}
 SO <- score_all_signatures(SO, score_mode = 'scaled',
-                     signatures_input = 'https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_PHAGOCYTOSIS&fileType=gmt')
+                     signatures_input = 'https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_PHAGOCYTOSIS&fileType=gmt', n_cpus = 2)
 ```
 
 ```{r}
