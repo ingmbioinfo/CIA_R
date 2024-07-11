@@ -148,6 +148,9 @@ compute_classification_metrics <- function(cells_info,
 #'
 #' @export
 #'
+#' @examples
+#' # TODO
+#'
 grouped_classification_metrics <- function(cells_info,
                                            classification_col,
                                            ref_labels,
@@ -351,7 +354,7 @@ group_composition <- function(data,
     theme_minimal() +
     labs(x = classification_obs,
          y = ref_obs)+
-    scale_fill_gradientn(name = "", colors = my_palette(100)) 
+    scale_fill_gradientn(name = "", colors = my_palette(100))
 
   print(p)
 }
