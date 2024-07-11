@@ -51,7 +51,7 @@
 #' ## unassigned_label <- 'Unassigned' # Specify the label that denotes unassigned samples
 #' ## metrics_report <-
 #' ##   compute_classification_metrics(cells_info, classification_cols, ref_labels, unassigned_label)
-#' ## print(metrics_report)
+#' ## metrics_report
 compute_classification_metrics <- function(cells_info,
                                            classification_cols,
                                            ref_labels,
@@ -295,8 +295,7 @@ plot_group_composition <- function(df, ref_col,
     p <- p + theme(legend.position = "none")
   }
 
-  # Show plot
-  print(p)
+  return(p)
 }
 #' Group Composition Heatmap
 #'
@@ -379,7 +378,7 @@ group_composition <- function(data,
     ) +
     scale_fill_gradientn(name = "", colors = my_palette(100))
 
-  print(p)
+  return(p)
 }
 
 #' Plot Grouped Distributions and Perform Statistical Tests
@@ -450,7 +449,7 @@ grouped_distributions <- function(data,
     value.name = "Value"
   )
   # Wilcoxon test
-  print("Performing Wilcoxon test on each cell group ...")
+  message("Performing Wilcoxon test on each cell group ...")
   count <- 0
   subsets <- list()
 
@@ -479,23 +478,26 @@ grouped_distributions <- function(data,
         }
       )
 
-      if (!is.null(result) && !is.na(result$p.value) && (result$p.value >= 0.01) && (comb[1] == names(medians)[pos])) {
+      if (!is.null(result) &&
+          !is.na(result$p.value) &&
+          (result$p.value >= 0.01) &&
+          (comb[1] == names(medians)[pos])) {
         count <- count + 1
-        print(paste(
-          "WARNING in cell group", group, ":", comb[1],
-          "values are not significantly different from", comb[2], "values."
-        ))
-        print(paste("(p=", result$p.value, ")"))
+        warning(
+          "In cell group ", group, " : ", comb[1],
+          " values are not significantly different from ", comb[2], " values.",
+          "\n(p=", result$p.value, ")"
+        )
       }
     }
   }
 
   if (count == 0) {
-    print("For each cell group there is a distribution significantly higher than the others (p<0.01)")
+    message("For each cell group there is a distribution significantly higher than the others (p<0.01)")
   }
 
-  # Mann-Whitney U test
-  print("Performing Mann-Whitney U test on each selected AnnData.obs column ...")
+  ## Mann-Whitney U test
+  message("Performing Mann-Whitney U test on each selected AnnData.obs column ...")
   count <- 0
   for (column in columns_obs) {
     sign <- lapply(
@@ -531,14 +533,17 @@ grouped_distributions <- function(data,
 
       if (!is.null(result) && !is.na(result$p.value) && (result$p.value >= 0.01) && (comb[1] == names(sign_medians)[pos])) {
         count <- count + 1
-        print(paste("WARNING in", column, "distribution: values in", comb[1], "group are not significantly different from values in", comb[2], "group"))
-        print(paste("(p=", result$p.value, ")"))
+        warning(
+          "In ", column, " distribution: values in", comb[1],
+          " group are not significantly different from values in ", comb[2], " group",
+          "\n(p=", result$p.value, ")"
+        )
       }
     }
   }
 
   if (count == 0) {
-    print("For each distribution, there is only a cell group in which values are higher with respect to all the other groups (p<0.01)")
+    message("For each distribution, there is only a cell group in which values are higher with respect to all the other groups (p<0.01)")
   }
 
   # Plotting
@@ -570,6 +575,6 @@ grouped_distributions <- function(data,
     if (!dir.exists("figures")) dir.create("figures")
     ggsave(paste0("figures/CIA_", save), plot = p, width = 10, height = 8)
   } else {
-    print(p)
+    return(p)
   }
 }
