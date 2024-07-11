@@ -1,11 +1,60 @@
 ---
-title: "pbmc3k"
-output: html_document
+title: >
+  The `CIA` User's Guide
+author:
+- name: Ivan Ferrari + Add other developers here! TODO
+  affiliation: 
+  - INGM TODO
+  email: email@ivan.fe
+- name: Federico Marini
+  affiliation: 
+  - Institute of Medical Biostatistics, Epidemiology and Informatics (IMBEI), Mainz
+  email: marinif@uni-mainz.de
+date: "`r BiocStyle::doc_date()`"
+package: "`r BiocStyle::pkg_ver('CIA')`"
+output: 
+  BiocStyle::html_document:
+    toc_float: true
+    toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{CIA_pbmc3k}
+  %\VignetteIndexEntry{The CIA User's Guide}
+  %\VignetteEncoding{UTF-8}  
+  %\VignettePackage{CIA}
+  %\VignetteKeywords{Classification, GeneExpression, SingleCell, Transcriptomics,
+    Annotation, Clustering, Visualization}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+editor_options: 
+  chunk_output_type: console
+bibliography: CIA_bibliography.bib
 ---
+
+<style type="text/css">
+.smaller {
+  font-size: 10px
+}
+</style>
+
+**Compiled date**: `r Sys.Date()`
+
+**Last edited**: 2024-07-11
+
+**License**: `r packageDescription("CIA")[["License"]]`
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  error    = FALSE,
+  warning  = FALSE,
+  eval     = TRUE,
+  message  = FALSE,
+  fig.width = 10
+)
+options(width = 100)
+```
+
+<hr>
+
 
 # CLUSTER INDEPENDENT ANNOTATION
 
@@ -366,7 +415,7 @@ plot_group_composition(SO@meta.data, comp_col = "CIA_default", ref_col = "cellty
 In this notebook, we have showed the robustness and versatility of the **Cluster Independent Annotation (CIA)** method. Through the computation of signature scores and subsequent cell classification, **CIA provides a fast and efficient approach to cell type annotation in single-cell RNA sequencing data**. Additionally, we have shown that by increasing the similarity threshold, CIA can effectively mitigate misclassifications, illuminating the presence of ambiguous or novel cell types.
 
 
-# Session info {-}
+# Session info {- .smaller}
 
 ```{r sessioninfo}
 sessionInfo()
