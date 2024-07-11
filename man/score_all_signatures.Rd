@@ -16,8 +16,8 @@ score_all_signatures(
 )
 }
 \arguments{
-\item{data}{A numeric matrix, data frame, SeuratObject, or
-SingleCellExperiment with genes in rows and cells in columns,
+\item{data}{A numeric matrix, data frame, \code{SeuratObject}, or
+\code{SingleCellExperiment} with genes in rows and cells in columns,
 representing the expression level of each gene in each cell.}
 
 \item{signatures_input}{A character string representing the file path to the
@@ -30,10 +30,10 @@ names.}
 \item{seurat_assay}{Assay for Seurat objects (default "RNA").}
 
 \item{seurat_layer}{Character string, indicating which layer to use of the
-Seurat object. Defaults to \code{data}.}
+Seurat object. Defaults to "data".}
 
 \item{sce_assay}{Character string, indicating which assay to use of the
-SingleCellExperiment object. Defaults to \code{logcounts}.}
+\code{SingleCellExperiment} object. Defaults to "logcounts".}
 
 \item{score_mode}{Character string, specifying the calculation mode to be
 used for scores: "raw", "scaled", or log-transformed ("log", "log2", "log10").
@@ -43,8 +43,9 @@ In the scope of this function, this defaults to "raw".}
 quarter of available cores).}
 }
 \value{
-Matrix of signature scores if return_score=TRUE or if data is a
-matrix/data,frame. Otherwise, updates the input object's metadata with scores.
+Matrix of signature scores if \code{return_score} is set to TRUE or if
+\code{data} is a matrix/data,frame.
+Otherwise, updates the input object's metadata with scores.
 }
 \description{
 This function calculates the signature scores for each gene set in the
@@ -54,4 +55,7 @@ the scores based on the expression levels of these genes in the data.
 \examples{
 ## TODO example
 
+}
+\seealso{
+\code{\link[=score_signature]{score_signature()}} \code{\link[=CIA_classify]{CIA_classify()}}
 }

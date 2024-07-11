@@ -92,6 +92,8 @@ load_signatures <- function(signatures_input, description_field_available = TRUE
 #'
 #' @export
 #'
+#' @seealso [score_all_signatures()] [CIA_classify()]
+#'
 #' @examples
 #' ## TODO example
 #'
@@ -213,6 +215,8 @@ score_signature <- function(data,
 #' @importFrom methods is
 #'
 #' @export
+#'
+#' @seealso [score_signature()] [CIA_classify()]
 #'
 #' @examples
 #' ## TODO example
@@ -406,6 +410,8 @@ score_all_signatures <- function(data,
 #' @importFrom methods is
 #'
 #' @export
+#'
+#' @seealso [score_signature()] [score_all_signatures()]
 #'
 #' @examples
 #' ## TODO example

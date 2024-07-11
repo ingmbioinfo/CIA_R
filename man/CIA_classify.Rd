@@ -18,8 +18,8 @@ CIA_classify(
 )
 }
 \arguments{
-\item{data}{A numeric matrix, data frame, SeuratObject, or
-SingleCellExperiment with genes in rows and cells in columns,
+\item{data}{A numeric matrix, data frame, \code{SeuratObject}, or
+\code{SingleCellExperiment} with genes in rows and cells in columns,
 representing the expression level of each gene in each cell.}
 
 \item{signatures_input}{A character string representing the file path to the
@@ -38,10 +38,10 @@ this threshold, the cell is labeled as unassigned.}
 \item{seurat_assay}{Assay for Seurat objects (default "RNA").}
 
 \item{seurat_layer}{Character string, indicating which layer to use of the
-Seurat object. Defaults to \code{data}.}
+Seurat object. Defaults to "data".}
 
 \item{sce_assay}{Character string, indicating which assay to use of the
-SingleCellExperiment object. Defaults to \code{logcounts}.}
+\code{SingleCellExperiment} object. Defaults to "logcounts".}
 
 \item{score_mode}{Character string, specifying the calculation mode to be
 used for scores: "raw", "scaled", or log-transformed ("log", "log2", "log10").
@@ -55,8 +55,10 @@ signature is identified, default is "Unassigned".}
 }
 \value{
 Modifies the input data object by adding the classification labels to
-its metadata and returns the modified data object.
-If input data is a matrix or data frame, returns a vector of classification labels.
+its metadata and returns the modified data object in the column specified by
+\code{column_name}.
+If input data is a matrix or data frame, this function returns a vector of
+classification labels.
 }
 \description{
 Performs classification of cells in \code{data} based on the computed signature
@@ -67,5 +69,7 @@ otherwise, it is marked as unassigned.
 \examples{
 ## TODO example
 
-## A thought: rename it to CIA_classify? it is somehow catchy?
+}
+\seealso{
+\code{\link[=score_signature]{score_signature()}} \code{\link[=score_all_signatures]{score_all_signatures()}}
 }

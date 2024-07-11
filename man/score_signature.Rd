@@ -14,18 +14,18 @@ score_signature(
 )
 }
 \arguments{
-\item{data}{Numeric matrix, data frame, SeuratObject, or SingleCellExperiment
-with genes in rows and cells in columns.}
+\item{data}{Numeric matrix, data frame, \code{SeuratObject}, or
+\code{SingleCellExperiment} with genes in rows and cells in columns.}
 
 \item{geneset}{Vector of gene names to compute the scores for.}
 
-\item{seurat_assay}{Assay to use for SeuratObject objects (default "RNA").}
+\item{seurat_assay}{Assay to use for \code{SeuratObject} objects (default "RNA").}
 
 \item{seurat_layer}{Character string, indicating which layer to use of the
-Seurat object. Defaults to \code{data}.}
+Seurat object. Defaults to "data".}
 
 \item{sce_assay}{Character string, indicating which assay to use of the
-SingleCellExperiment object. Defaults to \code{logcounts}.}
+\code{SingleCellExperiment} object. Defaults to "logcounts".}
 
 \item{total_col_sums}{Optional precomputed column sums for normalization.}
 }
@@ -42,4 +42,7 @@ the total expression of the cell.
 \examples{
 ## TODO example
 
+}
+\seealso{
+\code{\link[=score_all_signatures]{score_all_signatures()}} \code{\link[=CIA_classify]{CIA_classify()}}
 }
