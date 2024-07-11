@@ -1,23 +1,19 @@
 ---
 title: "pbmc3k"
 output: html_document
+vignette: >
+  %\VignetteIndexEntry{CIA_pbmc3k}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 # CLUSTER INDEPENDENT ANNOTATION
-```{r}
-library(devtools)
-document()
-```
 
 ```{r}
 library(Seurat)
-library(data.table)
-library(future)
-library(future.apply)
 library(Matrix)
 library(sparseMatrixStats)
 library(SingleCellExperiment)
-library(clusterExperiment)
 library(igraph)
 library(CIA)
 ```
