@@ -370,6 +370,14 @@ plot_group_composition(SO@meta.data, comp_col = "CIA_default", ref_col = "cellty
 In this notebook, we have showed the robustness and versatility of the **Cluster Independent Annotation (CIA)** method. Through the computation of signature scores and subsequent cell classification, **CIA provides a fast and efficient approach to cell type annotation in single-cell RNA sequencing data**. Additionally, we have shown that by increasing the similarity threshold, CIA can effectively mitigate misclassifications, illuminating the presence of ambiguous or novel cell types.
 
 
+# Session info {-}
+
+```{r sessioninfo}
+sessionInfo()
+```
+
+
+
 ## References
 
 1. Hao, Y., et al. (2021). Integrated analysis of multimodal single-cell data. *Cell*, 184(13), 3573-3587.e29. [https://www.sciencedirect.com/science/article/pii/S0092867421005833](https://www.sciencedirect.com/science/article/pii/S0092867421005833)
