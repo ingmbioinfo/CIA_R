@@ -66,7 +66,7 @@ celltypist_majority_vote <- function(data,
                                      graph = "RNA_snn",
                                      min_prop = 0,
                                      unassigned_label = "Unassigned",
-                                     res=0.05) {
+                                     res = 0.05) {
   if (!is(data, "Seurat") && !is(data, "SingleCellExperiment")) {
     stop("Data must be a Seurat or SingleCellExperiment object")
   }
@@ -83,9 +83,9 @@ celltypist_majority_vote <- function(data,
       if (!(graph %in% names(data@graphs))) {
         stop(paste("Provided graph name", graph, "not present in Seurat object. Please run FindNeighbors() first."))
       }
-      adj<- as.matrix(data@graphs[[graph]])
+      adj <- as.matrix(data@graphs[[graph]])
       gr <- graph_from_adjacency_matrix(adj, mode = "undirected", weighted = TRUE)
-      leid<- cluster_leiden(
+      leid <- cluster_leiden(
         gr,
         weights = NULL,
         resolution_parameter = res,
@@ -94,15 +94,15 @@ celltypist_majority_vote <- function(data,
         vertex_weights = NULL
       )
       data@meta.data$overclustering <- leid$membership
-      groups_obs<- 'overclustering'
-      obs<- data@meta.data
+      groups_obs <- "overclustering"
+      obs <- data@meta.data
     } else if (is(data, "SingleCellExperiment")) {
       if (!(graph %in% names(metadata(data)$graphs))) {
         stop(paste("Provided graph name", graph, "not present in Seurat object. Please run FindNeighbors() first."))
       }
-      adj<- as.matrix(data@metadata$graphs[[graph]])
+      adj <- as.matrix(data@metadata$graphs[[graph]])
       gr <- graph_from_adjacency_matrix(adj, mode = "undirected", weighted = TRUE)
-      leid<- cluster_leiden(
+      leid <- cluster_leiden(
         gr,
         weights = NULL,
         resolution_parameter = res,
@@ -111,23 +111,29 @@ celltypist_majority_vote <- function(data,
         vertex_weights = NULL
       )
       colData(data)$overclustering <- leid$membership
-      groups_obs<- "overclustering"
+      groups_obs <- "overclustering"
       obs <- colData(data)
     }
-    message("Reference annotation not selected.",
-            "Computing over-clustering with Leiden algorithm")
+    message(
+      "Reference annotation not selected.",
+      "Computing over-clustering with Leiden algorithm"
+    )
   }
 
   ## Check if groups_obs column exists
   if (!(groups_obs %in% colnames(obs))) {
-    stop(paste("Column",
-               groups_obs,
-               "not found in metadata. Please check the clustering step."))
+    stop(paste(
+      "Column",
+      groups_obs,
+      "not found in metadata. Please check the clustering step."
+    ))
   }
 
-  message(paste("Dataset has been divided into",
-                length(unique(obs[[groups_obs]])),
-                "groups according to transcriptional similarities."))
+  message(paste(
+    "Dataset has been divided into",
+    length(unique(obs[[groups_obs]])),
+    "groups according to transcriptional similarities."
+  ))
   message(paste0("Over-clustering result saved in metadata as ", groups_obs))
 
   message("Extending the more represented cell type label to each cell group...\n")
@@ -149,9 +155,11 @@ celltypist_majority_vote <- function(data,
     obs[[paste0(classification, "_majority_voting")]] <-
       factor(groups, levels = names(majority_labels), labels = majority_labels)
 
-    message(paste0("New classification labels have been stored in metadata as ",
-                   classification,
-                   "_majority_voting."))
+    message(paste0(
+      "New classification labels have been stored in metadata as ",
+      classification,
+      "_majority_voting."
+    ))
   }
 
   if (is(data, "Seurat")) {
