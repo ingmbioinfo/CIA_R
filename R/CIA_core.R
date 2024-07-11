@@ -9,7 +9,7 @@
 #' TSV file containing the gene signatures.
 #' @param description_field_available Logical value, to accommodate for the use
 #' of "custom" gmt file formats, where the description field might not be
-#' provided. Defaults to TRUE.
+#' provided. Defaults to `TRUE`.
 #'
 #' @return A list where each element is a character vector of gene names, named
 #' by the signature names.
@@ -72,14 +72,14 @@ load_signatures <- function(signatures_input, description_field_available = TRUE
 #' given cell and their relative expression levels (expression), normalized by
 #' the total expression of the cell.
 #'
-#' @param data Numeric matrix, data frame, SeuratObject, or SingleCellExperiment
-#' with genes in rows and cells in columns.
+#' @param data Numeric matrix, data frame, `SeuratObject`, or
+#' `SingleCellExperiment` with genes in rows and cells in columns.
 #' @param geneset Vector of gene names to compute the scores for.
-#' @param seurat_assay Assay to use for SeuratObject objects (default "RNA").
+#' @param seurat_assay Assay to use for `SeuratObject` objects (default "RNA").
 #' @param seurat_layer Character string, indicating which layer to use of the
-#' Seurat object. Defaults to `data`.
+#' Seurat object. Defaults to "data".
 #' @param sce_assay Character string, indicating which assay to use of the
-#' SingleCellExperiment object. Defaults to `logcounts`.
+#' `SingleCellExperiment` object. Defaults to "logcounts".
 #' @param total_col_sums Optional precomputed column sums for normalization.
 #'
 #' @return Vector of signature scores for each column (cell) in the data.
@@ -102,7 +102,9 @@ score_signature <- function(data,
                             sce_assay = "logcounts",
                             total_col_sums = NULL) {
   ## Checks on arguments
-  allowed_formats <- c("SingleCellExperiment", "Seurat", "matrix", "Matrix", "DelayedMatrix")
+  allowed_formats <-
+    c("SingleCellExperiment", "Seurat", "matrix", "Matrix", "DelayedMatrix")
+
   if (!any(unlist((lapply(allowed_formats, function(arg) is(data, arg)))))) {
     stop(
       "The data provided should be in one of the following formats: ",
@@ -132,7 +134,8 @@ score_signature <- function(data,
     )
 
     if (obj_version_major < 5) {
-      message("Seurat object version is < 5.0.0 . It's suggested to run Seurat::UpdateSeuratObject first.")
+      message("Seurat object version is < 5.0.0 . ",
+              "It's suggested to run `Seurat::UpdateSeuratObject` first.")
       datam <- slot(data[[seurat_assay]], seurat_layer)
     } else {
       datam <- LayerData(data[[seurat_assay]], seurat_layer)
@@ -188,9 +191,9 @@ score_signature <- function(data,
 #' @param return_score Boolean to return scores directly (default FALSE).
 #' @param seurat_assay Assay for Seurat objects (default "RNA").
 #' @param seurat_layer Character string, indicating which layer to use of the
-#' Seurat object. Defaults to `data`.
+#' Seurat object. Defaults to "data".
 #' @param sce_assay Character string, indicating which assay to use of the
-#' SingleCellExperiment object. Defaults to `logcounts`.
+#' `SingleCellExperiment` object. Defaults to "logcounts".
 #' @param score_mode Character string, specifying the calculation mode to be
 #' used for scores: "raw", "scaled", or log-transformed ("log", "log2", "log10").
 #' In the scope of this function, this defaults to "raw".
@@ -198,8 +201,9 @@ score_signature <- function(data,
 #' @param n_cpus Number of CPU cores for parallel computation (default uses a
 #' quarter of available cores).
 #'
-#' @return Matrix of signature scores if return_score=TRUE or if data is a
-#' matrix/data,frame. Otherwise, updates the input object's metadata with scores.
+#' @return Matrix of signature scores if `return_score` is set to TRUE or if
+#' `data` is a matrix/data,frame.
+#' Otherwise, updates the input object's metadata with scores.
 #'
 #' @importFrom BiocParallel bplapply MulticoreParam SerialParam
 #' @importFrom parallel detectCores
@@ -367,17 +371,17 @@ score_all_signatures <- function(data,
 #' provided the difference between the top two scores exceeds a given threshold,
 #' otherwise, it is marked as unassigned.
 #'
-#' @param data A numeric matrix, data frame, SeuratObject, or
-#' SingleCellExperiment with genes in rows and cells in columns,
+#' @param data A numeric matrix, data frame, `SeuratObject`, or
+#' `SingleCellExperiment` with genes in rows and cells in columns,
 #' representing the expression level of each gene in each cell.
 #' @param signatures_input A character string representing the file path to the
 #' TSV file containing the gene signatures, or a list where each element is a
 #' vector of gene names with names of the list elements representing signature names.
 #' @param seurat_assay Assay for Seurat objects (default "RNA").
 #' @param seurat_layer Character string, indicating which layer to use of the
-#' Seurat object. Defaults to `data`.
+#' Seurat object. Defaults to "data".
 #' @param sce_assay Character string, indicating which assay to use of the
-#' SingleCellExperiment object. Defaults to `logcounts`.
+#' `SingleCellExperiment` object. Defaults to "logcounts".
 #' @param score_mode Character string, specifying the calculation mode to be
 #' used for scores: "raw", "scaled", or log-transformed ("log", "log2", "log10").
 #' In the scope of this function, this defaults to "scaled".
@@ -394,8 +398,10 @@ score_all_signatures <- function(data,
 #' signature is identified, default is "Unassigned".
 #'
 #' @return Modifies the input data object by adding the classification labels to
-#' its metadata and returns the modified data object.
-#' If input data is a matrix or data frame, returns a vector of classification labels.
+#' its metadata and returns the modified data object in the column specified by
+#' `column_name`.
+#' If input data is a matrix or data frame, this function returns a vector of
+#' classification labels.
 #'
 #' @importFrom methods is
 #'
@@ -404,7 +410,6 @@ score_all_signatures <- function(data,
 #' @examples
 #' ## TODO example
 #'
-#' ## A thought: rename it to CIA_classify? it is somehow catchy?
 CIA_classify <- function(data,
                          signatures_input,
                          n_cpus = NULL,
