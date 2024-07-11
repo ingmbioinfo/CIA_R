@@ -23,7 +23,8 @@
 #' Leiden clustering algorithm. Default is 0.05.
 #'
 #' @return A `Seurat` or `SingleCellExperiment` object, with updated metadata
-#' containing the majority vote labels.
+#' containing the majority vote labels (with the information stored in vectors
+#' with suffix `_majority_voting`).
 #'
 #' @details
 #' The function can handle both `Seurat` and `SingleCellExperiment` objects.
@@ -94,8 +95,8 @@ celltypist_majority_vote <- function(data,
   if (is.null(groups_obs)) {
     if (is(data, "Seurat")) {
       if (!(graph_name %in% names(data@graphs))) {
-        stop(paste("Provided graph name", graph_name,
-                   "not present in Seurat object. Please run FindNeighbors() first."))
+        stop("Provided graph name ", graph_name,
+             " not present in Seurat object. Please run FindNeighbors() first.")
       }
       adj <- as.matrix(data@graphs[[graph_name]])
       gr <- graph_from_adjacency_matrix(adj, mode = "undirected", weighted = TRUE)
@@ -112,8 +113,8 @@ celltypist_majority_vote <- function(data,
       obs <- data@meta.data
     } else if (is(data, "SingleCellExperiment")) {
       if (!(graph_name %in% names(metadata(data)$graphs))) {
-        stop(paste("Provided graph name", graph_name,
-                   "not present in Seurat object. Please run FindNeighbors() first."))
+        stop("Provided graph name ", graph_name,
+             " not present in Seurat object. Please run FindNeighbors() first.")
       }
       adj <- as.matrix(data@metadata$graphs[[graph_name]])
       gr <- graph_from_adjacency_matrix(adj, mode = "undirected", weighted = TRUE)
@@ -137,19 +138,19 @@ celltypist_majority_vote <- function(data,
 
   ## Check if groups_obs column exists
   if (!(groups_obs %in% colnames(obs))) {
-    stop(paste(
-      "Column",
+    stop(
+      "Column ",
       groups_obs,
-      "not found in metadata. Please check the clustering step."
-    ))
+      " not found in metadata. Please check the clustering step."
+    )
   }
 
-  message(paste(
-    "Dataset has been divided into",
+  message(
+    "Dataset has been divided into ",
     length(unique(obs[[groups_obs]])),
-    "groups according to transcriptional similarities."
-  ))
-  message(paste0("Over-clustering result saved in metadata as ", groups_obs))
+    " groups according to transcriptional similarities."
+  )
+  message("Over-clustering result saved in metadata as ", groups_obs)
 
   message("Extending the more represented cell type label to each cell group...\n")
 
@@ -158,8 +159,8 @@ celltypist_majority_vote <- function(data,
   ## Check if classification_obs columns exist
   missing_columns <- classification_obs[!(classification_obs %in% colnames(obs))]
   if (length(missing_columns) > 0) {
-    stop(paste("The following classification_obs columns are missing in metadata:",
-               paste(missing_columns, collapse = ", ")))
+    stop("The following classification_obs columns are missing in metadata:",
+         paste(missing_columns, collapse = ", "))
   }
 
   for (classification in classification_obs) {
@@ -171,11 +172,11 @@ celltypist_majority_vote <- function(data,
     obs[[paste0(classification, "_majority_voting")]] <-
       factor(groups, levels = names(majority_labels), labels = majority_labels)
 
-    message(paste0(
+    message(
       "New classification labels have been stored in metadata as ",
       classification,
       "_majority_voting."
-    ))
+    )
   }
 
   if (is(data, "Seurat")) {
