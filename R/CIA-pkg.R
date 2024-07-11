@@ -8,3 +8,5 @@
 #' @docType package
 #' @keywords internal
 "_PACKAGE"
+
+globalVariables(c("Cluster", "Count"))
