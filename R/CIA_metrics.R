@@ -244,15 +244,15 @@ plot_group_composition <- function(df, ref_col,
                                    plot_type = "percentage",
                                    palette = RColorBrewer::brewer.pal(8, "Set3"),
                                    show_legend = TRUE) {
-  # Check if the specified columns exist in the DataFrame
+  ## Check if the specified columns exist in the DataFrame
   if (!(comp_col %in% names(df) && ref_col %in% names(df))) {
     stop("Specified columns are not in the DataFrame")
   }
 
-  # Create a contingency table of counts
+  ## Create a contingency table of counts
   pivot_table <- table(df[[ref_col]], df[[comp_col]])
 
-  # Convert to DataFrame for plotting
+  ## Convert to data.frame for plotting
   plot_data <- as.data.frame.matrix(pivot_table)
   plot_data <- cbind(Cluster = rownames(plot_data), plot_data)
   plot_data <- tidyr::pivot_longer(plot_data,
@@ -261,7 +261,7 @@ plot_group_composition <- function(df, ref_col,
     values_to = "Count"
   )
 
-  # Calculate percentages if required
+  ## Calculate percentages if required
   if (plot_type == "percentage") {
     plot_data <- plot_data |>
       group_by(Cluster) |>
@@ -278,7 +278,7 @@ plot_group_composition <- function(df, ref_col,
     stop("plot_type must be 'percentage' or 'raw'")
   }
 
-  # Plotting
+  ## Plotting
   p <- ggplot(plot_data, aes(
     x = .data$Cluster,
     y = .data$Value,
@@ -336,18 +336,18 @@ group_composition <- function(data,
                               ref_obs,
                               columns_order = NULL,
                               color_map = "Greens") {
-  # Extract data
+  ## Extract data
   ref_data <- data[[ref_obs]]
   class_data <- data[[classification_obs]]
 
-  # Create a contingency table
+  ## Create a contingency table
   contingency_table <- table(ref_data, class_data)
 
-  # Convert counts to percentage
+  ## Convert counts to percentage
   percentage_table <- prop.table(contingency_table, margin = 1) * 100
   percentage_table <- round(percentage_table, 2)
 
-  # Convert the table to a data frame for ggplot
+  ## Convert the table to a data frame for ggplot
   df <- as.data.frame.matrix(percentage_table)
   if (!is.null(columns_order)) {
     df <- df[, columns_order]
@@ -360,17 +360,17 @@ group_composition <- function(data,
     times = names(df)[1:(dim(df)[2] - 1)], direction = "long"
   )
 
-  # Setting up the color palette
+  ## Setting up the color palette
   my_palette <- colorRampPalette(brewer.pal(9, color_map)) # Customize this part for different palettes
 
-  # Plot heatmap
+  ## Plot heatmap
   p <- ggplot(df, aes(
     x = .data$rowname,
     y = .data$Column,
     fill = .data$Value
   )) +
     geom_tile() +
-    geom_text(aes(label = round(Value, 2)), color = "black") +
+    geom_text(aes(label = round(.data$Value, 2)), color = "black") +
     theme_minimal() +
     labs(
       x = classification_obs,
@@ -558,7 +558,7 @@ grouped_distributions <- function(data,
     fill = .data$Value
   )) +
     geom_tile() +
-    geom_text(aes(label = round(Value, 2)), color = "black") +
+    geom_text(aes(label = round(.data$Value, 2)), color = "black") +
     scale_fill_gradientn(
       name = "",
       colors = colorRampPalette(brewer.pal(9, color_map))(100)
