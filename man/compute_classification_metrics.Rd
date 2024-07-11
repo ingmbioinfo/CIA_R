@@ -66,5 +66,5 @@ compared to the reference method.
 ## unassigned_label <- 'Unassigned' # Specify the label that denotes unassigned samples
 ## metrics_report <-
 ##   compute_classification_metrics(cells_info, classification_cols, ref_labels, unassigned_label)
-## print(metrics_report)
+## metrics_report
 }
