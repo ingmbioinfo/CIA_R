@@ -406,7 +406,6 @@ group_composition <- function(data,
 #'
 #' @export
 #'
-#' @import ggplot2
 #' @importFrom reshape2 melt
 #' @importFrom stats wilcox.test median
 #' @importFrom utils combn
