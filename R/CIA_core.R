@@ -85,6 +85,7 @@ load_signatures <- function(signatures_input, description_field_available = TRUE
 #' @importFrom methods slot is
 #' @importFrom SeuratObject Layers LayerData Version
 #' @importFrom SummarizedExperiment assay assayNames colData
+#' @importFrom Seurat GetAssay
 #'
 #' @export
 #'
