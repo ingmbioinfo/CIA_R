@@ -42,7 +42,7 @@ Imports:
     dplyr,
     reshape2,
     grDevices,
-    clusterExperiment,
+    igraph,
     stats,
     utils,
     methods
