@@ -30,5 +30,4 @@ signatures <- list(
 )
 similarity <- signatures_similarity(signatures, metric_name = "jaccard")
 print(similarity)
-
 }
