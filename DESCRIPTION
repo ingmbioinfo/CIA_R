@@ -49,6 +49,7 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
+    BiocStyle,
     Matrix,
     scRNAseq,
     scater,
@@ -59,4 +60,4 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 biocViews:
     Software, Classification, GeneExpression, SingleCell, Transcriptomics,
-    Annotation, Clustering
+    Annotation, Clustering, Visualization
