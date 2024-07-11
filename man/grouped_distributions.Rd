@@ -14,15 +14,15 @@ grouped_distributions(
 )
 }
 \arguments{
-\item{data}{DataFrame containing the cell data.}
+\item{data}{A \code{data.frame} object containing the cell data.}
 
-\item{columns_obs}{Character vector. Column names in the dataframe where the
+\item{columns_obs}{Character vector. Column names in the data.frame where the
 values of interest are stored.}
 
-\item{ref_obs}{Character. Column name in the dataframe where the cell group
+\item{ref_obs}{Character. Column name in the data.frame where the cell group
 labels are stored.}
 
-\item{color_map}{Character. Colormap for the heatmap. Defaults to 'Reds'.}
+\item{color_map}{Character. Colormap for the heatmap. Defaults to "Reds".}
 
 \item{scale_medians}{Character. How to scale the median values in the heatmap.
 Options: 'row-wise', 'column-wise', or NULL. Defaults to NULL.}

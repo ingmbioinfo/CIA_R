@@ -40,3 +40,7 @@ This function plots the composition of each reference group as a horizontal
 stacked bar plot. The composition can be shown either as raw counts or as
 percentages.
 }
+\examples{
+# TODO
+
+}

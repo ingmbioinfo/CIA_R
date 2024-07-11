@@ -26,7 +26,7 @@ contains the reference group data.}
 columns in the heatmap.}
 
 \item{color_map}{Optional; character string specifying the color palette to
-use, defaults to 'Greens'. It should be one of the color palettes supported
+use, defaults to "Greens". It should be one of the color palettes supported
 by \code{RColorBrewer}.}
 }
 \value{
@@ -41,5 +41,4 @@ different classifications distribute across predefined groups.
 ## Assuming 'data' is a data frame with columns 'Group' and 'Category'
 # group_composition(data, 'Category', 'Group')
 # TODO
-
 }
