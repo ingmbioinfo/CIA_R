@@ -31,8 +31,9 @@
 #' sig_wikipathways <- load_signatures(gmt_url)
 #' head(names(sig_wikipathways))
 load_signatures <- function(signatures_input, description_field_available = TRUE) {
-  if (!is.character(signatures_input))
+  if (!is.character(signatures_input)) {
     stop("signatures_input must be either a URL or a string path to a local TSV file.")
+  }
 
   if (!grepl("^http", signatures_input)) {
     stopifnot(file.exists(signatures_input))
@@ -45,15 +46,17 @@ load_signatures <- function(signatures_input, description_field_available = TRUE
   } else {
     # strip only the first field
     signatures <- lapply(input_lines, tail, -1)
-    message("You are loading a gmt file which is not entirely conform to the ",
-            "official file specification. Please consider reformatting that ",
-            "if possible.")
+    message(
+      "You are loading a gmt file which is not entirely conform to the ",
+      "official file specification. Please consider reformatting that ",
+      "if possible."
+    )
   }
 
   names(signatures) <- lapply(input_lines, head, 1)
 
   # if some fields were left empty for a conversion issue...
-  for (i in names(signatures)){
+  for (i in names(signatures)) {
     signatures[[i]] <- signatures[[i]][signatures[[i]] != ""]
   }
 
@@ -98,12 +101,14 @@ score_signature <- function(data,
                             seurat_layer = "data",
                             sce_assay = "logcounts",
                             total_col_sums = NULL) {
-
   ## Checks on arguments
   allowed_formats <- c("SingleCellExperiment", "Seurat", "matrix", "Matrix", "DelayedMatrix")
-  if (!any(unlist((lapply(allowed_formats, function(arg) is(data, arg))))))
-    stop("The data provided should be in one of the following formats: ",
-         paste(allowed_formats, collapse = "|"))
+  if (!any(unlist((lapply(allowed_formats, function(arg) is(data, arg)))))) {
+    stop(
+      "The data provided should be in one of the following formats: ",
+      paste(allowed_formats, collapse = "|")
+    )
+  }
 
   stopifnot(is.character(geneset))
   stopifnot(length(geneset) > 0)
@@ -119,7 +124,6 @@ score_signature <- function(data,
   }
 
   if (is(data, "Seurat")) {
-
     stopifnot(is(data[[seurat_assay]], "Assay") | is(data[[seurat_assay]], "Assay5"))
     stopifnot(seurat_layer %in% Layers(data))
 
@@ -130,21 +134,21 @@ score_signature <- function(data,
     if (obj_version_major < 5) {
       message("Seurat object version is < 5.0.0 . It's suggested to run Seurat::UpdateSeuratObject first.")
       datam <- slot(data[[seurat_assay]], seurat_layer)
-
     } else {
       datam <- LayerData(data[[seurat_assay]], seurat_layer)
     }
-
   } else if (is(data, "SingleCellExperiment")) {
     stopifnot(sce_assay %in% assayNames(data))
 
     datam <- assay(data, sce_assay)
   } else if (is(data, "matrix") | is(data, "Matrix") | is(data, "DelayedMatrix")) {
     stopifnot(!is.null(dim(data)) & all(dim(data) > 0))
-    if (is(data, "matrix"))
+    if (is(data, "matrix")) {
       stopifnot(is.numeric(data))
-    if (is(data, "Matrix"))
-      stopifnot(is.numeric(data[1,1]))
+    }
+    if (is(data, "Matrix")) {
+      stopifnot(is.numeric(data[1, 1]))
+    }
 
     datam <- data
   }
@@ -174,8 +178,8 @@ score_signature <- function(data,
 #' provided data. It loads the gene signatures from an input source and computes
 #' the scores based on the expression levels of these genes in the data.
 #'
-#' @param data A numeric matrix, data frame, SeuratObject, or
-#' SingleCellExperiment with genes in rows and cells in columns,
+#' @param data A numeric matrix, data frame, `SeuratObject`, or
+#' `SingleCellExperiment` with genes in rows and cells in columns,
 #' representing the expression level of each gene in each cell.
 #' @param signatures_input A character string representing the file path to the
 #' TSV file containing the gene signatures, or a list where each element is a
@@ -219,13 +223,16 @@ score_all_signatures <- function(data,
                                  n_cpus = NULL) {
   ## Checks on arguments
   allowed_formats <- c("SingleCellExperiment", "Seurat", "matrix", "Matrix")
-  if (!any(unlist((lapply(allowed_formats, function(arg) is(data, arg))))))
-    stop("The data provided should be in one of the following formats: ",
-         paste(allowed_formats, collapse = "|"))
+  if (!any(unlist((lapply(allowed_formats, function(arg) is(data, arg)))))) {
+    stop(
+      "The data provided should be in one of the following formats: ",
+      paste(allowed_formats, collapse = "|")
+    )
+  }
 
   if (is.character(signatures_input)) {
     signatures <- load_signatures(signatures_input)
-  } else if (is.list(signatures_input)){
+  } else if (is.list(signatures_input)) {
     signatures <- signatures_input
   }
 
@@ -240,7 +247,7 @@ score_all_signatures <- function(data,
   stopifnot(length(sce_assay) == 1)
 
   stopifnot(is.character(score_mode))
-  score_mode <- match.arg(score_mode, c('raw', 'scaled', 'log', 'log2', 'log10'))
+  score_mode <- match.arg(score_mode, c("raw", "scaled", "log", "log2", "log10"))
 
   if (!is.null(n_cpus)) {
     stopifnot(is.numeric(n_cpus))
@@ -262,21 +269,21 @@ score_all_signatures <- function(data,
     if (obj_version_major < 5) {
       message("Seurat object version is < 5.0.0 . It's suggested to run Seurat::UpdateSeuratObject first.")
       datam <- slot(data[[seurat_assay]], seurat_layer)
-
     } else {
       datam <- LayerData(data[[seurat_assay]], seurat_layer)
     }
-
   } else if (is(data, "SingleCellExperiment")) {
     stopifnot(sce_assay %in% assayNames(data))
 
     datam <- assay(data, sce_assay)
   } else if (is(data, "matrix") | is(data, "Matrix") | is(data, "DelayedMatrix")) {
     stopifnot(!is.null(dim(data)) & all(dim(data) > 0))
-    if (is(data, "matrix"))
+    if (is(data, "matrix")) {
       stopifnot(is.numeric(data))
-    if (is(data, "Matrix"))
-      stopifnot(is.numeric(data[1,1]))
+    }
+    if (is(data, "Matrix")) {
+      stopifnot(is.numeric(data[1, 1]))
+    }
 
     datam <- data
   }
@@ -302,10 +309,13 @@ score_all_signatures <- function(data,
     names(signatures),
     function(name) {
       geneset <- signatures[[name]]
-      score_signature(data = datam,
-                      geneset = geneset,
-                      total_col_sums = tot)
-    }, BPPARAM = BiocParallel::MulticoreParam(n_cpus)
+      score_signature(
+        data = datam,
+        geneset = geneset,
+        total_col_sums = tot
+      )
+    },
+    BPPARAM = BiocParallel::MulticoreParam(n_cpus)
   )
 
   scores_df <- do.call(cbind, scores)
@@ -407,13 +417,16 @@ CIA_classify <- function(data,
                          unassigned_label = "Unassigned") {
   ## Checks on arguments
   allowed_formats <- c("SingleCellExperiment", "Seurat", "matrix", "Matrix")
-  if (!any(unlist((lapply(allowed_formats, function(arg) is(data, arg))))))
-    stop("The data provided should be in one of the following formats: ",
-         paste(allowed_formats, collapse = "|"))
+  if (!any(unlist((lapply(allowed_formats, function(arg) is(data, arg)))))) {
+    stop(
+      "The data provided should be in one of the following formats: ",
+      paste(allowed_formats, collapse = "|")
+    )
+  }
 
   if (is.character(signatures_input)) {
     signatures <- load_signatures(signatures_input)
-  } else if (is.list(signatures_input)){
+  } else if (is.list(signatures_input)) {
     signatures <- signatures_input
   }
 
@@ -424,7 +437,7 @@ CIA_classify <- function(data,
   }
 
   stopifnot(is.numeric(similarity_threshold))
-  stopifnot(similarity_threshold >=0 & similarity_threshold <= 1)
+  stopifnot(similarity_threshold >= 0 & similarity_threshold <= 1)
 
   stopifnot(is.character(seurat_assay))
   stopifnot(length(seurat_assay) == 1)
@@ -435,7 +448,7 @@ CIA_classify <- function(data,
   stopifnot(length(sce_assay) == 1)
 
   stopifnot(is.character(score_mode))
-  score_mode <- match.arg(score_mode, c('raw', 'scaled', 'log', 'log2', 'log10'))
+  score_mode <- match.arg(score_mode, c("raw", "scaled", "log", "log2", "log10"))
 
   stopifnot(is.character(column_name))
   stopifnot(length(column_name) > 0)
@@ -455,9 +468,10 @@ CIA_classify <- function(data,
   )
 
   labels <- apply(score_matrix, 1,
-                  get_label,
-                  similarity_threshold = similarity_threshold,
-                  unassigned_label = unassigned_label)
+    get_label,
+    similarity_threshold = similarity_threshold,
+    unassigned_label = unassigned_label
+  )
 
   end_time <- Sys.time() # Capture end time
 
@@ -474,14 +488,12 @@ CIA_classify <- function(data,
 
     return(data)
   } else if (is(data, "SingleCellExperiment")) {
-
     colData(data)[, column_name] <- as.data.frame(labels)
 
     message(column_name, "has been added in colData(data)", "\n")
 
     return(data)
   } else {
-
     return(as.factor(labels))
   }
 }

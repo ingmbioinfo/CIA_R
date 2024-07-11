@@ -57,18 +57,26 @@ compute_classification_metrics <- function(cells_info,
                                            ref_labels,
                                            unassigned_label = "") {
   stopifnot(is(cells_info, "DataFrame") || is.data.frame(cells_info))
-  stopifnot(is.character(classification_cols),
-            length(classification_cols) > 0)
-  stopifnot(is.character(ref_labels),
-            length(ref_labels) == 1)
-  stopifnot(is.character(unassigned_label),
-            length(unassigned_label) == 1)
+  stopifnot(
+    is.character(classification_cols),
+    length(classification_cols) > 0
+  )
+  stopifnot(
+    is.character(ref_labels),
+    length(ref_labels) == 1
+  )
+  stopifnot(
+    is.character(unassigned_label),
+    length(unassigned_label) == 1
+  )
 
-  if (!all(classification_cols %in% colnames(cells_info)))
+  if (!all(classification_cols %in% colnames(cells_info))) {
     stop("Some column names for the classification were not found in the `cells_info`")
+  }
 
-  if (!ref_labels %in% colnames(cells_info))
+  if (!ref_labels %in% colnames(cells_info)) {
     stop("The value specified for `ref_labels` was not found as a column name in the `cells_info`")
+  }
 
   report <- list()
 
@@ -156,41 +164,49 @@ grouped_classification_metrics <- function(cells_info,
                                            ref_labels,
                                            unassigned_label = "") {
   stopifnot(is(cells_info, "DataFrame") || is.data.frame(cells_info))
-  stopifnot(is.character(classification_col),
-            length(classification_col) > 0)
-  stopifnot(is.character(ref_labels),
-            length(ref_labels) == 1)
-  stopifnot(is.character(unassigned_label),
-            length(unassigned_label) == 1)
+  stopifnot(
+    is.character(classification_col),
+    length(classification_col) > 0
+  )
+  stopifnot(
+    is.character(ref_labels),
+    length(ref_labels) == 1
+  )
+  stopifnot(
+    is.character(unassigned_label),
+    length(unassigned_label) == 1
+  )
 
-  if (!all(classification_col %in% colnames(cells_info)))
+  if (!all(classification_col %in% colnames(cells_info))) {
     stop("Some column names for the classification were not found in the `cells_info`")
+  }
 
-  if (!ref_labels %in% colnames(cells_info))
+  if (!ref_labels %in% colnames(cells_info)) {
     stop("The value specified for `ref_labels` was not found as a column name in the `cells_info`")
+  }
 
 
-    TP_l <- TN_l <- FP_l <- FN_l <- UN_l<- numeric()
-    datam <- cells_info[cells_info[, classification_col] != unassigned_label, ]
+  TP_l <- TN_l <- FP_l <- FN_l <- UN_l <- numeric()
+  datam <- cells_info[cells_info[, classification_col] != unassigned_label, ]
 
-    for (i in unique(datam[[ref_labels]])) {
-      TP_l <- c(TP_l, sum(datam[[classification_col]] == i  & datam[[ref_labels]] == i, na.rm = TRUE))
-      TN_l <- c(TN_l, sum(datam[[classification_col]] != i & datam[[ref_labels]] != i, na.rm = TRUE))
-      FP_l <- c(FP_l, sum(datam[[classification_col]] == i & datam[[ref_labels]] != i, na.rm = TRUE))
-      FN_l <- c(FN_l, sum(datam[[classification_col]] != i & datam[[ref_labels]] == i, na.rm = TRUE))
-      UN_l <- c(UN_l, round(100 * sum(cells_info[[classification_col]]==unassigned_label & cells_info[[ref_labels]]==i)
-                    / sum(cells_info[[ref_labels]]==i), 2))
-    }
+  for (i in unique(datam[[ref_labels]])) {
+    TP_l <- c(TP_l, sum(datam[[classification_col]] == i & datam[[ref_labels]] == i, na.rm = TRUE))
+    TN_l <- c(TN_l, sum(datam[[classification_col]] != i & datam[[ref_labels]] != i, na.rm = TRUE))
+    FP_l <- c(FP_l, sum(datam[[classification_col]] == i & datam[[ref_labels]] != i, na.rm = TRUE))
+    FN_l <- c(FN_l, sum(datam[[classification_col]] != i & datam[[ref_labels]] == i, na.rm = TRUE))
+    UN_l <- c(UN_l, round(100 * sum(cells_info[[classification_col]] == unassigned_label & cells_info[[ref_labels]] == i)
+      / sum(cells_info[[ref_labels]] == i), 2))
+  }
 
-    SE <- TP_l / (TP_l + FN_l)
-    SP <- TN_l/ (TN_l + FP_l)
-    PR <- TP_l / (TP_l + FP_l)
-    ACC <- (TP_l + TN_l) / (TP_l + TN_l + FP_l + FN_l)
-    F1 <- 2 * TP_l / (2 * TP_l + FP_l + FN_l)
+  SE <- TP_l / (TP_l + FN_l)
+  SP <- TN_l / (TN_l + FP_l)
+  PR <- TP_l / (TP_l + FP_l)
+  ACC <- (TP_l + TN_l) / (TP_l + TN_l + FP_l + FN_l)
+  F1 <- 2 * TP_l / (2 * TP_l + FP_l + FN_l)
 
   report <- cbind(SE, SP, PR, ACC, F1, UN_l)
   report <- as.data.frame(report)
-  rownames(report)<- unique(datam[[ref_labels]])
+  rownames(report) <- unique(datam[[ref_labels]])
   colnames(report) <- c("SE", "SP", "PR", "ACC", "F1", "%UN")
   if (sum(report[, "%UN"]) == 0) {
     report <- report[, 1:5, drop = FALSE]
@@ -240,9 +256,10 @@ plot_group_composition <- function(df, ref_col,
   plot_data <- as.data.frame.matrix(pivot_table)
   plot_data <- cbind(Cluster = rownames(plot_data), plot_data)
   plot_data <- tidyr::pivot_longer(plot_data,
-                                   cols = -Cluster,
-                                   names_to = "Group",
-                                   values_to = "Count")
+    cols = -Cluster,
+    names_to = "Group",
+    values_to = "Count"
+  )
 
   # Calculate percentages if required
   if (plot_type == "percentage") {
@@ -262,10 +279,12 @@ plot_group_composition <- function(df, ref_col,
   }
 
   # Plotting
-  p <- ggplot(plot_data, aes(x = .data$Cluster,
-                             y = .data$Value,
-                             fill = .data$Group)) +
-    geom_bar(stat = 'identity', position = 'stack') +
+  p <- ggplot(plot_data, aes(
+    x = .data$Cluster,
+    y = .data$Value,
+    fill = .data$Group
+  )) +
+    geom_bar(stat = "identity", position = "stack") +
     coord_flip() +
     scale_fill_manual(values = palette) +
     labs(y = y_label, x = ref_col, fill = comp_col) +
@@ -318,7 +337,6 @@ group_composition <- function(data,
                               ref_obs,
                               columns_order = NULL,
                               color_map = "Greens") {
-
   # Extract data
   ref_data <- data[[ref_obs]]
   class_data <- data[[classification_obs]]
@@ -335,25 +353,30 @@ group_composition <- function(data,
   if (!is.null(columns_order)) {
     df <- df[, columns_order]
   }
-    df$rowname <- rownames(df)
-    df <- reshape(df,
-                  varying = list(names(df)[1:(dim(df)[2]-1)]),
-                  v.names = "Value",
-                  timevar = "Column",
-                  times = names(df)[1:(dim(df)[2]-1)], direction = "long")
+  df$rowname <- rownames(df)
+  df <- reshape(df,
+    varying = list(names(df)[1:(dim(df)[2] - 1)]),
+    v.names = "Value",
+    timevar = "Column",
+    times = names(df)[1:(dim(df)[2] - 1)], direction = "long"
+  )
 
   # Setting up the color palette
-  my_palette <- colorRampPalette(brewer.pal(9, color_map))  # Customize this part for different palettes
+  my_palette <- colorRampPalette(brewer.pal(9, color_map)) # Customize this part for different palettes
 
   # Plot heatmap
-  p <- ggplot(df, aes(x = .data$rowname,
-                      y = .data$Column,
-                      fill = .data$Value)) +
+  p <- ggplot(df, aes(
+    x = .data$rowname,
+    y = .data$Column,
+    fill = .data$Value
+  )) +
     geom_tile() +
-     geom_text(aes(label = round(Value, 2)), color = "black") +
+    geom_text(aes(label = round(Value, 2)), color = "black") +
     theme_minimal() +
-    labs(x = classification_obs,
-         y = ref_obs)+
+    labs(
+      x = classification_obs,
+      y = ref_obs
+    ) +
     scale_fill_gradientn(name = "", colors = my_palette(100))
 
   print(p)
@@ -409,25 +432,26 @@ grouped_distributions <- function(data,
   }))
   colnames(grouped_df) <- c(ref_obs, columns_obs)
   grouped_df <- as.data.frame(grouped_df)
-  for (i in 2:dim(grouped_df)[2]){
-      grouped_df[,i] <- as.numeric(grouped_df[,i])
-      }
+  for (i in 2:dim(grouped_df)[2]) {
+    grouped_df[, i] <- as.numeric(grouped_df[, i])
+  }
   if (!is.null(scale_medians)) {
-    if (scale_medians == 'row-wise') {
-      grouped_df[,columns_obs] <- t(apply(grouped_df[,columns_obs], 1, function(x) x / sum(x, na.rm = TRUE)))
-    } else if (scale_medians == 'column-wise') {
-      grouped_df[,columns_obs] <- sweep(
-        grouped_df[,columns_obs], 2, colSums(grouped_df[,columns_obs], na.rm = TRUE), `/`
+    if (scale_medians == "row-wise") {
+      grouped_df[, columns_obs] <- t(apply(grouped_df[, columns_obs], 1, function(x) x / sum(x, na.rm = TRUE)))
+    } else if (scale_medians == "column-wise") {
+      grouped_df[, columns_obs] <- sweep(
+        grouped_df[, columns_obs], 2, colSums(grouped_df[, columns_obs], na.rm = TRUE), `/`
       )
     }
   }
   # Convert to long format for plotting
   df_long <- melt(grouped_df,
-                  id.vars = ref_obs,
-                  variable.name = "Column",
-                  value.name = "Value")
+    id.vars = ref_obs,
+    variable.name = "Column",
+    value.name = "Value"
+  )
   # Wilcoxon test
-  print('Performing Wilcoxon test on each cell group ...')
+  print("Performing Wilcoxon test on each cell group ...")
   count <- 0
   subsets <- list()
 
@@ -442,34 +466,43 @@ grouped_distributions <- function(data,
       if (all(subset_data[[comb[1]]] == 0) || all(subset_data[[comb[2]]] == 0)) {
         next
       }
-      result <- tryCatch({
-        wilcox.test(subset_data[[comb[1]]], subset_data[[comb[2]]],
-                    paired = TRUE, alternative = "two.sided")
-      }, warning = function(w) {
-        return(NULL)
-      }, error = function(e) {
-        return(NULL)
-      })
+      result <- tryCatch(
+        {
+          wilcox.test(subset_data[[comb[1]]], subset_data[[comb[2]]],
+            paired = TRUE, alternative = "two.sided"
+          )
+        },
+        warning = function(w) {
+          return(NULL)
+        },
+        error = function(e) {
+          return(NULL)
+        }
+      )
 
       if (!is.null(result) && !is.na(result$p.value) && (result$p.value >= 0.01) && (comb[1] == names(medians)[pos])) {
         count <- count + 1
-        print(paste('WARNING in cell group', group, ':', comb[1],
-                    'values are not significantly different from', comb[2], 'values.'))
-        print(paste('(p=', result$p.value, ')'))
+        print(paste(
+          "WARNING in cell group", group, ":", comb[1],
+          "values are not significantly different from", comb[2], "values."
+        ))
+        print(paste("(p=", result$p.value, ")"))
       }
     }
   }
 
   if (count == 0) {
-    print('For each cell group there is a distribution significantly higher than the others (p<0.01)')
+    print("For each cell group there is a distribution significantly higher than the others (p<0.01)")
   }
 
   # Mann-Whitney U test
-  print('Performing Mann-Whitney U test on each selected AnnData.obs column ...')
+  print("Performing Mann-Whitney U test on each selected AnnData.obs column ...")
   count <- 0
   for (column in columns_obs) {
-    sign <- lapply(unique_groups,
-                   function(group) data[data[[ref_obs]] == group, column])
+    sign <- lapply(
+      unique_groups,
+      function(group) data[data[[ref_obs]] == group, column]
+    )
     names(sign) <- unique_groups
     sign_medians <- sapply(sign, median, na.rm = TRUE)
     pos <- which.max(sign_medians)
@@ -483,44 +516,55 @@ grouped_distributions <- function(data,
         next
       }
 
-      result <- tryCatch({
-        wilcox.test(group1_values, group2_values,
-                    alternative = "two.sided", paired = FALSE)
-      }, warning = function(w) {
-        return(NULL)
-      }, error = function(e) {
-        return(NULL)
-      })
+      result <- tryCatch(
+        {
+          wilcox.test(group1_values, group2_values,
+            alternative = "two.sided", paired = FALSE
+          )
+        },
+        warning = function(w) {
+          return(NULL)
+        },
+        error = function(e) {
+          return(NULL)
+        }
+      )
 
       if (!is.null(result) && !is.na(result$p.value) && (result$p.value >= 0.01) && (comb[1] == names(sign_medians)[pos])) {
         count <- count + 1
-        print(paste('WARNING in', column, 'distribution: values in', comb[1], 'group are not significantly different from values in', comb[2], 'group'))
-        print(paste('(p=', result$p.value, ')'))
+        print(paste("WARNING in", column, "distribution: values in", comb[1], "group are not significantly different from values in", comb[2], "group"))
+        print(paste("(p=", result$p.value, ")"))
       }
     }
   }
 
   if (count == 0) {
-    print('For each distribution, there is only a cell group in which values are higher with respect to all the other groups (p<0.01)')
+    print("For each distribution, there is only a cell group in which values are higher with respect to all the other groups (p<0.01)")
   }
 
   # Plotting
   # If the columns are not already factors, convert them
-  df_long$ref <- as.factor(df_long[,ref_obs])
+  df_long$ref <- as.factor(df_long[, ref_obs])
   df_long$Column <- as.factor(df_long$Column)
   df_long$Value <- as.numeric(df_long$Value)
 
-  p <- ggplot(df_long, aes(x = .data$ref,
-                           y = .data$Column,
-                           fill = .data$Value)) +
+  p <- ggplot(df_long, aes(
+    x = .data$ref,
+    y = .data$Column,
+    fill = .data$Value
+  )) +
     geom_tile() +
     geom_text(aes(label = round(Value, 2)), color = "black") +
-    scale_fill_gradientn(name = "",
-                         colors = colorRampPalette(brewer.pal(9, color_map))(100)) +
+    scale_fill_gradientn(
+      name = "",
+      colors = colorRampPalette(brewer.pal(9, color_map))(100)
+    ) +
     theme_minimal() +
-    labs(title = "Median score values",
-         x = "Signatures",
-         y = ref_obs)
+    labs(
+      title = "Median score values",
+      x = "Signatures",
+      y = ref_obs
+    )
 
   # Save or display plot
   if (!is.null(save)) {

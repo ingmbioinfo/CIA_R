@@ -24,7 +24,6 @@
 #' @export
 signatures_similarity <- function(signatures_dict,
                                   metric_name = "jaccard") {
-
   metric_name <- match.arg(metric_name, c("jaccard", "percentage"))
 
   signature_names <- names(signatures_dict)
