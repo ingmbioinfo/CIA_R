@@ -12,6 +12,8 @@
 #' @return A data frame containing the similarity of each pair of signatures,
 #' with signatures as both rows and columns.
 #'
+#' @export
+#'
 #' @examples
 #' signatures <- list(
 #'   "signature1" = c("gene1", "gene2", "gene3"),
@@ -20,8 +22,6 @@
 #' )
 #' similarity <- signatures_similarity(signatures, metric_name = "jaccard")
 #' print(similarity)
-#'
-#' @export
 signatures_similarity <- function(signatures_dict,
                                   metric_name = "jaccard") {
   metric_name <- match.arg(metric_name, c("jaccard", "percentage"))
