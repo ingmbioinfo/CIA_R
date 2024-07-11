@@ -340,7 +340,7 @@ compute_classification_metrics(SO@meta.data, classification_cols = cols, ref_lab
 With Seurat, it is possible to extract signatures for use with CIA to classify other datasets in few steps:
 ```{r}
 Idents(SO)<- SO@meta.data$celltype
-pbmc_degs <- FindAllMarkers(SO, logfc.threshold = 0.5, min.pct = 0.3, only.pos = T)
+pbmc_degs <- FindAllMarkers(SO, logfc.threshold = 0.5, min.pct = 0.3, only.pos = TRUE)
 pbmc_degs<- pbmc_degs[pbmc_degs$p_val < 0.01,]
 pbmc_gmt <- list()
 
