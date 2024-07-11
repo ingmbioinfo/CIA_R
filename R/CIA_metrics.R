@@ -239,7 +239,11 @@ grouped_classification_metrics <- function(cells_info,
 #'
 #' @export
 #'
-plot_group_composition <- function(df, ref_col,
+#' @examples
+#' # TODO
+#'
+plot_group_composition <- function(df,
+                                   ref_col,
                                    comp_col,
                                    plot_type = "percentage",
                                    palette = RColorBrewer::brewer.pal(8, "Set3"),
@@ -307,20 +311,15 @@ plot_group_composition <- function(df, ref_col,
 #' data.
 #' @param classification_obs Character string, the name of the column in
 #' \code{data} that contains the classification data.
-#' @param ref_obs Character string, the name of the column in \code{data} that
+#' @param ref_obs Character string, the name of the column in `data` that
 #' contains the reference group data.
 #' @param columns_order Optional; a character vector specifying the order of
 #' columns in the heatmap.
 #' @param color_map Optional; character string specifying the color palette to
-#' use, defaults to 'Greens'. It should be one of the color palettes supported
-#' by \code{RColorBrewer}.
+#' use, defaults to "Greens". It should be one of the color palettes supported
+#' by `RColorBrewer`.
 #'
 #' @return A ggplot object representing the heatmap.
-#'
-#' @examples
-#' ## Assuming 'data' is a data frame with columns 'Group' and 'Category'
-#' # group_composition(data, 'Category', 'Group')
-#' # TODO
 #'
 #' @importFrom ggplot2 aes coord_flip geom_bar geom_text geom_tile ggplot
 #' ggsave labs scale_fill_gradientn scale_fill_manual theme theme_minimal
@@ -332,6 +331,11 @@ plot_group_composition <- function(df, ref_col,
 #' @importFrom stats reshape
 #'
 #' @export
+#'
+#' @examples
+#' ## Assuming 'data' is a data frame with columns 'Group' and 'Category'
+#' # group_composition(data, 'Category', 'Group')
+#' # TODO
 group_composition <- function(data,
                               classification_obs,
                               ref_obs,
@@ -391,12 +395,12 @@ group_composition <- function(data,
 #' The Mann-Whitney U test checks if each signature has the highest score values
 #' in the corresponding group compared to all other groups.
 #'
-#' @param data DataFrame containing the cell data.
-#' @param columns_obs Character vector. Column names in the dataframe where the
+#' @param data A `data.frame` object containing the cell data.
+#' @param columns_obs Character vector. Column names in the data.frame where the
 #' values of interest are stored.
-#' @param ref_obs Character. Column name in the dataframe where the cell group
+#' @param ref_obs Character. Column name in the data.frame where the cell group
 #' labels are stored.
-#' @param color_map Character. Colormap for the heatmap. Defaults to 'Reds'.
+#' @param color_map Character. Colormap for the heatmap. Defaults to "Reds".
 #' @param scale_medians Character. How to scale the median values in the heatmap.
 #' Options: 'row-wise', 'column-wise', or NULL. Defaults to NULL.
 #' @param save Character. Filename to save the heatmap. If provided, saves the
@@ -421,7 +425,7 @@ grouped_distributions <- function(data,
                                   color_map = "Reds",
                                   scale_medians = NULL,
                                   save = NULL) {
-  # Compute median values for each group
+  ## Compute median values for each group
   data[[ref_obs]] <- as.factor(data[[ref_obs]])
   unique_groups <- levels(data[[ref_obs]])
   grouped_df <- do.call(rbind, lapply(unique_groups, function(group) {
@@ -443,13 +447,15 @@ grouped_distributions <- function(data,
       )
     }
   }
-  # Convert to long format for plotting
+
+  ## Convert to long format for plotting
   df_long <- melt(grouped_df,
     id.vars = ref_obs,
     variable.name = "Column",
     value.name = "Value"
   )
-  # Wilcoxon test
+
+  ## Wilcoxon test
   message("Performing Wilcoxon test on each cell group ...")
   count <- 0
   subsets <- list()
@@ -514,7 +520,10 @@ grouped_distributions <- function(data,
       group1_values <- sign[[comb[1]]]
       group2_values <- sign[[comb[2]]]
 
-      if (all(is.na(group1_values)) || all(is.na(group2_values)) || all(group1_values == 0) || all(group2_values == 0)) {
+      if (all(is.na(group1_values)) ||
+          all(is.na(group2_values)) ||
+          all(group1_values == 0) ||
+          all(group2_values == 0)) {
         next
       }
 
@@ -547,8 +556,8 @@ grouped_distributions <- function(data,
     message("For each distribution, there is only a cell group in which values are higher with respect to all the other groups (p<0.01)")
   }
 
-  # Plotting
-  # If the columns are not already factors, convert them
+  ## Plotting
+  ## If the columns are not already factors, convert them
   df_long$ref <- as.factor(df_long[, ref_obs])
   df_long$Column <- as.factor(df_long$Column)
   df_long$Value <- as.numeric(df_long$Value)
@@ -571,7 +580,7 @@ grouped_distributions <- function(data,
       y = ref_obs
     )
 
-  # Save or display plot
+  ## Save or display plot
   if (!is.null(save)) {
     if (!dir.exists("figures")) dir.create("figures")
     ggsave(paste0("figures/CIA_", save), plot = p, width = 10, height = 8)
