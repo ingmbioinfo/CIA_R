@@ -17,6 +17,7 @@
 #' @export
 #'
 #' @importFrom utils head tail
+#' @importFrom methods is
 #'
 #' @examples
 #' gmt_file <- system.file("extdata", "azimuth_human_motor_cortex.gmt",
@@ -81,13 +82,15 @@ load_signatures <- function(signatures_input, description_field_available = TRUE
 #' @return Vector of signature scores for each column (cell) in the data.
 #'
 #' @importFrom sparseMatrixStats colSums2
-#' @importFrom methods slot
+#' @importFrom methods slot is
 #' @importFrom SeuratObject Layers LayerData Version
+#' @importFrom SummarizedExperiment assay assayNames colData
 #'
 #' @export
 #'
 #' @examples
 #' ## TODO example
+#'
 score_signature <- function(data,
                             geneset,
                             seurat_assay = "RNA",
@@ -198,6 +201,7 @@ score_signature <- function(data,
 #' @importFrom sparseMatrixStats colSums2
 #' @importFrom SummarizedExperiment assay colData<- colData assayNames
 #' @importFrom SingleCellExperiment SingleCellExperiment counts logcounts
+#' @importFrom methods is
 #'
 #' @export
 #'

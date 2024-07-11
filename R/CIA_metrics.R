@@ -36,6 +36,8 @@
 #' * the percentage of unassigned cells (%UN) for each classification method,
 #' compared to the reference method.
 #'
+#' @importFrom methods is
+#'
 #' @export
 #'
 #' @examples
@@ -142,6 +144,8 @@ compute_classification_metrics <- function(cells_info,
 #' * the percentage of unassigned cells (%UN) for each classification method,
 #' compared to the reference method.
 #'
+#' @importFrom methods is
+#'
 #' @export
 #'
 grouped_classification_metrics <- function(cells_info,
@@ -215,6 +219,7 @@ grouped_classification_metrics <- function(cells_info,
 #' @importFrom dplyr group_by mutate ungroup
 #'
 #' @export
+#'
 plot_group_composition <- function(df, ref_col,
                                    comp_col,
                                    plot_type = "percentage",
@@ -296,13 +301,15 @@ plot_group_composition <- function(df, ref_col,
 #' # group_composition(data, 'Category', 'Group')
 #' # TODO
 #'
-#' @import ggplot2 tidyr RColorBrewer
+#' @importFrom ggplot2 aes coord_flip geom_bar geom_text geom_tile ggplot
+#' ggsave labs scale_fill_gradientn scale_fill_manual theme theme_minimal
+#' @importFrom tidyr pivot_longer
+#' @importFrom RColorBrewer brewer.pal
 #'
 #' @importFrom grDevices colorRampPalette
 #' @importFrom stats reshape
 #'
 #' @export
-
 group_composition <- function(data,
                               classification_obs,
                               ref_obs,
@@ -377,6 +384,7 @@ group_composition <- function(data,
 #' @importFrom reshape2 melt
 #' @importFrom stats wilcox.test median
 #' @importFrom utils combn
+#' @importFrom RColorBrewer brewer.pal
 #'
 #' @examples
 #' # TODO

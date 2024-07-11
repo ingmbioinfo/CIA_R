@@ -26,10 +26,11 @@
 #' sce_obj <- celltypist_majority_vote(sce_obj, classification_obs = "predicted_labels", min_prop = 0.5)
 #' }
 #'
-#' @import Seurat
-#' @import SingleCellExperiment
-#' @import igraph
-#' @importFrom S4Vectors DataFrame
+#' @importFrom SummarizedExperiment colData
+#' @importFrom igraph graph_from_adjacency_matrix cluster_leiden
+#' @importFrom S4Vectors DataFrame metadata
+#' @importFrom methods is
+#'
 #' @export
 celltypist_majority_vote <- function(data, classification_obs, groups_obs = NULL, graph = "RNA_snn", min_prop = 0, unassigned_label = 'Unassigned', res=0.05) {
   if (!is(data, "Seurat") && !is(data, "SingleCellExperiment")) {
