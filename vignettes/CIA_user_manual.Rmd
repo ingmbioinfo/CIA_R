@@ -105,7 +105,7 @@ This tool offers several advantages:
 ## CIA input
 Our method requires as input a **named list of gene signatures** (e.g. cell type, cell state ...) and a scRNA-seq data in **[SeuratObject](https://rdrr.io/cran/SeuratObject/) or [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html) format**.
 ### Gene signatures
-In our study, we used the differentially expressed genes (DEGs) from Hao et al., 2021's [[1]](https://www.sciencedirect.com/science/article/pii/S0092867421005833) **PBMC atlas** as signature markers. The original clusters in this dataset were annotated using an integrated analysis combining RNA and protein data, ensuring the **RNA-based gene lists accurately represent specific cell types**. We focused on the broadest annotation level for clearer visualization and easier cross-dataset comparison.
+In our study, we used the differentially expressed genes (DEGs) from Hao *et al.*'s **PBMC atlas** as signature markers [@Hao2021]. The original clusters in this dataset were annotated using an integrated analysis combining RNA and protein data, ensuring the **RNA-based gene lists accurately represent specific cell types**. We focused on the broadest annotation level for clearer visualization and easier cross-dataset comparison.
 **We omitted the 'other T'** label from our analysis, as it includes cell types not present in the PBMC3K dataset, making validation impossible. The **'other'** cluster, predominantly platelets, **was relabeled as 'Platelet'** for clarity.
 N.B. - DEGs have been filtered to create concise and targeted gene lists: a log2 fold change greater than 1.5, a minimum average expression level of 0.25, a z-score above 5, and expression in at least 40% of the cells within each cluster.
 ```{r}
@@ -124,7 +124,7 @@ signatures_similarity(gmt, metric_name = "jaccard")
 ```
 
 ### Data input
-In order **to evaluate both the consistency** of our method **and the performances of classification**, **we used** the PMBC atlas **DEGs to automatically annotate** the [PBMC3K](https://scanpy.readthedocs.io/en/stable/generated/scanpy.datasets.pbmc3k.html) dataset from *Satija et al., 2015* [[2]](https://www.nature.com/articles/nbt.3192). This dataset was annotated by the authors relying on clustering and marker genes expression inspection and it is widely used as reference in the scientific community.
+In order **to evaluate both the consistency** of our method **and the performances of classification**, **we used** the PMBC atlas **DEGs to automatically annotate** the [PBMC3K](https://scanpy.readthedocs.io/en/stable/generated/scanpy.datasets.pbmc3k.html) dataset from [@Satija2015]. This dataset was annotated by the authors relying on clustering and marker genes expression inspection and it is widely used as reference in the scientific community.
 **We classified** this dataset **independently from the already present annotation**, whose **cell labels were used as ground truth** to evaluate our classification perfomances with different modalities.
 
 Our method support both SeuratObject (SO) an SingleCellExperiment (SCE) and it is tested on expression data previously scaled to 10000 and Log-normalized, for this reason we strongly suggest to normalize your count matrix as follows:
@@ -162,7 +162,7 @@ DimPlot(SO, group.by = "seurat_annotations") | DimPlot(SO,
 ```
 
 ## Signature score
-The `score_signature` function is **based on the "gene signature score"** calculation method presented in *Della Chiara, Gervasoni, Fakiola, Godano et al., 2021* [[3]](https://www.nature.com/articles/s41467-021-22544-y). The "gene signature score" of a signature **S** in a cell **C** is defined as follows:
+The `score_signature` function is **based on the "gene signature score"** calculation method presented in [@DellaChiara2021] *Della Chiara, Gervasoni, Fakiola, Godano et al., 2021* [[3]](https://www.nature.com/articles/s41467-021-22544-y). The "gene signature score" of a signature **S** in a cell **C** is defined as follows:
 
 $${\bf{GSS(C)}}=\frac{n}{L}\frac{\sum_{i=1}^n {\bf{X}}_i\: for\: {\bf{G}}_i \in S}{\sum_{j=1}^m {\bf{X}}_j\: for\: {\bf{G}}_j \in G}$$
 
@@ -375,7 +375,7 @@ FeaturePlot(object = SO, features = "GOBP_PHAGOCYTOSIS", cols = c("lightgrey", "
 ```
 
 ### Majority voting
-The **Celltypist** classifier [[4]](https://www.science.org/doi/10.1126/science.abl5197) features an intriguing process called **'majority voting,'** which refines cell identities within subclusters following an **over-clustering step**. In essence, **within each subcluster**, the **label of the predominant cell type is applied** to all cells in that group. While this step extends beyond the standard CIA workflow, we aimed to compare classification results under optimal conditions. To this end, we developed the `celltypist_majority_vote` function (**external module**) to emulate the 'majority voting' mechanism.
+The **Celltypist** classifier [@DomnguezConde2022] features an intriguing process called **'majority voting,'** which refines cell identities within subclusters following an **over-clustering step**. In essence, **within each subcluster**, the **label of the predominant cell type is applied** to all cells in that group. While this step extends beyond the standard CIA workflow, we aimed to compare classification results under optimal conditions. To this end, we developed the `celltypist_majority_vote` function (**external module**) to emulate the 'majority voting' mechanism.
 
 N.B.: Due to a different implementation of the Leiden algorithm, results may be slightly different from the Python version of CIA.
 ```{r}
@@ -440,15 +440,5 @@ sessionInfo()
 
 
 
-## References
+# References
 
-1. Hao, Y., et al. (2021). Integrated analysis of multimodal single-cell data. *Cell*, 184(13), 3573-3587.e29. [https://www.sciencedirect.com/science/article/pii/S0092867421005833](https://www.sciencedirect.com/science/article/pii/S0092867421005833)
-
-
-2. Satija, R., Farrell, J. A., Gennert, D., Schier, A. F., & Regev, A. (2015). Spatial reconstruction of single-cell gene expression data. *Nature Biotechnology*, 33, 495–502. [https://www.nature.com/articles/nbt.3192](https://www.nature.com/articles/nbt.3192)
-
-
-3. Della Chiara, G., et al. (2021). Gene signature extraction and cell identity recognition at the single-cell level with Cell ID. *Nature Communications*, 12, 2262. [https://www.nature.com/articles/s41467-021-22544-y](https://www.nature.com/articles/s41467-021-22544-y)
-
-
-4. Celltypist Classifier. (2022). Cell type annotation for single-cell RNA-seq data with CellTypist. *Science*, 374, eabj8222. [https://www.science.org/doi/10.1126/science.abl5197](https://www.science.org/doi/10.1126/science.abl5197)
