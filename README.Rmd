@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 # CIA
 
 <!-- badges: start -->
-  [![R-CMD-check](https://github.com/TODO/TODO/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/TODO/TODO/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/ingmbioinfo/CIA_R/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ingmbioinfo/CIA_R/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of `CIA` is to TODO... 
