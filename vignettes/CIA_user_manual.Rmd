@@ -55,45 +55,17 @@ options(width = 100)
 
 <hr>
 
+# Introduction {#introduction}
 
-# CLUSTER INDEPENDENT ANNOTATION
-
-```{r}
-library(Seurat)
-library(Matrix)
-library(sparseMatrixStats)
-library(SingleCellExperiment)
-library(igraph)
-library(CIA)
-```
-
-## Index
-
-1. [Introduction](#introduction)
-2. [CIA input](#CIA-input)
-   - [Gene signatures](#Gene-signatures)
-   - [Data input](#Data-input)
-3. [Signature score](#Signature-score)
-   - [Default score](#Default-score)
-   - [Scaled score](#Scaled-score)
-4. [Signature-based classification](#Signature-based-classification)
-   - [Default classification](#Default-classification)
-   - [Classification with similarity threshold](#Classification-with-similarity-threshold)
-5. [Classification performance evaluation](#Classification-performance-evaluation)
-6. [Tips](#Tips)
-   - [Direct inspection of MSigDB signatures](#Direct-inspection-of-MSigDB-signatures)
-   - [Majority voting](#Majority-voting)
-   - [Extraction of signatures from Differentially Expressed Genes](#Extraction-of-signatures-from-DEGs)
-   - [Alternative representation of cell group composition](#Alternative-representation-of-cell-group-composition)
-7. [Conclusion](#Conclusion)
-8. [References](#References)
-## Introduction
-**Cluster Independent Annotation** (**CIA**) is a classification method designed to **assist researchers during the cell annotation step** of scRNA-seq experiments. Given gene signatures as input, this classifier **computes a signature score for each cell** and **compares the score values** to assign a label to each single cell. 
+**Cluster Independent Annotation** (**CIA**) is a classification method designed to **assist researchers during the cell annotation step** of scRNA-seq experiments. 
+Given gene signatures as input, this classifier **computes a signature score for each cell** and **compares the score values** to assign a label to each single cell. 
 
 This tool offers several advantages:
 
 -	It synthesizes the information of **an entire signature expression into a single score value**, avoiding the tedious inspection of individual marker genes from lengthy differentially expressed genes (DEGs) lists, which may not be cluster-specific individually.
--   It makes possible the exploration of new signatures derived from your research for which training data for machine learning algorithms may not yet exist.
+
+- It makes possible the exploration of new signatures derived from your research for which training data for machine learning algorithms may not yet exist.
+
 -	It provides a classification for each cell that is **completely independent of clustering**, allowing it to be used alongside a clustering method to set a proper resolution value, thus yielding coherent and easily annotated cell groups.
 
 -	**It's very fast**: it can classify a large dataset (hundreds of thousands of cells) in just a few seconds since **we have implemented the ability to parallelize processes**.
@@ -102,13 +74,51 @@ This tool offers several advantages:
 
 -	By normalizing for the gene signature length, it facilitates the **comparison of gene sets of varying lengths**, ranging **from tens to thousands of genes**.
 
-## CIA input
+# Getting started {#gettingstarted}
+
+To install this package, start R and enter:
+
+```{r install, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("CIA")
+```
+
+Once installed, the package can be loaded and attached to your current workspace as follows:
+
+```{r loadlib, eval = TRUE}
+library("CIA")
+```
+
+# CIA input
+
 Our method requires as input a **named list of gene signatures** (e.g. cell type, cell state ...) and a scRNA-seq data in **[SeuratObject](https://rdrr.io/cran/SeuratObject/) or [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html) format**.
-### Gene signatures
-In our study, we used the differentially expressed genes (DEGs) from Hao *et al.*'s **PBMC atlas** as signature markers [@Hao2021]. The original clusters in this dataset were annotated using an integrated analysis combining RNA and protein data, ensuring the **RNA-based gene lists accurately represent specific cell types**. We focused on the broadest annotation level for clearer visualization and easier cross-dataset comparison.
-**We omitted the 'other T'** label from our analysis, as it includes cell types not present in the PBMC3K dataset, making validation impossible. The **'other'** cluster, predominantly platelets, **was relabeled as 'Platelet'** for clarity.
+
+## Gene signatures
+
+In our study, we used the differentially expressed genes (DEGs) from Hao *et al.*'s **PBMC atlas** as signature markers [@Hao2021]. 
+The original clusters in this dataset were annotated using an integrated analysis combining RNA and protein data, ensuring the **RNA-based gene lists accurately represent specific cell types**. 
+We focused on the broadest annotation level for clearer visualization and easier cross-dataset comparison.
+**We omitted the 'other T'** label from our analysis, as it includes cell types not present in the PBMC3K dataset, making validation impossible. 
+The **'other'** cluster, predominantly platelets, **was relabeled as 'Platelet'** for clarity.  
 N.B. - DEGs have been filtered to create concise and targeted gene lists: a log2 fold change greater than 1.5, a minimum average expression level of 0.25, a z-score above 5, and expression in at least 40% of the cells within each cluster.
-```{r}
+
+We start our analysis by loading the required packages:
+
+```{r loadpkgs}
+library("CIA")
+library("SingleCellExperiment")
+library("Seurat")
+library("Matrix")
+library("sparseMatrixStats")
+library("igraph")
+library("patchwork")
+```
+
+Subsequently, we load the `atlas.gmt` file into our environment and inspect it briefly.
+
+```{r loadgmt}
 # to load the gene signatures
 gmt <- load_signatures(system.file("extdata", "atlas.gmt", package = "CIA"))
 # load_signatures can load both dictionaries or gmt files by providing both file_paths or URLs
@@ -118,25 +128,31 @@ for (i in names(gmt)) {
 }
 ```
 
-```{r}
-# to check gene lists similarity (Jaccard Index)
+The `signatures_similarity()` function is used to check the similarity among the gene lists (using the Jaccard Index by default)
+
+```{r similgmt}
 signatures_similarity(gmt, metric_name = "jaccard")
 ```
 
-### Data input
-In order **to evaluate both the consistency** of our method **and the performances of classification**, **we used** the PMBC atlas **DEGs to automatically annotate** the [PBMC3K](https://scanpy.readthedocs.io/en/stable/generated/scanpy.datasets.pbmc3k.html) dataset from [@Satija2015]. This dataset was annotated by the authors relying on clustering and marker genes expression inspection and it is widely used as reference in the scientific community.
-**We classified** this dataset **independently from the already present annotation**, whose **cell labels were used as ground truth** to evaluate our classification perfomances with different modalities.
+## Data input
 
-Our method support both SeuratObject (SO) an SingleCellExperiment (SCE) and it is tested on expression data previously scaled to 10000 and Log-normalized, for this reason we strongly suggest to normalize your count matrix as follows:
-#### SeuratObject
-```{r}
+In order **to evaluate both the consistency** of our method **and the performances of classification**, **we used** the PMBC atlas **DEGs to automatically annotate** the [PBMC3K](https://scanpy.readthedocs.io/en/stable/generated/scanpy.datasets.pbmc3k.html) dataset from [@Satija2015]. 
+This dataset was annotated by the authors relying on clustering and marker genes expression inspection and it is widely used as reference in the scientific community.
+**We classified** this dataset **independently from the already present annotation**, whose **cell labels were used as ground truth** to evaluate our classification performances with different modalities.
+
+Our method support both SeuratObject (SO) an SingleCellExperiment (SCE), and it is tested on expression data previously scaled to 10000 and Log-normalized, for this reason we strongly suggest to normalize your count matrix as follows.
+
+For a `Seurat` object:
+
+```{r loadso}
 SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
 SO <- NormalizeData(SO, normalization.method = "LogNormalize", scale.factor = 10000) # to add "data" layer
 SO
 ```
 
-#### SingleCellExperiment
-```{r}
+For a `SingleCellExperiment` object, we can use
+ 
+```{r loadsce}
 SCE <- as.SingleCellExperiment(SO)
 library_sizes <- colSums(assay(SCE, "counts"))
 normalized_counts <- sweep(assay(SCE, "counts"), 2, library_sizes, FUN = "/") * 10000
@@ -144,25 +160,24 @@ assay(SCE, "logcounts") <- log1p(normalized_counts) # to add 'logcounts' assay
 SCE
 ```
 
-```{r}
+```{r graphsce}
 SCE@metadata$graphs[["RNA_snn"]] <- SO@graphs$RNA_snn
 ```
 
 For the classification of the test dataset **we renamed and merged some clusters** in order to make easier the comparison and the visualization of results.
 In particular, ‘CD14+ Monocytes' and 'FCGR3A+ Monocytes' clusters were merged into ‘Mono’. 
-```{r}
-options(repr.plot.width = 14, repr.plot.height = 7)
-DimPlot(SO, group.by = "seurat_annotations") | DimPlot(SO,
-  group.by = "celltype",
-  cols = c(
-    "#fb9a99", "#b2df8a", "#1f78b4",
-    "#d62728", "#6fadfd", "#E4D00A", "#FF5733"
+
+```{r firstumap, fig.width=14, fig.height=7}
+DimPlot(SO, group.by = "seurat_annotations") | 
+  DimPlot(SO, group.by = "celltype", cols = c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728",
+                                              "#6fadfd", "#E4D00A", "#FF5733")
   )
-)
 ```
 
-## Signature score
-The `score_signature` function is **based on the "gene signature score"** calculation method presented in [@DellaChiara2021] *Della Chiara, Gervasoni, Fakiola, Godano et al., 2021* [[3]](https://www.nature.com/articles/s41467-021-22544-y). The "gene signature score" of a signature **S** in a cell **C** is defined as follows:
+# Signature score
+
+The `score_signature()` function is **based on the "gene signature score"** calculation method presented in [@DellaChiara2021] *Della Chiara, Gervasoni, Fakiola, Godano et al., 2021* [[3]](https://www.nature.com/articles/s41467-021-22544-y).  
+The "gene signature score" of a signature **S** in a cell **C** is defined as follows:
 
 $${\bf{GSS(C)}}=\frac{n}{L}\frac{\sum_{i=1}^n {\bf{X}}_i\: for\: {\bf{G}}_i \in S}{\sum_{j=1}^m {\bf{X}}_j\: for\: {\bf{G}}_j \in G}$$
 
@@ -171,104 +186,140 @@ Where:
 - **G** = {𝐺₁, 𝐺₂, …, 𝐺ₘ} is the list of length **m** that contains all the gene symbols of cell **C**;
 - **S** = {𝐺₁, 𝐺₂, …, 𝐺ₗ} is the list of gene symbols of length **L** that compose the signature;
 - **X** = {𝑋₁, 𝑋₂, …, 𝑋ₘ} is the vector of gene expression values for genes in list **G**.
+
 With this score it is possible to **condensate in a single value both the proportion of expressed signature genes and their overall expression**, enabling researchers to easily study whole signatures expression at single cell level. 
-Here we show how to compute the scores of a gene signature for both a SeuratObject and a SingleCellExperiment:
-```{r}
+
+Here we show how to compute the scores of a gene signature ("B cells", named `B` in the `gmt` object), for both a SeuratObject and a SingleCellExperiment:
+
+```{r bcellsscores}
+# compute the signature scores of B cells gene signature for each cell
 head(score_signature(data = SO, geneset = gmt[["B"]]))
-# compute the signature scores of B cells gene signature for each cell
-```
 
-```{r}
 head(score_signature(data = SCE, geneset = gmt[["B"]]))
-# compute the signature scores of B cells gene signature for each cell
 ```
 
-### Default score
-To compute the signature scores of each signature in parallel, we implemented the `score_all_signatures` function.
+## Default score
+
+To compute the signature scores of each signature in parallel, we implemented the `score_all_signatures()` function.
 The function calls `load_signatures`, allowing it to support both **named lists** and canonical **gmt files** (tab separated and without header), which can be provided as either a **filepath** or a **URL**.
+
 For **SeuratObjects**, it is possible to select the matrix on which to compute the scores by setting the `seurat_assay` and `seurat_layer` parameters. By default, these are set to `RNA` and `data`, respectively.
 
-```{r}
+```{r so-scoreall}
 SO <- score_all_signatures(SO,
-  signatures_input = gmt,
-  seurat_assay = "RNA", seurat_layer = "data", n_cpus = 2
-)
-```
+                           signatures_input = gmt,
+                           seurat_assay = "RNA", 
+                           seurat_layer = "data", 
+                           n_cpus = 2)
 
-```{r}
 head(SO@meta.data[, names(gmt)])
 ```
 
 For **SingleCellExperiment** objects, the same can be done by setting the `sce_assay` parameter, which is set to `logcounts` by default.
-```{r}
-SCE <- score_all_signatures(SCE, signatures_input = gmt, sce_assay = "logcounts", n_cpus = 2)
-```
+```{r sce-scoreall}
+SCE <- score_all_signatures(SCE, 
+                            signatures_input = gmt, 
+                            sce_assay = "logcounts", 
+                            n_cpus = 2)
 
-```{r}
 head(colData(SCE)[, names(gmt)])
 ```
 
-From this point in the tutorial, **we will demonstrate CIA features using data in SeuratObject format** for clarity purposes. **The following parameter settings work exactly the same for SingleCellExperiment objects**.
-### Scaled score
-The scaled score is the **GSS divided by the maximum score value**, an operation that rescales the values from 0 to 1. This allows scaled scores of **different signatures**, even with **varying lengths**, to be **directly compared**. To compute the 'scaled' score, score_mode must be set to 'scaled'.
+From this point in the tutorial, **we will demonstrate CIA features using data in SeuratObject format** for clarity purposes. 
+The following parameter settings work exactly the same for SingleCellExperiment objects.
+
+## Scaled score
+
+The scaled score is the **GSS divided by the maximum score value**, an operation that rescales the values from 0 to 1. 
+This allows scaled scores of **different signatures**, even with **varying lengths**, to be **directly compared**. To compute the 'scaled' score, score_mode must be set to 'scaled'.
+
 ```{r}
-SO <- score_all_signatures(data = SO, signatures_input = gmt, score_mode = "scaled", n_cpus = 2)
+SO <- score_all_signatures(data = SO, 
+                           signatures_input = gmt, 
+                           score_mode = "scaled", 
+                           n_cpus = 2)
+
 head(SO@meta.data[, names(gmt)])
 ```
 
-```{r}
-options(repr.plot.width = 8, repr.plot.height = 7)
-DimPlot(SO, group.by = "celltype", cols = c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", "#6fadfd", "#E4D00A", "#FF5733"))
+```{r fig.width=8, fig.height=7}
+DimPlot(SO, 
+        group.by = "celltype", 
+        cols = c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", 
+                 "#6fadfd", "#E4D00A", "#FF5733"))
 ```
 
 By inspecting the score values, for all the signatures, **the highest values are found in the proper cluster**, indicating the sensitivity of the signatures and the capability of the signature score to represent the expression of the whole gene lists.
-```{r}
-options(repr.plot.width = 15, repr.plot.height = 10)
-FeaturePlot(object = SO, features = names(gmt), cols = c("lightgrey", "red"))
+
+```{r fig.width=15, fig.height=10}
+FeaturePlot(object = SO, 
+            features = names(gmt), 
+            cols = c("lightgrey", "red"))
 ```
 
-## Signature-based classification
-To better viusualize those distributions, we exploited `grouped_distributions`. By selecting AnnData.obs columns containing **signature scores**, this function plots **a heatmap showing the medians of their values in cell groups** and it prints **a statistical report**.
-**For each cell group**, a two-sided **Wilcoxon test** is perfomed to evaluate if the distribution with the highest median is different from the others. **For each signature**, a two-sided **Mann-Whitney U test** is performed to evaluate if the distribution in the cell group having the highest median is different from the other groups distributions.
-```{r}
-options(repr.plot.width = 10, repr.plot.height = 8)
-grouped_distributions(SO@meta.data, ref_obs = "celltype", columns_obs = names(gmt), scale_medians = "column-wise")
+# Signature-based classification
+
+To better viusualize those distributions, we exploited `grouped_distributions`. 
+By selecting AnnData.obs columns containing **signature scores**, this function plots **a heatmap showing the medians of their values in cell groups** and it prints **a statistical report**.  
+**For each cell group**, a two-sided **Wilcoxon test** is perfomed to evaluate if the distribution with the highest median is different from the others. 
+**For each signature**, a two-sided **Mann-Whitney U test** is performed to evaluate if the distribution in the cell group having the highest median is different from the other groups distributions.
+
+```{r fig.width=10, fig.height=8}
+grouped_distributions(SO@meta.data, 
+                      ref_obs = "celltype", 
+                      columns_obs = names(gmt), 
+                      scale_medians = "column-wise")
 ```
 
 The statistical tests confirmed that the **visible differences in signature score distributions are significant**, indicating that scaled signature scores are consistent with authors annotation. 
 With the evidence of the goodness of the signatures, we proceeded with the classification of PBMC3K.
-### Default classification
-To classify the PBMC3K dataset we used `CIA_classify`, which directly computes and compares scaled scores of each signature in each single cell of the dataset.
-```{r}
-SO <- CIA_classify(
-  data = SO, signatures_input = gmt,
-  similarity_threshold = 0, column_name = "CIA_default", n_cpus = 2
-)
-```
 
-Classification is performed by **assigning to each cell the label of the signature that has the maximum scaled score value**. Because it is based on matrix and vector operations, and given the possibility to parallelize the computation, this process is **very fast**.
-```{r}
-options(repr.plot.width = 14, repr.plot.height = 7)
-cols <- c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", "#6fadfd", "#E4D00A", "#FF5733")
-DimPlot(SO, group.by = "celltype", cols = cols) | DimPlot(SO, group.by = "CIA_default", cols = cols)
-```
+## Default classification
+
+To classify the PBMC3K dataset we used `CIA_classify()`, which directly computes and compares scaled scores of each signature in each single cell of the dataset.
 
 ```{r}
-options(repr.plot.width = 10, repr.plot.height = 8)
-group_composition(SO@meta.data, classification_obs = "CIA_default", ref_obs = "celltype")
+SO <- CIA_classify(data = SO, 
+                   signatures_input = gmt,
+                   similarity_threshold = 0, 
+                   column_name = "CIA_default", 
+                   n_cpus = 2)
 ```
 
-The confusion matrix reveals that the classification method is highly effective, with most cells being correctly labeled according to their true cell types. The errors that did occur are relatively few and can be summarized as follows:
+Classification is performed by **assigning to each cell the label of the signature that has the maximum scaled score value**. 
+Because it is based on matrix and vector operations, and given the possibility to parallelize the computation, this process is **very fast**.
+
+```{r fig.width=14, fig.height=7}
+cols <- c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", 
+          "#6fadfd", "#E4D00A", "#FF5733")
+DimPlot(SO, group.by = "celltype", cols = cols) | 
+  DimPlot(SO, group.by = "CIA_default", cols = cols)
+```
+
+```{r fig.width=10, fig.height=8}
+group_composition(SO@meta.data, 
+                  classification_obs = "CIA_default", 
+                  ref_obs = "celltype")
+```
+
+The confusion matrix reveals that the classification method is highly effective, with most cells being correctly labeled according to their true cell types. 
+The errors that did occur are relatively few and can be summarized as follows:
 
 - **CD4 T cells:** Predominantly classified correctly, with a small number misclassified as CD8 T cells.
 - **CD8 T cells:** Mostly identified accurately, but with some confusion with NK cells noted.
 - **Dendritic cells:** Generally well-classified, although there is a tendency for some cells to be mislabeled as monocytes.
-### Classification with similarity threshold
-The similarity threshold is a critical parameter in the classification process, utilized within the `CIA_classify` function. It sets **the minimum required difference between the highest and second-highest signature scores** for a cell to be confidently classified into a specific category. This threshold **prevents ambiguous classifications** and ensures that cells are distinctly assigned to the most appropriate categories based on their signature expression levels.
 
-Cells whose signature scores do not meet this threshold are labeled as **'Unassignned'**. This label indicates that these cells do not exhibit a strong correlation with any of the predefined signatures, thus avoiding misclassification.
+## Classification with similarity threshold
 
-Here we test 3 tresholds: 5%, 10% and 15%.
+The similarity threshold is a critical parameter in the classification process, utilized within the `CIA_classify()` function. 
+It sets **the minimum required difference between the highest and second-highest signature scores** for a cell to be confidently classified into a specific category. 
+This threshold **prevents ambiguous classifications** and ensures that cells are distinctly assigned to the most appropriate categories based on their signature expression levels.
+
+Cells whose signature scores do not meet this threshold are labeled as **'Unassigned'**. 
+This label indicates that these cells do not exhibit a strong correlation with any of the predefined signatures, thus avoiding misclassification.
+
+Here we test 3 thresholds: 5%, 10% and 15% - the classification values are stored each in a separate vector, stored in the original object.
+
 ```{r}
 for (t in c(0.05, 0.1, 0.15)) {
   SO <- CIA_classify(
@@ -278,25 +329,33 @@ for (t in c(0.05, 0.1, 0.15)) {
 }
 ```
 
-```{r}
-options(repr.plot.width = 12, repr.plot.height = 5)
-cols <- c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", "#6fadfd", "#E4D00A", "#FF5733")
-DimPlot(SO, group.by = "celltype", cols = cols) | DimPlot(SO, group.by = "CIA_default", cols = cols)
+```{r fig.width=12, fig.height=7}
+cols <- c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", 
+          "#6fadfd", "#E4D00A", "#FF5733")
+DimPlot(SO, group.by = "celltype", cols = cols) | 
+  DimPlot(SO, group.by = "CIA_default", cols = cols)
 ```
 
-```{r}
-options(repr.plot.width = 18, repr.plot.height = 5)
-cols <- c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", "#6fadfd", "#E4D00A", "#FF5733", "#808080")
-DimPlot(SO, group.by = "CIA_t0.05", cols = cols) | DimPlot(SO, group.by = "CIA_t0.1", cols = cols) |
+```{r fig.width=18, fig.height=5}
+cols <- c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", 
+          "#6fadfd", "#E4D00A", "#FF5733", "#808080")
+DimPlot(SO, group.by = "CIA_t0.05", cols = cols) | 
+  DimPlot(SO, group.by = "CIA_t0.1", cols = cols) |
   DimPlot(SO, group.by = "CIA_t0.15", cols = cols)
 ```
 
-Raising the similarity threshold in the classification algorithm indeed leads to a greater number of cells being labeled as **"Unassigned"**. This change typically affects **cells that previously might have been incorrectly classified**, particularly those within groups that exhibit closely related signature profiles. As the similarity threshold increases, the classifier becomes more conservative, requiring a higher degree of confidence before assigning a label. Consequently, **cells that do not distinctly match a particular signature according to the stricter criteria are more likely to remain unclassified**.
+Raising the similarity threshold in the classification algorithm indeed leads to a greater number of cells being labeled as **"Unassigned"**. 
+This change typically affects **cells that previously might have been incorrectly classified**, particularly those within groups that exhibit closely related signature profiles. 
+As the similarity threshold increases, the classifier becomes more conservative, requiring a higher degree of confidence before assigning a label. 
+Consequently, **cells that do not distinctly match a particular signature according to the stricter criteria are more likely to remain unclassified**.
 
 To further show the importance of this threshold we removed a signature from the dictionary in order to simulate the situation in which a cell type of the dataset is not represented by the signatures.
+
 ```{r}
 gmt$B <- NULL
 ```
+
+After eliminating the B cell signature, we re-run the classification, again storing the results in a specific vector added to the original object.
 
 ```{r}
 for (t in c(0, 0.1)) {
@@ -307,101 +366,145 @@ for (t in c(0, 0.1)) {
 }
 ```
 
-```{r}
-options(repr.plot.width = 6, repr.plot.height = 5)
-cols <- c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", "#6fadfd", "#E4D00A", "#FF5733")
+```{r fig.width=6, fig.height=5}
+cols <- c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", 
+          "#6fadfd", "#E4D00A", "#FF5733")
 DimPlot(SO, group.by = "celltype", cols = cols)
 ```
 
-```{r}
-options(repr.plot.width = 12, repr.plot.height = 5)
-cols <- c("#b2df8a", "#1f78b4", "#d62728", "#6fadfd", "#E4D00A", "#FF5733", "#808080")
-DimPlot(SO, group.by = "CIA_noB_t0", cols = cols) | DimPlot(SO, group.by = "CIA_noB_t0.1", cols = cols)
+```{r fig.width=12, fig.height=5}
+cols <- c("#b2df8a", "#1f78b4", "#d62728", "#6fadfd", 
+          "#E4D00A", "#FF5733", "#808080")
+DimPlot(SO, group.by = "CIA_noB_t0", cols = cols) | 
+  DimPlot(SO, group.by = "CIA_noB_t0.1", cols = cols)
 ```
 
-Indeed, applying a similarity threshold has proven to be a **crucial step for enhancing the specificity and reliability of the classification results**. It has effectively reduced the mislabeling of B cells as Dendritic Cells (DC), demonstrating its value in refining the accuracy of cell type predictions. Moreover, the threshold's role in identifying 'Unassigned' cells **helps flag potential new or unexpected cell types**, such as contaminants or previously unidentified cell populations, within the sample. This feature is especially beneficial for exploratory analyses where novel discoveries are a possibility.
-## Classification performance evaluation
-To evaluate classification performances both per ground truth cluster and overall we exploited respectively `grouped_classification_metrics` and `compute_classification_metrics` functions.  
+Indeed, applying a similarity threshold has proven to be a **crucial step for enhancing the specificity and reliability of the classification results**. 
+It has effectively reduced the mislabeling of B cells as Dendritic Cells (DC), demonstrating its value in refining the accuracy of cell type predictions. 
+Moreover, the threshold's role in identifying 'Unassigned' cells **helps flag potential new or unexpected cell types**, such as contaminants or previously unidentified cell populations, within the sample. 
+This feature is especially beneficial for exploratory analyses where novel discoveries are a possibility.
+
+# Classification performance evaluation
+
+To evaluate classification performances both per ground truth cluster and overall we exploited respectively `grouped_classification_metrics()` and `compute_classification_metrics()` functions.  
 
 In both functions **cell labels assigned by CIA and the annotation already present in test datasets are compared** in order to count true positive (TP), true negative (TN), false positive (FP) and false negative (FN) cells for each cluster. 
 Only for the overall calculation the per-cluster counts are summed to obtain the total TN, TP, FN and FP.
 
 Then, again for both functions, the following metrics are calculated:
+
 - **Sensitivity** (SE)= TP/(TP+FN)
 - **Specificity** (SP)= TN/(TN+FP)
 - **Precision** (PR)= TP/(TP+FP)
 - **Accuracy** (ACC)= (TN+TP)/(TN+TP+FN+FP)
 - **F1-score** (F1)= 2*TP/(2*TP+FN+FP)
 
-N.B.: the column of the classification of interest and the one with ground truth labels must have the same categories to be compared.
+N.B.: the column of the classification of interest and the one with ground truth labels must have the same categories to be compared.  
 Here, for clarity, we show only the **per-cluster classification** metrics of a single classification.
+
 ```{r}
-grouped_classification_metrics(SO@meta.data, classification_col = "CIA_default", ref_labels = "celltype")
+grouped_classification_metrics(SO@meta.data, 
+                               classification_col = "CIA_default", 
+                               ref_labels = "celltype")
 ```
 
 And here are reported the **overall perfomances of each classification modality**:
+
 ```{r}
-cols <- c("CIA_default", "CIA_t0.05", "CIA_t0.1", "CIA_t0.15", "CIA_noB_t0", "CIA_noB_t0.1")
-compute_classification_metrics(SO@meta.data, classification_cols = cols, ref_labels = "celltype")
+cols <- c("CIA_default", "CIA_t0.05", "CIA_t0.1", 
+          "CIA_t0.15", "CIA_noB_t0", "CIA_noB_t0.1")
+compute_classification_metrics(SO@meta.data, 
+                               classification_cols = cols, 
+                               ref_labels = "celltype")
 ```
 
-As the similarity threshold is raised, **overall classification performance may decrease due to an increase in the number of 'Unassigned' cells**, which are counted as misclassified. However, **by setting the unassigned_label, we can exclude 'Unassigned' cells from performance metrics calculations**, thereby refining our analysis. Consequently, a new column indicating the percentage of unlabeled cells will be included in the output, providing additional insight into the classification process.
+As the similarity threshold is raised, **overall classification performance may decrease due to an increase in the number of 'Unassigned' cells**, which are counted as misclassified. 
+However, **by setting the unassigned_label, we can exclude 'Unassigned' cells from performance metrics calculations**, thereby refining our analysis. 
+Consequently, a new column indicating the percentage of unlabeled cells will be included in the output, providing additional insight into the classification process.
+
 ```{r}
 compute_classification_metrics(SO@meta.data,
-  classification_cols = cols, ref_labels = "celltype",
-  unassigned_label = "Unassigned"
-)
+                               classification_cols = cols, 
+                               ref_labels = "celltype",
+                               unassigned_label = "Unassigned")
 ```
 
-## Tips
-### Direct inspection of MSigDB signatures
-With the `score_signature` and `score_all_signatures` functions, you can compute and inspect signatures from the [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/) by simply providing the corresponding URL.
+# Additional functionality of CIA
+
+In this section, we display the additional functionality provided by the CIA package.
+
+## Direct inspection of MSigDB signatures
+
+With the `score_signature()` and `score_all_signatures()` functions, you can compute and inspect signatures from the [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/) by simply providing the corresponding URL.
+
 ```{r}
-head(score_signature(SO,
-  geneset = "https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_PHAGOCYTOSIS&fileType=gmt"
-))
+head(
+  score_signature(
+    SO,
+    geneset = "https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_PHAGOCYTOSIS&fileType=gmt"
+  )
+)
+
+# TODO: all zeroes, is this requiring to be logged in?
 ```
 
 ```{r}
 SO <- score_all_signatures(SO,
   score_mode = "scaled",
-  signatures_input = "https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_PHAGOCYTOSIS&fileType=gmt", n_cpus = 2
+  signatures_input = "https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_PHAGOCYTOSIS&fileType=gmt", 
+  n_cpus = 2
 )
 ```
 
-```{r}
-options(repr.plot.width = 8, repr.plot.height = 6)
-FeaturePlot(object = SO, features = "GOBP_PHAGOCYTOSIS", cols = c("lightgrey", "red"))
+```{r fig.width=8, fig.height=6}
+FeaturePlot(object = SO, 
+            features = "GOBP_PHAGOCYTOSIS", 
+            cols = c("lightgrey", "red"))
 ```
 
-### Majority voting
-The **Celltypist** classifier [@DomnguezConde2022] features an intriguing process called **'majority voting,'** which refines cell identities within subclusters following an **over-clustering step**. In essence, **within each subcluster**, the **label of the predominant cell type is applied** to all cells in that group. While this step extends beyond the standard CIA workflow, we aimed to compare classification results under optimal conditions. To this end, we developed the `celltypist_majority_vote` function (**external module**) to emulate the 'majority voting' mechanism.
+## Majority voting
+
+The **Celltypist** classifier [@DomnguezConde2022] features an intriguing process called **'majority voting,'** which refines cell identities within subclusters following an **over-clustering step**. 
+In essence, **within each subcluster**, the **label of the predominant cell type is applied** to all cells in that group. 
+While this step extends beyond the standard CIA workflow, we aimed to compare classification results under optimal conditions. 
+To this end, we developed the `celltypist_majority_vote()` function to emulate the 'majority voting' mechanism.
 
 N.B.: Due to a different implementation of the Leiden algorithm, results may be slightly different from the Python version of CIA.
-```{r}
-SO <- celltypist_majority_vote(SO, classification_obs = c("CIA_default", "CIA_t0.1"))
-```
 
 ```{r}
-options(repr.plot.width = 10, repr.plot.height = 6)
+SO <- celltypist_majority_vote(SO, 
+                               classification_obs = c("CIA_default", "CIA_t0.1"))
+```
+
+```{r fig.width=10, fig.height=6}
 DimPlot(SO, group.by = "overclustering")
 ```
 
-```{r}
-options(repr.plot.width = 12, repr.plot.height = 5)
-cols1 <- c("#b2df8a", "#fb9a99", "#6fadfd", "#E4D00A", "#1f78b4", "#d62728", "#FF5733")
-cols2 <- c("#b2df8a", "#fb9a99", "#6fadfd", "#E4D00A", "#1f78b4", "#808080", "#d62728", "#FF5733")
-DimPlot(SO, group.by = "CIA_default_majority_voting", cols = cols1) | DimPlot(SO, group.by = "CIA_t0.1_majority_voting", cols = cols2)
+```{r fig.width=12, fig.height=5}
+cols1 <- c("#b2df8a", "#fb9a99", "#6fadfd", "#E4D00A", 
+           "#1f78b4", "#d62728", "#FF5733")
+cols2 <- c("#b2df8a", "#fb9a99", "#6fadfd", "#E4D00A", 
+           "#1f78b4", "#808080", "#d62728", "#FF5733")
+DimPlot(SO, 
+        group.by = "CIA_default_majority_voting", 
+        cols = cols1) | 
+  DimPlot(SO, 
+          group.by = "CIA_t0.1_majority_voting", 
+          cols = cols2)
 ```
 
 ```{r}
 cols <- c("CIA_default_majority_voting", "CIA_t0.1_majority_voting")
-compute_classification_metrics(SO@meta.data, classification_cols = cols, ref_labels = "celltype", unassigned_label = "Unassigned")
+compute_classification_metrics(SO@meta.data, 
+                               classification_cols = cols, 
+                               ref_labels = "celltype", 
+                               unassigned_label = "Unassigned")
 ```
 
-### Extraction of signatures from Differentially Expressed Genes
+## Extraction of signatures from Differentially Expressed Genes
 
 With Seurat, it is possible to extract signatures for use with CIA to classify other datasets in few steps:
+
 ```{r}
 Idents(SO) <- SO@meta.data$celltype
 pbmc_degs <- FindAllMarkers(SO, logfc.threshold = 0.5, min.pct = 0.3, only.pos = TRUE)
@@ -415,22 +518,25 @@ for (i in unique(pbmc_degs$cluster)) {
 }
 ```
 
-### Alternative representation of cell group composition
+## Alternative representation of cell group composition
 
-Alternatively to the canonical confusion matrix, it is possible to visualize classification results using `plot_group_composition`. This function shows the composition of each reference group given the newly performed classification, allowing the use of the same colors used for the corresponding UMAP plot.
+Alternatively to the canonical confusion matrix, it is possible to visualize classification results using `plot_group_composition()`. 
+This function shows the composition of each reference group given the newly performed classification, allowing the use of the same colors used for the corresponding UMAP plot.
+
 ```{r}
 # Plot group composition
 plot_group_composition(SO@meta.data,
-  comp_col = "CIA_default", ref_col = "celltype",
-  palette = c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", "#6fadfd", "#E4D00A", "#FF5733")
-)
+                       comp_col = "CIA_default", 
+                       ref_col = "celltype",
+                       palette = c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", 
+                                   "#6fadfd", "#E4D00A", "#FF5733"))
 ```
 
+# Conclusion
 
-## Conclusion
-
-In this notebook, we have showed the robustness and versatility of the **Cluster Independent Annotation (CIA)** method. Through the computation of signature scores and subsequent cell classification, **CIA provides a fast and efficient approach to cell type annotation in single-cell RNA sequencing data**. Additionally, we have shown that by increasing the similarity threshold, CIA can effectively mitigate misclassifications, illuminating the presence of ambiguous or novel cell types.
-
+In this notebook, we have showed the robustness and versatility of the **Cluster Independent Annotation (CIA)** method. 
+Through the computation of signature scores and subsequent cell classification, **CIA provides a fast and efficient approach to cell type annotation in single-cell RNA sequencing data**.
+Additionally, we have shown that by increasing the similarity threshold, CIA can effectively mitigate misclassifications, illuminating the presence of ambiguous or novel cell types.
 
 # Session info {- .smaller}
 
@@ -438,7 +544,4 @@ In this notebook, we have showed the robustness and versatility of the **Cluster
 sessionInfo()
 ```
 
-
-
 # References
-

@@ -55,6 +55,7 @@ Suggests:
     scRNAseq,
     scater,
     scran,
+    patchwork,
     testthat (>= 3.0.0)
 URL: https://github.com/ingmbioinfo/CIA_R/
 BugReports: https://github.com/ingmbioinfo/CIA_R/issues
