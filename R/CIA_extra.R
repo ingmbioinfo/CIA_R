@@ -9,7 +9,7 @@
 #' @param data A `Seurat` or `SingleCellExperiment` object containing the
 #' single-cell data.
 #' @param classification_obs A character vector specifying the column names in
-#' the metadata that contain cell type classifications.
+#' the metadata that contain the current cell type classifications.
 #' @param groups_obs A character string specifying the column name in the
 #' metadata that contains the grouping information. If `NULL`, over-clustering
 #' will be performed.
@@ -114,8 +114,11 @@ celltypist_majority_vote <- function(data,
     } else if (is(data, "SingleCellExperiment")) {
       if (!(graph_name %in% names(metadata(data)$graphs))) {
         stop("Provided graph name ", graph_name,
-             " not present in Seurat object. Please run FindNeighbors() first.")
+             " not present in SingleCellExperiment object. ",
+             "Please run FindNeighbors() first.")
+        ## TODO actually we need another function for that, need to choose a formulation
       }
+      ## TODO: might need to use a different way to access that
       adj <- as.matrix(data@metadata$graphs[[graph_name]])
       gr <- graph_from_adjacency_matrix(adj, mode = "undirected", weighted = TRUE)
       leid <- cluster_leiden(

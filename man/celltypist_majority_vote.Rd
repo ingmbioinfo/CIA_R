@@ -19,7 +19,7 @@ celltypist_majority_vote(
 single-cell data.}
 
 \item{classification_obs}{A character vector specifying the column names in
-the metadata that contain cell type classifications.}
+the metadata that contain the current cell type classifications.}
 
 \item{groups_obs}{A character string specifying the column name in the
 metadata that contains the grouping information. If \code{NULL}, over-clustering
