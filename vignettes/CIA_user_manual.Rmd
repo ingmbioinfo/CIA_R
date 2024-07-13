@@ -259,9 +259,9 @@ FeaturePlot(object = SO,
 
 # Signature-based classification
 
-To better viusualize those distributions, we exploited `grouped_distributions`. 
+To better visualize those distributions, we exploited `grouped_distributions`. 
 By selecting AnnData.obs columns containing **signature scores**, this function plots **a heatmap showing the medians of their values in cell groups** and it prints **a statistical report**.  
-**For each cell group**, a two-sided **Wilcoxon test** is perfomed to evaluate if the distribution with the highest median is different from the others. 
+**For each cell group**, a two-sided **Wilcoxon test** is performed to evaluate if the distribution with the highest median is different from the others. 
 **For each signature**, a two-sided **Mann-Whitney U test** is performed to evaluate if the distribution in the cell group having the highest median is different from the other groups distributions.
 
 ```{r fig.width=10, fig.height=8}
@@ -408,7 +408,7 @@ grouped_classification_metrics(SO@meta.data,
                                ref_labels = "celltype")
 ```
 
-And here are reported the **overall perfomances of each classification modality**:
+And here are reported the **overall performances of each classification modality**:
 
 ```{r}
 cols <- c("CIA_default", "CIA_t0.05", "CIA_t0.1", 
