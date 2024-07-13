@@ -276,24 +276,163 @@ test_that("All scores at once computations", {
 })
 
 
+test_that("Extra content, majority voting", {
+  ## with sce...
+  sce_aio <- CIA_classify(
+    data = sce,
+    signatures_input = gmt,
+    n_cpus = 2,
+    similarity_threshold = 0.1,
+    column_name = "CIA_prediction_t=0.1"
+  )
+
+  table(sce_aio$`CIA_prediction_t=0.1`)
+
+  sce_aio$quick_cluster <-
+    scran::quickCluster(sce_aio, min.size=5, assay.type = "tophat_counts")
 
 
+  ## with seurat...
+  so_aio <- CIA_classify(
+    data = so,
+    signatures_input = gmt,
+    seurat_assay = "endogenous",
+    seurat_layer = "data",
+    n_cpus = 2,
+    similarity_threshold = 0.1,
+    column_name = "CIA_prediction_t=0.1"
+  )
+  # so_aio <- Seurat::FindVariableFeatures(so_aio)
+  # so_aio <- Seurat::ScaleData(so_aio)
+  # so_aio <- Seurat::RunPCA(so_aio)
+  so_aio <- FindNeighbors(so_aio, reduction = "PCA", dims = 4)
+  so_aio_majority <- celltypist_majority_vote(
+    so_aio,
+    graph_name = "endogenous_snn",
+    classification_obs = "CIA_prediction_t=0.1",
+    min_prop = 0.5
+  )
+  table(so_aio$`CIA_prediction_t=0.1`)
+  table(so_aio_majority$`CIA_prediction_t=0.1_majority_voting`)
+
+  expect_true(is.factor(so_aio_majority$`CIA_prediction_t=0.1_majority_voting`))
+
+  # sce_aio_majority <- celltypist_majority_vote(
+  #   sce_aio,
+  #   classification_obs = "CIA_prediction_t=0.1",
+  #   groups_obs = "quick_cluster",
+  #   min_prop = 0.5
+  # )
+  ## TODO: this is to be included/tested properly
+
+})
+
+
+test_that("Checking performance metrics and associated functionality", {
+  sce_aio <- CIA_classify(
+    data = sce,
+    signatures_input = gmt,
+    n_cpus = 2,
+    similarity_threshold = 0.1,
+    column_name = "CIA_prediction_t=0.1"
+  )
+
+  sce_aio <- CIA_classify(
+    data = sce_aio,
+    signatures_input = gmt,
+    n_cpus = 2,
+    column_name = "CIA_prediction"
+  )
+
+  so_aio <- CIA_classify(
+    data = so,
+    signatures_input = gmt,
+    seurat_assay = "endogenous",
+    seurat_layer = "data",
+    n_cpus = 2,
+    similarity_threshold = 0.1,
+    column_name = "CIA_prediction_t=0.1"
+  )
+  so_aio <- CIA_classify(
+    data = so_aio,
+    signatures_input = gmt,
+    seurat_assay = "endogenous",
+    seurat_layer = "data",
+    n_cpus = 2,
+    column_name = "CIA_prediction"
+  )
+  so_aio_withallinfo <- score_all_signatures(
+    data = so_aio,
+    signatures_input = gmt,
+    seurat_assay = "endogenous",
+    seurat_layer = "data",
+    n_cpus = 2
+  )
+
+  ccm1 <- compute_classification_metrics(
+    cells_info = colData(sce_aio),
+    classification_cols = c("CIA_prediction"),
+    ref_labels = "CIA_prediction"
+  )
+
+  ccm2 <- compute_classification_metrics(
+    cells_info = colData(sce_aio),
+    classification_cols = c("CIA_prediction", "CIA_prediction_t=0.1"),
+    ref_labels = "CIA_prediction",
+    unassigned_label = "Unassigned"
+  )
+
+  expect_type(ccm1, "double")
+  expect_type(ccm2, "double")
+
+
+
+  ccm3 <- compute_classification_metrics(
+    cells_info = so_aio@meta.data,
+    classification_cols = c("CIA_prediction", "CIA_prediction_t=0.1"),
+    ref_labels = "CIA_prediction",
+    unassigned_label = "Unassigned"
+  )
+  expect_type(ccm3, "double")
+
+
+  gccm1 <- grouped_classification_metrics(
+    cells_info = colData(sce_aio),
+    classification_col= "CIA_prediction",
+    ref_labels = "CIA_prediction",
+    unassigned_label = "Unassigned"
+  )
+  expect_type(gccm1, "list")
+
+  gccm3 <- grouped_classification_metrics(
+    cells_info = so_aio@meta.data,
+    classification_col= "CIA_prediction",
+    ref_labels = "CIA_prediction",
+    unassigned_label = "Unassigned"
+  )
+  expect_type(gccm3, "list")
+
+  # Working on the plots -------------------------------------------------------
+  p_gc <- plot_group_composition(
+    so_aio@meta.data,
+    comp_col = "CIA_prediction", ref_col = "CIA_prediction",
+    palette = colorRampPalette(RColorBrewer::brewer.pal(8, "Set3"))(20)
+  )
+  expect_true(is(p_gc, "gg"))
+
+  p_gch <- group_composition(so_aio@meta.data,
+                             classification_obs = "CIA_prediction",
+                             ref_obs = "CIA_prediction")
+  expect_true(is(p_gch, "gg"))
+
+  p_gd <- grouped_distributions(
+    so_aio_withallinfo@meta.data,
+    ref_obs = "CIA_prediction",
+    columns_obs = names(gmt))
+  expect_true(is(p_gd, "gg"))
+})
 
 # TODO: rename the param column_name? cia_name?
 
 # TODO: option to ALSO store the CIA scores?
-
-# compute_classification_metrics(
-#   cells_info = colData(sce_aio),
-#   classification_cols = c("CIA_prediction_t=0.1"),
-#   ref_labels = "Primary.Type"
-# )
-#
-# # removing unassigned from metrics calculation
-# compute_classification_metrics(
-#   cells_info = colData(sce_aio),
-#   classification_cols = c("CIA_prediction", "CIA_prediction_t=0.1"),
-#   ref_labels = "Primary.Type",
-#   unassigned_label = "Unassigned"
-# )
 
