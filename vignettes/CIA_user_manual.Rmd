@@ -110,7 +110,7 @@ In our study, we used the differentially expressed genes (DEGs) from Hao et al.,
 N.B. - DEGs have been filtered to create concise and targeted gene lists: a log2 fold change greater than 1.5, a minimum average expression level of 0.25, a z-score above 5, and expression in at least 40% of the cells within each cluster.
 ```{r}
 # to load the gene signatures
-gmt <- load_signatures("../inst/extdata/atlas.gmt")
+gmt <- load_signatures(system.file("extdata", "atlas.gmt", package = "CIA"))
 # load_signatures can load both dictionaries or gmt files by providing both file_paths or URLs
 
 for (i in names(gmt)) {
@@ -130,14 +130,14 @@ In order **to evaluate both the consistency** of our method **and the performanc
 Our method support both SeuratObject (SO) an SingleCellExperiment (SCE) and it is tested on expression data previously scaled to 10000 and Log-normalized, for this reason we strongly suggest to normalize your count matrix as follows:
 #### SeuratObject
 ```{r}
-SO <- readRDS("../inst/extdata/pbmc3k.rds")
+SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
 SO <- NormalizeData(SO, normalization.method = "LogNormalize", scale.factor = 10000) # to add "data" layer
 SO
 ```
 
 #### SingleCellExperiment
 ```{r}
-SCE <- as.SingleCellExperiment(readRDS("../inst/extdata/pbmc3k.rds"), )
+SCE <- as.SingleCellExperiment(SO)
 library_sizes <- colSums(assay(SCE, "counts"))
 normalized_counts <- sweep(assay(SCE, "counts"), 2, library_sizes, FUN = "/") * 10000
 assay(SCE, "logcounts") <- log1p(normalized_counts) # to add 'logcounts' assay
@@ -190,7 +190,7 @@ For **SeuratObjects**, it is possible to select the matrix on which to compute t
 
 ```{r}
 SO <- score_all_signatures(SO,
-  signatures_input = "../inst/extdata/atlas.gmt",
+  signatures_input = gmt,
   seurat_assay = "RNA", seurat_layer = "data", n_cpus = 2
 )
 ```
@@ -201,7 +201,7 @@ head(SO@meta.data[, names(gmt)])
 
 For **SingleCellExperiment** objects, the same can be done by setting the `sce_assay` parameter, which is set to `logcounts` by default.
 ```{r}
-SCE <- score_all_signatures(SCE, signatures_input = "../inst/extdata/atlas.gmt", sce_assay = "logcounts", n_cpus = 2)
+SCE <- score_all_signatures(SCE, signatures_input = gmt, sce_assay = "logcounts", n_cpus = 2)
 ```
 
 ```{r}
@@ -212,7 +212,7 @@ From this point in the tutorial, **we will demonstrate CIA features using data i
 ### Scaled score
 The scaled score is the **GSS divided by the maximum score value**, an operation that rescales the values from 0 to 1. This allows scaled scores of **different signatures**, even with **varying lengths**, to be **directly compared**. To compute the 'scaled' score, score_mode must be set to 'scaled'.
 ```{r}
-SO <- score_all_signatures(data = SO, signatures_input = "../inst/extdata/atlas.gmt", score_mode = "scaled", n_cpus = 2)
+SO <- score_all_signatures(data = SO, signatures_input = gmt, score_mode = "scaled", n_cpus = 2)
 head(SO@meta.data[, names(gmt)])
 ```
 
@@ -241,7 +241,7 @@ With the evidence of the goodness of the signatures, we proceeded with the class
 To classify the PBMC3K dataset we used `CIA_classify`, which directly computes and compares scaled scores of each signature in each single cell of the dataset.
 ```{r}
 SO <- CIA_classify(
-  data = SO, signatures_input = "../inst/extdata/atlas.gmt",
+  data = SO, signatures_input = gmt,
   similarity_threshold = 0, column_name = "CIA_default", n_cpus = 2
 )
 ```
@@ -272,7 +272,7 @@ Here we test 3 tresholds: 5%, 10% and 15%.
 ```{r}
 for (t in c(0.05, 0.1, 0.15)) {
   SO <- CIA_classify(
-    data = SO, signatures_input = "../inst/extdata/atlas.gmt", unassigned_label = "Unassigned",
+    data = SO, signatures_input = gmt, unassigned_label = "Unassigned",
     similarity_threshold = t, column_name = paste0("CIA_t", as.character(t)), n_cpus = 2
   )
 }
