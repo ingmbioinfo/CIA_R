@@ -41,4 +41,6 @@ different classifications distribute across predefined groups.
 ## Assuming 'data' is a data frame with columns 'Group' and 'Category'
 # group_composition(data, 'Category', 'Group')
 # TODO
+
+# TODO: an idea, shall we rename this to "group_composition_heatmap" to make its "form" clear?
 }

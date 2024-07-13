@@ -45,4 +45,6 @@ in the corresponding group compared to all other groups.
 # TODO
 # grouped_distributions(data, columns_obs = c('feature1', 'feature2'), ref_obs = 'group_column')
 
+
+## TODO: we need to warn right away that the scores have to be in!
 }

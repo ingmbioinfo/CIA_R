@@ -246,6 +246,7 @@ plot_group_composition <- function(df,
                                    ref_col,
                                    comp_col,
                                    plot_type = "percentage",
+                                   # TODO: can we handle to have the color numbers set as the max nr of levels? like with colorRampPalette
                                    palette = RColorBrewer::brewer.pal(8, "Set3"),
                                    show_legend = TRUE) {
   ## Check if the specified columns exist in the DataFrame
@@ -336,6 +337,8 @@ plot_group_composition <- function(df,
 #' ## Assuming 'data' is a data frame with columns 'Group' and 'Category'
 #' # group_composition(data, 'Category', 'Group')
 #' # TODO
+#'
+#' # TODO: an idea, shall we rename this to "group_composition_heatmap" to make its "form" clear?
 group_composition <- function(data,
                               classification_obs,
                               ref_obs,
@@ -419,6 +422,8 @@ group_composition <- function(data,
 #' # TODO
 #' # grouped_distributions(data, columns_obs = c('feature1', 'feature2'), ref_obs = 'group_column')
 #'
+#'
+#' ## TODO: we need to warn right away that the scores have to be in!
 grouped_distributions <- function(data,
                                   columns_obs,
                                   ref_obs,
