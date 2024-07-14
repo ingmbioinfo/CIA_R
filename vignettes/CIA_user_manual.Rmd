@@ -240,16 +240,14 @@ The following parameter settings work exactly the same for SingleCellExperiment 
 The scaled score is the **GSS divided by the maximum score value**, an operation that rescales the values from 0 to 1. 
 This allows scaled scores of **different signatures**, even with **varying lengths**, to be **directly compared**. To compute the 'scaled' score, score_mode must be set to 'scaled'.
 
-```{r}
+```{r scoreallseurat, fig.width=8, fig.height=7}
 SO <- score_all_signatures(data = SO, 
                            signatures_input = gmt, 
                            score_mode = "scaled", 
                            n_cpus = 2)
 
 head(SO@meta.data[, names(gmt)])
-```
 
-```{r fig.width=8, fig.height=7}
 DimPlot(SO, 
         group.by = "celltype", 
         cols = c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", 
@@ -258,7 +256,7 @@ DimPlot(SO,
 
 By inspecting the score values, for all the signatures, **the highest values are found in the proper cluster**, indicating the sensitivity of the signatures and the capability of the signature score to represent the expression of the whole gene lists.
 
-```{r fig.width=15, fig.height=10}
+```{r plotallscores, fig.width=15, fig.height=10}
 FeaturePlot(object = SO, 
             features = names(gmt), 
             cols = c("lightgrey", "red"))
@@ -271,7 +269,7 @@ By selecting AnnData.obs columns containing **signature scores**, this function 
 **For each cell group**, a two-sided **Wilcoxon test** is performed to evaluate if the distribution with the highest median is different from the others. 
 **For each signature**, a two-sided **Mann-Whitney U test** is performed to evaluate if the distribution in the cell group having the highest median is different from the other groups distributions.
 
-```{r fig.width=10, fig.height=8}
+```{r groupeddistros, fig.width=10, fig.height=8}
 grouped_distributions(SO@meta.data, 
                       ref_obs = "celltype", 
                       columns_obs = names(gmt), 
@@ -285,7 +283,7 @@ With the evidence of the goodness of the signatures, we proceeded with the class
 
 To classify the PBMC3K dataset we used `CIA_classify()`, which directly computes and compares scaled scores of each signature in each single cell of the dataset.
 
-```{r}
+```{r classifyso}
 SO <- CIA_classify(data = SO, 
                    signatures_input = gmt,
                    similarity_threshold = 0, 
@@ -296,14 +294,14 @@ SO <- CIA_classify(data = SO,
 Classification is performed by **assigning to each cell the label of the signature that has the maximum scaled score value**. 
 Because it is based on matrix and vector operations, and given the possibility to parallelize the computation, this process is **very fast**.
 
-```{r fig.width=14, fig.height=7}
+```{r plotclass, fig.width=14, fig.height=7}
 cols <- c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", 
           "#6fadfd", "#E4D00A", "#FF5733")
 DimPlot(SO, group.by = "celltype", cols = cols) | 
   DimPlot(SO, group.by = "CIA_default", cols = cols)
 ```
 
-```{r fig.width=10, fig.height=8}
+```{r groupdistro, fig.width=10, fig.height=8}
 group_composition(SO@meta.data, 
                   classification_obs = "CIA_default", 
                   ref_obs = "celltype")
@@ -327,23 +325,21 @@ This label indicates that these cells do not exhibit a strong correlation with a
 
 Here we test 3 thresholds: 5%, 10% and 15% - the classification values are stored each in a separate vector, stored in the original object.
 
-```{r}
+```{r classify-unassigned, fig.width=12, fig.height=7}
 for (t in c(0.05, 0.1, 0.15)) {
   SO <- CIA_classify(
     data = SO, signatures_input = gmt, unassigned_label = "Unassigned",
     similarity_threshold = t, column_name = paste0("CIA_t", as.character(t)), n_cpus = 2
   )
 }
-```
 
-```{r fig.width=12, fig.height=7}
 cols <- c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", 
           "#6fadfd", "#E4D00A", "#FF5733")
 DimPlot(SO, group.by = "celltype", cols = cols) | 
   DimPlot(SO, group.by = "CIA_default", cols = cols)
 ```
 
-```{r fig.width=18, fig.height=5}
+```{r plotthreetresholds, fig.width=18, fig.height=5}
 cols <- c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", 
           "#6fadfd", "#E4D00A", "#FF5733", "#808080")
 DimPlot(SO, group.by = "CIA_t0.05", cols = cols) | 
@@ -358,28 +354,26 @@ Consequently, **cells that do not distinctly match a particular signature accord
 
 To further show the importance of this threshold we removed a signature from the dictionary in order to simulate the situation in which a cell type of the dataset is not represented by the signatures.
 
-```{r}
+```{r bgone}
 gmt$B <- NULL
 ```
 
 After eliminating the B cell signature, we re-run the classification, again storing the results in a specific vector added to the original object.
 
-```{r}
+```{r classifynob, fig.width=6, fig.height=5}
 for (t in c(0, 0.1)) {
   SO <- CIA_classify(
     data = SO, signatures_input = gmt, unassigned_label = "Unassigned",
     similarity_threshold = t, column_name = paste0("CIA_noB_t", as.character(t)), n_cpus = 2
   )
 }
-```
 
-```{r fig.width=6, fig.height=5}
 cols <- c("#fb9a99", "#b2df8a", "#1f78b4", "#d62728", 
           "#6fadfd", "#E4D00A", "#FF5733")
 DimPlot(SO, group.by = "celltype", cols = cols)
 ```
 
-```{r fig.width=12, fig.height=5}
+```{r plotnob, fig.width=12, fig.height=5}
 cols <- c("#b2df8a", "#1f78b4", "#d62728", "#6fadfd", 
           "#E4D00A", "#FF5733", "#808080")
 DimPlot(SO, group.by = "CIA_noB_t0", cols = cols) | 
@@ -409,7 +403,7 @@ Then, again for both functions, the following metrics are calculated:
 N.B.: the column of the classification of interest and the one with ground truth labels must have the same categories to be compared.  
 Here, for clarity, we show only the **per-cluster classification** metrics of a single classification.
 
-```{r}
+```{r gcmetrics}
 grouped_classification_metrics(SO@meta.data, 
                                classification_col = "CIA_default", 
                                ref_labels = "celltype")
@@ -417,7 +411,7 @@ grouped_classification_metrics(SO@meta.data,
 
 And here are reported the **overall performances of each classification modality**:
 
-```{r}
+```{r allmetrics}
 cols <- c("CIA_default", "CIA_t0.05", "CIA_t0.1", 
           "CIA_t0.15", "CIA_noB_t0", "CIA_noB_t0.1")
 compute_classification_metrics(SO@meta.data, 
@@ -429,7 +423,7 @@ As the similarity threshold is raised, **overall classification performance may 
 However, **by setting the unassigned_label, we can exclude 'Unassigned' cells from performance metrics calculations**, thereby refining our analysis. 
 Consequently, a new column indicating the percentage of unlabeled cells will be included in the output, providing additional insight into the classification process.
 
-```{r}
+```{r gcmunassigned}
 compute_classification_metrics(SO@meta.data,
                                classification_cols = cols, 
                                ref_labels = "celltype",
@@ -444,7 +438,7 @@ In this section, we display the additional functionality provided by the CIA pac
 
 With the `score_signature()` and `score_all_signatures()` functions, you can compute and inspect signatures from the [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/) by simply providing the corresponding URL.
 
-```{r}
+```{r checkmsigdb}
 head(
   score_signature(
     SO,
@@ -455,7 +449,7 @@ head(
 # TODO: all zeroes, is this requiring to be logged in?
 ```
 
-```{r}
+```{r scoregmt}
 SO <- score_all_signatures(SO,
   score_mode = "scaled",
   signatures_input = "https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_PHAGOCYTOSIS&fileType=gmt", 
@@ -463,7 +457,7 @@ SO <- score_all_signatures(SO,
 )
 ```
 
-```{r fig.width=8, fig.height=6}
+```{r plotgobp, fig.width=8, fig.height=6}
 FeaturePlot(object = SO, 
             features = "GOBP_PHAGOCYTOSIS", 
             cols = c("lightgrey", "red"))
@@ -478,12 +472,12 @@ To this end, we developed the `celltypist_majority_vote()` function to emulate t
 
 N.B.: Due to a different implementation of the Leiden algorithm, results may be slightly different from the Python version of CIA.
 
-```{r}
+```{r majvote}
 SO <- celltypist_majority_vote(SO, 
                                classification_obs = c("CIA_default", "CIA_t0.1"))
 ```
 
-```{r fig.width=10, fig.height=6}
+```{r plotoc, fig.width=10, fig.height=6}
 DimPlot(SO, group.by = "overclustering")
 ```
 
@@ -500,7 +494,7 @@ DimPlot(SO,
           cols = cols2)
 ```
 
-```{r}
+```{r classmetmv}
 cols <- c("CIA_default_majority_voting", "CIA_t0.1_majority_voting")
 compute_classification_metrics(SO@meta.data, 
                                classification_cols = cols, 
@@ -512,7 +506,7 @@ compute_classification_metrics(SO@meta.data,
 
 With Seurat, it is possible to extract signatures for use with CIA to classify other datasets in few steps:
 
-```{r}
+```{r designatures}
 Idents(SO) <- SO@meta.data$celltype
 pbmc_degs <- FindAllMarkers(SO, logfc.threshold = 0.5, min.pct = 0.3, only.pos = TRUE)
 pbmc_degs <- pbmc_degs[pbmc_degs$p_val < 0.01, ]
@@ -530,7 +524,7 @@ for (i in unique(pbmc_degs$cluster)) {
 Alternatively to the canonical confusion matrix, it is possible to visualize classification results using `plot_group_composition()`. 
 This function shows the composition of each reference group given the newly performed classification, allowing the use of the same colors used for the corresponding UMAP plot.
 
-```{r}
+```{r plotgc}
 # Plot group composition
 plot_group_composition(SO@meta.data,
                        comp_col = "CIA_default", 
