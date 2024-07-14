@@ -91,6 +91,12 @@ Once installed, the package can be loaded and attached to your current workspace
 library("CIA")
 ```
 
+If you want to install the development version (from the GitHub repository), you should instead run the following chunk:
+
+```{r installdev, eval=FALSE}
+BiocManager::install("ingmbioinfo/CIA_R")
+```
+
 # CIA input
 
 Our method requires as input a **named list of gene signatures** (e.g. cell type, cell state ...) and a scRNA-seq data in **[SeuratObject](https://rdrr.io/cran/SeuratObject/) or [SingleCellExperiment](https://bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html) format**.
