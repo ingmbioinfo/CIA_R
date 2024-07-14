@@ -188,10 +188,11 @@ The "gene signature score" of a signature **S** in a cell **C** is defined as fo
 $${\bf{GSS(C)}}=\frac{n}{L}\frac{\sum_{i=1}^n {\bf{X}}_i\: for\: {\bf{G}}_i \in S}{\sum_{j=1}^m {\bf{X}}_j\: for\: {\bf{G}}_j \in G}$$
 
 Where:
+
 - **n** is the number of genes in **S** that are expressed in **C**;
-- **G** = {𝐺₁, 𝐺₂, …, 𝐺ₘ} is the list of length **m** that contains all the gene symbols of cell **C**;
-- **S** = {𝐺₁, 𝐺₂, …, 𝐺ₗ} is the list of gene symbols of length **L** that compose the signature;
-- **X** = {𝑋₁, 𝑋₂, …, 𝑋ₘ} is the vector of gene expression values for genes in list **G**.
+- $\mathbf{G}=\left\{G_1, G_2, \ldots, G_{\mathrm{m}}\right\}$ is the list of length **m** that contains all the gene symbols of cell **C**;
+- $\mathbf{S}=\left\{G_1, G_2, \ldots, G_{\mathrm{l}}\right\}$ is the list of gene symbols of length **L** that compose the signature;
+- $\mathbf{X}=\left\{X_1, X_2, \ldots, X_{\mathrm{m}}\right\}$ is the vector of gene expression values for genes in list **G**.
 
 With this score it is possible to **condensate in a single value both the proportion of expressed signature genes and their overall expression**, enabling researchers to easily study whole signatures expression at single cell level. 
 
