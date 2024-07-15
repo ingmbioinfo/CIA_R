@@ -125,9 +125,10 @@ library("patchwork")
 Subsequently, we load the `atlas.gmt` file into our environment and inspect it briefly.
 
 ```{r loadgmt}
-# to load the gene signatures
+## To load the gene signatures
 gmt <- load_signatures(system.file("extdata", "atlas.gmt", package = "CIA"))
-# load_signatures can load both dictionaries or gmt files by providing both file_paths or URLs
+
+# One can load_signatures can load both dictionaries or gmt files by providing both file_paths or URLs
 
 for (i in names(gmt)) {
   cat(paste0(i, ":"), length(gmt[[i]]), "genes \n")
@@ -152,7 +153,9 @@ For a `Seurat` object:
 
 ```{r loadso}
 SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
-SO <- NormalizeData(SO, normalization.method = "LogNormalize", scale.factor = 10000) # to add "data" layer
+SO <- NormalizeData(SO, 
+                    normalization.method = "LogNormalize", 
+                    scale.factor = 10000) ## To add "data" layer
 SO
 ```
 
@@ -162,7 +165,7 @@ For a `SingleCellExperiment` object, we can use
 SCE <- as.SingleCellExperiment(SO)
 library_sizes <- colSums(assay(SCE, "counts"))
 normalized_counts <- sweep(assay(SCE, "counts"), 2, library_sizes, FUN = "/") * 10000
-assay(SCE, "logcounts") <- log1p(normalized_counts) # to add 'logcounts' assay
+assay(SCE, "logcounts") <- log1p(normalized_counts) ## To add 'logcounts' assay
 SCE
 ```
 
@@ -199,7 +202,7 @@ With this score it is possible to **condensate in a single value both the propor
 Here we show how to compute the scores of a gene signature ("B cells", named `B` in the `gmt` object), for both a SeuratObject and a SingleCellExperiment:
 
 ```{r bcellsscores}
-# compute the signature scores of B cells gene signature for each cell
+## Compute the signature scores of B cells gene signature for each cell
 head(score_signature(data = SO, geneset = gmt[["B"]]))
 
 head(score_signature(data = SCE, geneset = gmt[["B"]]))
