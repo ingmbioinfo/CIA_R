@@ -297,13 +297,13 @@ score_all_signatures <- function(data,
   }
 
   message("Checking if genes are in the dataset matrix...", "\n")
-  result <- sapply(names(signatures), function(x) {
+  result <- unlist(lapply(names(signatures), function(x) {
     lt <- length(signatures[[x]])
     l <- sum(signatures[[x]] %in% rownames(data))
     message <- sprintf("%s: %d / %d", x, l, lt)
     message(message)
     invisible(message) # Use invisible to avoid printing the return value of cat
-  })
+  }))
 
   n_cpus <- if (is.null(n_cpus)) {
     ceiling(parallel::detectCores() / 4)

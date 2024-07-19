@@ -517,7 +517,7 @@ grouped_distributions <- function(data,
       function(group) data[data[[ref_obs]] == group, column]
     )
     names(sign) <- unique_groups
-    sign_medians <- sapply(sign, median, na.rm = TRUE)
+    sign_medians <- unlist(lapply(sign, median, na.rm = TRUE))
     pos <- which.max(sign_medians)
 
     combs <- combn(unique_groups, 2, simplify = FALSE)
