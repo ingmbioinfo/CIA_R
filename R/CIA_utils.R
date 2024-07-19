@@ -31,7 +31,7 @@ signatures_similarity <- function(signatures_dict,
   similarity_matrix <- matrix(0, n, n,
                               dimnames = list(signature_names, signature_names))
 
-  for (i in 1:n) {
+  for (i in seq_len(n)) {
     for (j in i:n) {
       intersec <- length(
         intersect(

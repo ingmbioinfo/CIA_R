@@ -109,7 +109,7 @@ compute_classification_metrics <- function(cells_info,
   report <- t(as.data.frame(report))
   colnames(report) <- c("SE", "SP", "PR", "ACC", "F1", "%UN")
   if (sum(report[, "%UN"]) == 0) {
-    report <- report[, 1:5, drop = FALSE]
+    report <- report[, seq_len(5), drop = FALSE]
   }
   return(report)
 }
@@ -209,7 +209,7 @@ grouped_classification_metrics <- function(cells_info,
   rownames(report) <- unique(datam[[ref_labels]])
   colnames(report) <- c("SE", "SP", "PR", "ACC", "F1", "%UN")
   if (sum(report[, "%UN"]) == 0) {
-    report <- report[, 1:5, drop = FALSE]
+    report <- report[, seq_len(5), drop = FALSE]
   }
   return(report)
 }
@@ -362,10 +362,10 @@ group_composition <- function(data,
   }
   df$rowname <- rownames(df)
   df <- reshape(df,
-    varying = list(names(df)[1:(dim(df)[2] - 1)]),
+    varying = list(names(df)[seq_len(dim(df)[2] - 1)]),
     v.names = "Value",
     timevar = "Column",
-    times = names(df)[1:(dim(df)[2] - 1)], direction = "long"
+    times = names(df)[seq_len(dim(df)[2] - 1)], direction = "long"
   )
 
   ## Setting up the color palette
