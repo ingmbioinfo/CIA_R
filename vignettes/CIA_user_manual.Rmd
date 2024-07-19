@@ -542,6 +542,20 @@ plot_group_composition(SO@meta.data,
                                    "#6fadfd", "#E4D00A", "#FF5733"))
 ```
 
+# Exploring the data after CIA {#aftercia}
+
+Since CIA seamlessly work on SingleCellExperiment objects, its output is fully compatible with the `Biocpkg("iSEE")` package for interactive data exploration.
+
+Using iSEE on the output of CIA can be as simple as executing this chunk:
+
+```{r launchisee, eval=FALSE}
+sce <- Seurat::as.SingleCellExperiment(SO)
+
+if (require(iSEE)) {
+  iSEE(sce)
+}
+```
+
 # Conclusion {#conclusion}
 
 In this notebook, we have showed the robustness and versatility of the **Cluster Independent Annotation (CIA)** method. 
