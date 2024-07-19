@@ -296,7 +296,7 @@ score_all_signatures <- function(data,
     datam <- data
   }
 
-  message("Checking if genes are in the dataset matrix...", "\n")
+  message("Checking if genes are in the dataset matrix...\n-----")
   result <- unlist(lapply(names(signatures), function(x) {
     lt <- length(signatures[[x]])
     l <- sum(signatures[[x]] %in% rownames(data))
@@ -353,13 +353,13 @@ score_all_signatures <- function(data,
   if (is(data, "Seurat")) {
     data@meta.data[, colnames(scores_df)] <- scores_df
 
-    message("Scores have been added in data@meta.data", "\n")
+    message("-----\nScores have been added in data@meta.data")
 
     return(data)
   } else if (is(data, "SingleCellExperiment")) {
     colData(data)[, colnames(scores_df)] <- scores_df
 
-    message("Scores have been added in colData(data)", "\n")
+    message("-----\nScores have been added in colData(data)")
 
     return(data)
   } else {
