@@ -241,6 +241,7 @@ grouped_classification_metrics <- function(cells_info,
 #'
 #' @examples
 #' # TODO
+#' # TODO: as an idea: we could flip the order of the levels to have it match the legend?
 #'
 plot_group_composition <- function(df,
                                    ref_col,
