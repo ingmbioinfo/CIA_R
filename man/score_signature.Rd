@@ -40,8 +40,14 @@ given cell and their relative expression levels (expression), normalized by
 the total expression of the cell.
 }
 \examples{
-## TODO example
+SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
+SO <- NormalizeData(SO,
+                   normalization.method = "LogNormalize",
+                   scale.factor = 10000)
+gmt <- load_signatures(system.file("extdata", "atlas.gmt", package = "CIA"))
 
+## Checking the B cell signature
+score_signature(data = SO, geneset = gmt[["B"]])
 }
 \seealso{
 \code{\link[=score_all_signatures]{score_all_signatures()}} \code{\link[=CIA_classify]{CIA_classify()}}
