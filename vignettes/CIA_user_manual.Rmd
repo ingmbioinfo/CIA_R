@@ -460,14 +460,15 @@ In this section, we display the additional functionality provided by the CIA pac
 With the `score_signature()` and `score_all_signatures()` functions, you can compute and inspect signatures from the [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/) by simply providing the corresponding URL.
 
 ```{r checkmsigdb}
+phago_signature <- 
+  load_signatures("https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_PHAGOCYTOSIS&fileType=gmt")
+
 head(
   score_signature(
     SO,
-    geneset = "https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_PHAGOCYTOSIS&fileType=gmt"
+    geneset = phago_signature$GOBP_PHAGOCYTOSIS
   )
 )
-
-# TODO: all zeroes, is this requiring to be logged in?
 ```
 
 ```{r scoregmt}
