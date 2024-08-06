@@ -54,6 +54,7 @@ the scores based on the expression levels of these genes in the data.
 }
 \examples{
 SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
+library("Seurat")
 SO <- NormalizeData(SO,
                    normalization.method = "LogNormalize",
                    scale.factor = 10000)

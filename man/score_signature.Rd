@@ -41,6 +41,7 @@ the total expression of the cell.
 }
 \examples{
 SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
+library("Seurat")
 SO <- NormalizeData(SO,
                    normalization.method = "LogNormalize",
                    scale.factor = 10000)

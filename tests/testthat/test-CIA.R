@@ -418,9 +418,9 @@ test_that("Checking performance metrics and associated functionality", {
   )
   expect_true(is(p_gc, "gg"))
 
-  p_gch <- group_composition(so_aio@meta.data,
-                             classification_obs = "CIA_prediction",
-                             ref_obs = "CIA_prediction")
+  p_gch <- group_composition_heatmap(so_aio@meta.data,
+                                     classification_obs = "CIA_prediction",
+                                     ref_obs = "CIA_prediction")
   expect_true(is(p_gch, "gg"))
 
   p_gd <- grouped_distributions(

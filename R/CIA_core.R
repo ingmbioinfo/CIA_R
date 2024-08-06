@@ -96,6 +96,7 @@ load_signatures <- function(signatures_input, description_field_available = TRUE
 #'
 #' @examples
 #' SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
+#' library("Seurat")
 #' SO <- NormalizeData(SO,
 #'                    normalization.method = "LogNormalize",
 #'                    scale.factor = 10000)
@@ -226,6 +227,7 @@ score_signature <- function(data,
 #'
 #' @examples
 #' SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
+#' library("Seurat")
 #' SO <- NormalizeData(SO,
 #'                    normalization.method = "LogNormalize",
 #'                    scale.factor = 10000)
@@ -425,6 +427,7 @@ score_all_signatures <- function(data,
 #'
 #' @examples
 #' SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
+#' library("Seurat")
 #' SO <- NormalizeData(SO,
 #'                    normalization.method = "LogNormalize",
 #'                    scale.factor = 10000)
