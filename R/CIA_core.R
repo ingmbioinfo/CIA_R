@@ -235,7 +235,8 @@ score_signature <- function(data,
 #'
 #' ## Checking all signatures at once
 #' score_all_signatures(data = SO,
-#'                      signatures_inpu = gmt)
+#'                      signatures_inpu = gmt,
+#'                      n_cpus = 2)
 score_all_signatures <- function(data,
                                  signatures_input,
                                  return_score = FALSE,

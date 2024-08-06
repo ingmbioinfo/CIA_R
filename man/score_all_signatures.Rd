@@ -62,7 +62,8 @@ gmt <- load_signatures(system.file("extdata", "atlas.gmt", package = "CIA"))
 
 ## Checking all signatures at once
 score_all_signatures(data = SO,
-                     signatures_inpu = gmt)
+                     signatures_inpu = gmt,
+                     n_cpus = 2)
 }
 \seealso{
 \code{\link[=score_signature]{score_signature()}} \code{\link[=CIA_classify]{CIA_classify()}}
