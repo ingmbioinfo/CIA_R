@@ -1,5 +1,6 @@
 Package: CIA
-Title: What the Package Does (One Line, Title Case) TODO
+Title: Cluster Independent Annotation (CIA) to Accurately Classify Cells in 
+    scRNA-seq Datasets Using Gene Signatures
 Version: 0.2.0
 Authors@R: 
     c(
@@ -20,9 +21,11 @@ Authors@R:
             email = "marinif@uni-mainz.de", comment = c(ORCID = "0000-0003-3252-7758")
         )
     )
-Description: What the package does (one paragraph) longer longerlonger longer. 
-    TODO TODO yadda yadda longer longerlonger longer. TODO TODO final sentence 
-    is very long.
+Description: CIA (Cluster Independent Annotation) is designed to accurately 
+    classify cells in scRNA-seq datasets using gene signatures. This tool 
+    operates without the need for a fully annotated reference dataset or complex 
+    machine learning processes. All in all, it provides a highly user-friendly 
+    and practical solution for cell type annotation. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
