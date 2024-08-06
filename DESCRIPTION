@@ -5,16 +5,20 @@ Version: 0.2.0
 Authors@R: 
     c(
         person(
-            given = "a1", family = "a2", role = c("aut", "cre"), 
-            email = "ab@c.d", comment = c(ORCID = "0000-0001-0002-0003")
+            given = "Ivan", family = "Ferrari", role = c("aut", "cre"), 
+            email = "ferrari@ingm.org", comment = c(ORCID = "0000-0003-3746-4143")
         ),
         person(
-            given = "a1", family = "a2", role = c("aut"), 
-            email = "ab@c.d", comment = c(ORCID = "0000-0001-0002-0003")
+            given = "Andrea", family = "Gobbini", role = c("aut"), 
+            email = "gobbini@ingm.org", comment = c(ORCID = "0000-0002-8846-4656")
         ),
         person(
-            given = "a1", family = "a2", role = c("aut"), 
-            email = "ab@c.d", comment = c(ORCID = "0000-0001-0002-0003")
+            given = "Mattia", family = "Battistella", role = c("aut"), 
+            email = "battistella@ingm.org", comment = c(ORCID = "0009-0006-9236-4398")
+        ),
+        person(
+            given = "Eugenia", family = "Galeota", role = c("aut"), 
+            email = "galeota@ingm.org", comment = c(ORCID = "0000-0002-4413-7389")
         ),
         person(
             given = "Federico", family = "Marini", role = c("aut"), 

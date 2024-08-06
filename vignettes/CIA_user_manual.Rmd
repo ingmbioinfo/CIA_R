@@ -2,10 +2,22 @@
 title: >
   The `CIA` User's Guide
 author:
-- name: Ivan Ferrari + Add other developers here! TODO
+- name: Ivan Ferrari
   affiliation: 
-  - INGM TODO
-  email: email@ivan.fe
+  - Istituto Nazionale Genetica Molecolare (INGM), Milan, Italy
+  email: ferrari@ingm.org
+- name: Andrea Gobbini
+  affiliation: 
+  - Istituto Nazionale Genetica Molecolare (INGM), Milan, Italy
+  email: gobbini@ingm.org
+- name: Mattia Battistella
+  affiliation: 
+  - Istituto Nazionale Genetica Molecolare (INGM), Milan, Italy
+  email: battistella@ingm.org
+- name: Eugenia Galeota
+  affiliation: 
+  - Istituto Nazionale Genetica Molecolare (INGM), Milan, Italy
+  email: galeota@ingm.org
 - name: Federico Marini
   affiliation: 
   - Institute of Medical Biostatistics, Epidemiology and Informatics (IMBEI), Mainz
