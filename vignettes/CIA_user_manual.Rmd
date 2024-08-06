@@ -171,16 +171,14 @@ SO <- NormalizeData(SO,
 SO
 ```
 
-For a `SingleCellExperiment` object, we can use
+For a `SingleCellExperiment` object, we can use the following chunk to obtain normalized expression values in the same flavour provided by the `scanpy` framework:
  
 ```{r loadsce}
 SCE <- as.SingleCellExperiment(SO)
 library_sizes <- colSums(assay(SCE, "counts"))
 normalized_counts <- sweep(assay(SCE, "counts"), 2, library_sizes, FUN = "/") * 10000
-assay(SCE, "logcounts") <- log1p(normalized_counts) ## To add 'logcounts' assay
+assay(SCE, "logcounts") <- log1p(normalized_counts) 
 SCE
-
-## TODO: Ivan, can we simply use the logNormCounts() function?
 ```
 
 ```{r graphsce}
