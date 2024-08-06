@@ -190,8 +190,6 @@ test_that("All scores at once computations", {
 
 
   # all signatures - matrix -------------------------------------------------
-  # TODO
-
   allsigs_cia <- score_all_signatures(
     data = mat_logcounts,
     signatures_input = gmt,
@@ -431,8 +429,3 @@ test_that("Checking performance metrics and associated functionality", {
     columns_obs = names(gmt))
   expect_true(is(p_gd, "gg"))
 })
-
-# TODO: rename the param column_name? cia_name?
-
-# TODO: option to ALSO store the CIA scores?
-
