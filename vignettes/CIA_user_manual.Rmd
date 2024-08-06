@@ -323,9 +323,9 @@ DimPlot(SO, group.by = "celltype", cols = cols) |
 ```
 
 ```{r groupdistro, fig.width=10, fig.height=8}
-group_composition(SO@meta.data, 
-                  classification_obs = "CIA_default", 
-                  ref_obs = "celltype")
+group_composition_heatmap(SO@meta.data, 
+                          classification_obs = "CIA_default", 
+                          ref_obs = "celltype")
 ```
 
 The confusion matrix reveals that the classification method is highly effective, with most cells being correctly labeled according to their true cell types. 

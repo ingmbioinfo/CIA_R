@@ -3,7 +3,7 @@
 export(CIA_classify)
 export(celltypist_majority_vote)
 export(compute_classification_metrics)
-export(group_composition)
+export(group_composition_heatmap)
 export(grouped_classification_metrics)
 export(grouped_distributions)
 export(load_signatures)
