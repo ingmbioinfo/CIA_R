@@ -201,16 +201,17 @@ DimPlot(SO, group.by = "seurat_annotations") |
 # Signature score {#sigscore}
 
 The `score_signature()` function is **based on the "gene signature score"** calculation method presented in [@DellaChiara2021] *Della Chiara, Gervasoni, Fakiola, Godano et al., 2021* [[3]](https://www.nature.com/articles/s41467-021-22544-y).  
-The "gene signature score" of a signature **S** in a cell **C** is defined as follows:
+The "gene signature score" of a signature **S** in a cell **j** is defined as follows:
 
-$${\bf{GSS(C)}}=\frac{n}{L}\frac{\sum_{i=1}^n {\bf{X}}_i\: for\: {\bf{G}}_i \in S}{\sum_{j=1}^m {\bf{X}}_j\: for\: {\bf{G}}_j \in G}$$
-
+$${GSS}(S, j) = \left( \frac{n_j}{L} \right) \times \left( \frac{\sum_{i \in S \cap G_j} X_{ij}}{\sum_{i \in G_j} X_{ij}} \right)$$
+ 
 Where:
 
-- **n** is the number of genes in **S** that are expressed in **C**;
-- $\mathbf{G}=\left\{G_1, G_2, \ldots, G_{\mathrm{m}}\right\}$ is the list of length **m** that contains all the gene symbols of cell **C**;
-- $\mathbf{S}=\left\{G_1, G_2, \ldots, G_{\mathrm{l}}\right\}$ is the list of gene symbols of length **L** that compose the signature;
-- $\mathbf{X}=\left\{X_1, X_2, \ldots, X_{\mathrm{m}}\right\}$ is the vector of gene expression values for genes in list **G**.
+- $n_j$ is the number of genes in the signature $S$ that have non-zero expression in cell $j$
+- $L$ is the total number of genes in the signature $S$
+- $S$ is the set of genes in the signature
+- $𝐺_j$ is the set of genes expressed (i.e. with counts > 0) in cell $j$
+- $X$ is the gene expression matrix where $X_{ij}$ represents the expression of gene $i$ in cell $j$
 
 With this score it is possible to **condensate in a single value both the proportion of expressed signature genes and their overall expression**, enabling researchers to easily study whole signatures expression at single cell level. 
 
