@@ -284,6 +284,8 @@ plot_group_composition <- function(df,
     stop("plot_type must be 'percentage' or 'raw'")
   }
 
+  plot_data$Cluster <- factor(plot_data$Cluster, levels = rev(unique(plot_data$Cluster)))
+
   ## Plotting
   p <- ggplot(plot_data, aes(
     x = .data$Cluster,
