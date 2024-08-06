@@ -200,7 +200,7 @@ DimPlot(SO, group.by = "seurat_annotations") |
 
 # Signature score {#sigscore}
 
-The `score_signature()` function is **based on the "gene signature score"** calculation method presented in [@DellaChiara2021] *Della Chiara, Gervasoni, Fakiola, Godano et al., 2021* [[3]](https://www.nature.com/articles/s41467-021-22544-y).  
+The `score_signature()` function is **based on the "gene signature score"** calculation method presented in [@DellaChiara2021].  
 The "gene signature score" of a signature **S** in a cell **j** is defined as follows:
 
 $${GSS}(S, j) = \left( \frac{n_j}{L} \right) \times \left( \frac{\sum_{i \in S \cap G_j} X_{ij}}{\sum_{i \in G_j} X_{ij}} \right)$$
