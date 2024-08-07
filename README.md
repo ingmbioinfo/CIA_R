@@ -50,7 +50,7 @@ integration into existing workflows.
 - **Python docs**:
   `CIA Python documentation <https://cia-python.readthedocs.io/en/latest/index.html>`\_
 - **R Package and Tutorial**:
-  `CIA R GitHub Repository <https://github.com/ingmbioinfo/cia/tree/master/tutorial>`\_
+  `CIA R GitHub Repository <https://github.com/ingmbioinfo/CIA_R>`\_
 
 ## Installation
 
