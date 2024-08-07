@@ -53,8 +53,17 @@ provided data. It loads the gene signatures from an input source and computes
 the scores based on the expression levels of these genes in the data.
 }
 \examples{
-## TODO example
+SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
+library("Seurat")
+SO <- NormalizeData(SO,
+                   normalization.method = "LogNormalize",
+                   scale.factor = 10000)
+gmt <- load_signatures(system.file("extdata", "atlas.gmt", package = "CIA"))
 
+## Checking all signatures at once
+score_all_signatures(data = SO,
+                     signatures_inpu = gmt,
+                     n_cpus = 2)
 }
 \seealso{
 \code{\link[=score_signature]{score_signature()}} \code{\link[=CIA_classify]{CIA_classify()}}

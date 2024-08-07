@@ -190,8 +190,6 @@ test_that("All scores at once computations", {
 
 
   # all signatures - matrix -------------------------------------------------
-  # TODO
-
   allsigs_cia <- score_all_signatures(
     data = mat_logcounts,
     signatures_input = gmt,
@@ -420,9 +418,9 @@ test_that("Checking performance metrics and associated functionality", {
   )
   expect_true(is(p_gc, "gg"))
 
-  p_gch <- group_composition(so_aio@meta.data,
-                             classification_obs = "CIA_prediction",
-                             ref_obs = "CIA_prediction")
+  p_gch <- group_composition_heatmap(so_aio@meta.data,
+                                     classification_obs = "CIA_prediction",
+                                     ref_obs = "CIA_prediction")
   expect_true(is(p_gch, "gg"))
 
   p_gd <- grouped_distributions(
@@ -431,8 +429,3 @@ test_that("Checking performance metrics and associated functionality", {
     columns_obs = names(gmt))
   expect_true(is(p_gd, "gg"))
 })
-
-# TODO: rename the param column_name? cia_name?
-
-# TODO: option to ALSO store the CIA scores?
-

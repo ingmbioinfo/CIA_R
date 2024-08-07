@@ -2,10 +2,22 @@
 title: >
   The `CIA` User's Guide
 author:
-- name: Ivan Ferrari + Add other developers here! TODO
+- name: Ivan Ferrari
   affiliation: 
-  - INGM TODO
-  email: email@ivan.fe
+  - Istituto Nazionale Genetica Molecolare (INGM), Milan, Italy
+  email: ferrari@ingm.org
+- name: Andrea Gobbini
+  affiliation: 
+  - Istituto Nazionale Genetica Molecolare (INGM), Milan, Italy
+  email: gobbini@ingm.org
+- name: Mattia Battistella
+  affiliation: 
+  - Istituto Nazionale Genetica Molecolare (INGM), Milan, Italy
+  email: battistella@ingm.org
+- name: Eugenia Galeota
+  affiliation: 
+  - Istituto Nazionale Genetica Molecolare (INGM), Milan, Italy
+  email: galeota@ingm.org
 - name: Federico Marini
   affiliation: 
   - Institute of Medical Biostatistics, Epidemiology and Informatics (IMBEI), Mainz
@@ -159,16 +171,14 @@ SO <- NormalizeData(SO,
 SO
 ```
 
-For a `SingleCellExperiment` object, we can use
+For a `SingleCellExperiment` object, we can use the following chunk to obtain normalized expression values in the same flavour provided by the `scanpy` framework:
  
 ```{r loadsce}
 SCE <- as.SingleCellExperiment(SO)
 library_sizes <- colSums(assay(SCE, "counts"))
 normalized_counts <- sweep(assay(SCE, "counts"), 2, library_sizes, FUN = "/") * 10000
-assay(SCE, "logcounts") <- log1p(normalized_counts) ## To add 'logcounts' assay
+assay(SCE, "logcounts") <- log1p(normalized_counts) 
 SCE
-
-## TODO: Ivan, can we simply use the logNormCounts() function?
 ```
 
 ```{r graphsce}
@@ -190,17 +200,18 @@ DimPlot(SO, group.by = "seurat_annotations") |
 
 # Signature score {#sigscore}
 
-The `score_signature()` function is **based on the "gene signature score"** calculation method presented in [@DellaChiara2021] *Della Chiara, Gervasoni, Fakiola, Godano et al., 2021* [[3]](https://www.nature.com/articles/s41467-021-22544-y).  
-The "gene signature score" of a signature **S** in a cell **C** is defined as follows:
+The `score_signature()` function is **based on the "gene signature score"** calculation method presented in [@DellaChiara2021].  
+The "gene signature score" of a signature **S** in a cell **j** is defined as follows:
 
-$${\bf{GSS(C)}}=\frac{n}{L}\frac{\sum_{i=1}^n {\bf{X}}_i\: for\: {\bf{G}}_i \in S}{\sum_{j=1}^m {\bf{X}}_j\: for\: {\bf{G}}_j \in G}$$
-
+$${GSS}(S, j) = \left( \frac{n_j}{L} \right) \times \left( \frac{\sum_{i \in S \cap G_j} X_{ij}}{\sum_{i \in G_j} X_{ij}} \right)$$
+ 
 Where:
 
-- **n** is the number of genes in **S** that are expressed in **C**;
-- $\mathbf{G}=\left\{G_1, G_2, \ldots, G_{\mathrm{m}}\right\}$ is the list of length **m** that contains all the gene symbols of cell **C**;
-- $\mathbf{S}=\left\{G_1, G_2, \ldots, G_{\mathrm{l}}\right\}$ is the list of gene symbols of length **L** that compose the signature;
-- $\mathbf{X}=\left\{X_1, X_2, \ldots, X_{\mathrm{m}}\right\}$ is the vector of gene expression values for genes in list **G**.
+- $n_j$ is the number of genes in the signature $S$ that have non-zero expression in cell $j$
+- $L$ is the total number of genes in the signature $S$
+- $S$ is the set of genes in the signature
+- $𝐺_j$ is the set of genes expressed (i.e. with counts > 0) in cell $j$
+- $X$ is the gene expression matrix where $X_{ij}$ represents the expression of gene $i$ in cell $j$
 
 With this score it is possible to **condensate in a single value both the proportion of expressed signature genes and their overall expression**, enabling researchers to easily study whole signatures expression at single cell level. 
 
@@ -311,9 +322,9 @@ DimPlot(SO, group.by = "celltype", cols = cols) |
 ```
 
 ```{r groupdistro, fig.width=10, fig.height=8}
-group_composition(SO@meta.data, 
-                  classification_obs = "CIA_default", 
-                  ref_obs = "celltype")
+group_composition_heatmap(SO@meta.data, 
+                          classification_obs = "CIA_default", 
+                          ref_obs = "celltype")
 ```
 
 The confusion matrix reveals that the classification method is highly effective, with most cells being correctly labeled according to their true cell types. 
@@ -448,14 +459,15 @@ In this section, we display the additional functionality provided by the CIA pac
 With the `score_signature()` and `score_all_signatures()` functions, you can compute and inspect signatures from the [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/) by simply providing the corresponding URL.
 
 ```{r checkmsigdb}
+phago_signature <- 
+  load_signatures("https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_PHAGOCYTOSIS&fileType=gmt")
+
 head(
   score_signature(
     SO,
-    geneset = "https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName=GOBP_PHAGOCYTOSIS&fileType=gmt"
+    geneset = phago_signature$GOBP_PHAGOCYTOSIS
   )
 )
-
-# TODO: all zeroes, is this requiring to be logged in?
 ```
 
 ```{r scoregmt}

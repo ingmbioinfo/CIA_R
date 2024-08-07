@@ -284,6 +284,8 @@ plot_group_composition <- function(df,
     stop("plot_type must be 'percentage' or 'raw'")
   }
 
+  plot_data$Cluster <- factor(plot_data$Cluster, levels = rev(unique(plot_data$Cluster)))
+
   ## Plotting
   p <- ggplot(plot_data, aes(
     x = .data$Cluster,
@@ -336,15 +338,14 @@ plot_group_composition <- function(df,
 #'
 #' @examples
 #' ## Assuming 'data' is a data frame with columns 'Group' and 'Category'
-#' # group_composition(data, 'Category', 'Group')
+#' # group_composition_heatmap(data, 'Category', 'Group')
 #' # TODO
 #'
-#' # TODO: an idea, shall we rename this to "group_composition_heatmap" to make its "form" clear?
-group_composition <- function(data,
-                              classification_obs,
-                              ref_obs,
-                              columns_order = NULL,
-                              color_map = "Greens") {
+group_composition_heatmap <- function(data,
+                                      classification_obs,
+                                      ref_obs,
+                                      columns_order = NULL,
+                                      color_map = "Greens") {
   ## Extract data
   ref_data <- data[[ref_obs]]
   class_data <- data[[classification_obs]]
@@ -425,6 +426,7 @@ group_composition <- function(data,
 #'
 #'
 #' ## TODO: we need to warn right away that the scores have to be in!
+#' # grouped_distributions_heatmap?
 grouped_distributions <- function(data,
                                   columns_obs,
                                   ref_obs,

@@ -67,8 +67,19 @@ provided the difference between the top two scores exceeds a given threshold,
 otherwise, it is marked as unassigned.
 }
 \examples{
-## TODO example
+SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
+library("Seurat")
+SO <- NormalizeData(SO,
+                   normalization.method = "LogNormalize",
+                   scale.factor = 10000)
+gmt <- load_signatures(system.file("extdata", "atlas.gmt", package = "CIA"))
 
+## Checking all signatures at once
+SO <- CIA_classify(data = SO,
+                   signatures_input = gmt,
+                   similarity_threshold = 0,
+                   column_name = "CIA_default",
+                   n_cpus = 2)
 }
 \seealso{
 \code{\link[=score_signature]{score_signature()}} \code{\link[=score_all_signatures]{score_all_signatures()}}

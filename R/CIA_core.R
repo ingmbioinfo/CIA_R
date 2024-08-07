@@ -95,8 +95,15 @@ load_signatures <- function(signatures_input, description_field_available = TRUE
 #' @seealso [score_all_signatures()] [CIA_classify()]
 #'
 #' @examples
-#' ## TODO example
+#' SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
+#' library("Seurat")
+#' SO <- NormalizeData(SO,
+#'                    normalization.method = "LogNormalize",
+#'                    scale.factor = 10000)
+#' gmt <- load_signatures(system.file("extdata", "atlas.gmt", package = "CIA"))
 #'
+#' ## Checking the B cell signature
+#' score_signature(data = SO, geneset = gmt[["B"]])
 score_signature <- function(data,
                             geneset,
                             seurat_assay = "RNA",
@@ -219,8 +226,17 @@ score_signature <- function(data,
 #' @seealso [score_signature()] [CIA_classify()]
 #'
 #' @examples
-#' ## TODO example
+#' SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
+#' library("Seurat")
+#' SO <- NormalizeData(SO,
+#'                    normalization.method = "LogNormalize",
+#'                    scale.factor = 10000)
+#' gmt <- load_signatures(system.file("extdata", "atlas.gmt", package = "CIA"))
 #'
+#' ## Checking all signatures at once
+#' score_all_signatures(data = SO,
+#'                      signatures_inpu = gmt,
+#'                      n_cpus = 2)
 score_all_signatures <- function(data,
                                  signatures_input,
                                  return_score = FALSE,
@@ -342,13 +358,10 @@ score_all_signatures <- function(data,
     return(scores_df)
   }
 
-
   # TODO: call the column names in a clever way to make people notice where
   # these come from
-
   # ideally: CIA_signatureid_celltype
   # CIA_azimuth_Vip, for example
-
 
   if (is(data, "Seurat")) {
     data@meta.data[, colnames(scores_df)] <- scores_df
@@ -414,8 +427,19 @@ score_all_signatures <- function(data,
 #' @seealso [score_signature()] [score_all_signatures()]
 #'
 #' @examples
-#' ## TODO example
+#' SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
+#' library("Seurat")
+#' SO <- NormalizeData(SO,
+#'                    normalization.method = "LogNormalize",
+#'                    scale.factor = 10000)
+#' gmt <- load_signatures(system.file("extdata", "atlas.gmt", package = "CIA"))
 #'
+#' ## Checking all signatures at once
+#' SO <- CIA_classify(data = SO,
+#'                    signatures_input = gmt,
+#'                    similarity_threshold = 0,
+#'                    column_name = "CIA_default",
+#'                    n_cpus = 2)
 CIA_classify <- function(data,
                          signatures_input,
                          n_cpus = NULL,
@@ -495,13 +519,13 @@ CIA_classify <- function(data,
   if (is(data, "Seurat")) {
     data@meta.data[, column_name] <- as.factor(labels)
 
-    message(column_name, "has been added in data@meta.data", "\n")
+    message(column_name, " has been added in data@meta.data", "\n")
 
     return(data)
   } else if (is(data, "SingleCellExperiment")) {
     colData(data)[, column_name] <- as.data.frame(labels)
 
-    message(column_name, "has been added in colData(data)", "\n")
+    message(column_name, " has been added in colData(data)", "\n")
 
     return(data)
   } else {
