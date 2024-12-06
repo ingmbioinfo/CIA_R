@@ -33,7 +33,10 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Print working directory
+        run: echo ${GITHUB_WORKSPACE}
 
       - name: Set up R and install BiocManager
         uses: grimbough/bioc-actions/setup-bioc@v1
@@ -63,38 +66,26 @@ jobs:
           key: ${{ runner.os }}-bioc-${{ matrix.config.bioc }}-${{ hashFiles('depends.Rds') }}
           restore-keys: ${{ runner.os }}-bioc-${{ matrix.config.bioc }}-
 
-      - name: Install system dependencies
+      - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         env:
           RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
-        run: |
-          Rscript -e "remotes::install_github('r-hub/sysreqs')"
-          sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
-          sudo -s eval "$sysreqs"
-          sudo apt-get update && sudo apt-get -y install libcurl4-openssl-dev libglpk-dev libharfbuzz-dev libfribidi-dev
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          pak-version: devel
 
       - name: Install system dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install cairo
-          brew install --cask xquartz
           brew install harfbuzz
           brew install fribidi
-          brew install fftw
-
-      # - name: Set up gfortran symlinks (macOS)
-      #   if: runner.os == 'macOS'
-      #   run: |
-      #     set -x
-      #     sudo ln -s /usr/local/Cellar/gcc@11/*/lib/gcc/11 /usr/local/gfortran/lib
-      #     gfortran --version
 
       - name: Install dependencies
         run: |
           local_deps <- remotes::local_package_deps(dependencies = TRUE)
           deps <- remotes::dev_package_deps(dependencies = TRUE, repos = BiocManager::repositories())
           BiocManager::install(local_deps[local_deps %in% deps$package[deps$diff != 0]], Ncpu = 2L)
-          BiocManager::install(c("GenomeInfoDbData", "GO.db"), Ncpu = 2L)
           remotes::install_cran('rcmdcheck', Ncpu = 2L)
         shell: Rscript {0}
 
@@ -106,32 +97,41 @@ jobs:
         shell: Rscript {0}
 
       - name: Build, Install, Check
+        id: build-install-check
         uses: grimbough/bioc-actions/build-install-check@v1
+
+      - name: Upload install log if the build/install/check step fails
+        if: always() && (steps.build-install-check.outcome == 'failure')
+        uses: actions/upload-artifact@v4
+        with:
+          name: install-log
+          path: |
+            ${{ steps.build-install-check.outputs.install-log }}
+
+      - name: Show testthat output (windows)
+        if: always() && runner.os == 'Windows'
+        run: |
+            type ${{ steps.build-install-check.outputs.check-dir }}\tests\testthat.Rout
+        shell: cmd
+
+      - name: Show testthat output (non-windows)
+        if: always() && runner.os != 'Windows'
+        run: |
+            cat ${{ steps.build-install-check.outputs.check-dir }}/tests/testthat.Rout
+        shell: bash
+
+      - name: Upload check results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-bioc-${{ matrix.config.bioc }}-results
+          path: ${{ steps.build-install-check.outputs.check-dir }}
 
       - name: Run BiocCheck
         uses: grimbough/bioc-actions/run-BiocCheck@v1
         with:
           arguments: '--no-check-bioc-views --no-check-bioc-help'
           error-on: 'error'
-
-      # - name: Upload check results
-      #   if: failure()
-      #   uses: actions/upload-artifact@main
-      #   with:
-      #     name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-      #     path: check
-
-      - name: Show testthat output
-        if: always()
-        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
-        shell: bash
-
-      - name: Upload check results
-        if: failure()
-        uses: actions/upload-artifact@main
-        with:
-          name: ${{ runner.os }}-bioc-${{ matrix.config.bioc }}-results
-          path: check
 
       - name: Test coverage
         if: matrix.config.os == 'macOS-latest'
