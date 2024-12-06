@@ -23,7 +23,7 @@ author:
   - Institute of Medical Biostatistics, Epidemiology and Informatics (IMBEI), Mainz
   email: marinif@uni-mainz.de
 date: "`r BiocStyle::doc_date()`"
-package: "`r BiocStyle::pkg_ver('CIA')`"
+package: "`r BiocStyle::pkg_ver('CIAr')`"
 output: 
   BiocStyle::html_document:
     toc_float: true
@@ -50,7 +50,7 @@ bibliography: CIA_bibliography.bib
 
 **Last edited**: 2024-07-11
 
-**License**: `r packageDescription("CIA")[["License"]]`
+**License**: `r packageDescription("CIAr")[["License"]]`
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
@@ -94,13 +94,13 @@ To install this package, start R and enter:
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
-BiocManager::install("CIA")
+BiocManager::install("CIAr")
 ```
 
 Once installed, the package can be loaded and attached to your current workspace as follows:
 
 ```{r loadlib, eval = TRUE}
-library("CIA")
+library("CIAr")
 ```
 
 If you want to install the development version (from the GitHub repository), you should instead run the following line:
@@ -125,7 +125,7 @@ N.B. - DEGs have been filtered to create concise and targeted gene lists: a log2
 We start our analysis by loading the required packages:
 
 ```{r loadpkgs}
-library("CIA")
+library("CIAr")
 library("SingleCellExperiment")
 library("Seurat")
 library("Matrix")
@@ -138,7 +138,7 @@ Subsequently, we load the `atlas.gmt` file into our environment and inspect it b
 
 ```{r loadgmt}
 ## To load the gene signatures
-gmt <- load_signatures(system.file("extdata", "atlas.gmt", package = "CIA"))
+gmt <- load_signatures(system.file("extdata", "atlas.gmt", package = "CIAr"))
 
 # One can load_signatures can load both dictionaries or gmt files by providing both file_paths or URLs
 
@@ -164,7 +164,7 @@ Our method support both SeuratObject (SO) an SingleCellExperiment objects as inp
 For a `Seurat` object:
 
 ```{r loadso}
-SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIA"))
+SO <- readRDS(system.file("extdata", "pbmc3k.rds", package = "CIAr"))
 SO <- NormalizeData(SO, 
                     normalization.method = "LogNormalize", 
                     scale.factor = 10000) ## To add "data" layer
