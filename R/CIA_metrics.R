@@ -109,7 +109,7 @@ compute_classification_metrics <- function(cells_info,
   report <- t(as.data.frame(report))
   colnames(report) <- c("SE", "SP", "PR", "ACC", "F1", "%UN")
   if (sum(report[, "%UN"]) == 0) {
-    report <- report[, 1:5, drop = FALSE]
+    report <- report[, seq_len(5), drop = FALSE]
   }
   return(report)
 }
@@ -209,7 +209,7 @@ grouped_classification_metrics <- function(cells_info,
   rownames(report) <- unique(datam[[ref_labels]])
   colnames(report) <- c("SE", "SP", "PR", "ACC", "F1", "%UN")
   if (sum(report[, "%UN"]) == 0) {
-    report <- report[, 1:5, drop = FALSE]
+    report <- report[, seq_len(5), drop = FALSE]
   }
   return(report)
 }
@@ -241,6 +241,7 @@ grouped_classification_metrics <- function(cells_info,
 #'
 #' @examples
 #' # TODO
+#' # TODO: as an idea: we could flip the order of the levels to have it match the legend?
 #'
 plot_group_composition <- function(df,
                                    ref_col,
@@ -282,6 +283,8 @@ plot_group_composition <- function(df,
   } else {
     stop("plot_type must be 'percentage' or 'raw'")
   }
+
+  plot_data$Cluster <- factor(plot_data$Cluster, levels = rev(unique(plot_data$Cluster)))
 
   ## Plotting
   p <- ggplot(plot_data, aes(
@@ -335,15 +338,14 @@ plot_group_composition <- function(df,
 #'
 #' @examples
 #' ## Assuming 'data' is a data frame with columns 'Group' and 'Category'
-#' # group_composition(data, 'Category', 'Group')
+#' # group_composition_heatmap(data, 'Category', 'Group')
 #' # TODO
 #'
-#' # TODO: an idea, shall we rename this to "group_composition_heatmap" to make its "form" clear?
-group_composition <- function(data,
-                              classification_obs,
-                              ref_obs,
-                              columns_order = NULL,
-                              color_map = "Greens") {
+group_composition_heatmap <- function(data,
+                                      classification_obs,
+                                      ref_obs,
+                                      columns_order = NULL,
+                                      color_map = "Greens") {
   ## Extract data
   ref_data <- data[[ref_obs]]
   class_data <- data[[classification_obs]]
@@ -362,10 +364,10 @@ group_composition <- function(data,
   }
   df$rowname <- rownames(df)
   df <- reshape(df,
-    varying = list(names(df)[1:(dim(df)[2] - 1)]),
+    varying = list(names(df)[seq_len(dim(df)[2] - 1)]),
     v.names = "Value",
     timevar = "Column",
-    times = names(df)[1:(dim(df)[2] - 1)], direction = "long"
+    times = names(df)[seq_len(dim(df)[2] - 1)], direction = "long"
   )
 
   ## Setting up the color palette
@@ -424,6 +426,7 @@ group_composition <- function(data,
 #'
 #'
 #' ## TODO: we need to warn right away that the scores have to be in!
+#' # grouped_distributions_heatmap?
 grouped_distributions <- function(data,
                                   columns_obs,
                                   ref_obs,
@@ -517,7 +520,7 @@ grouped_distributions <- function(data,
       function(group) data[data[[ref_obs]] == group, column]
     )
     names(sign) <- unique_groups
-    sign_medians <- sapply(sign, median, na.rm = TRUE)
+    sign_medians <- unlist(lapply(sign, median, na.rm = TRUE))
     pos <- which.max(sign_medians)
 
     combs <- combn(unique_groups, 2, simplify = FALSE)

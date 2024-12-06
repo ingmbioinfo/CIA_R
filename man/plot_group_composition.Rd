@@ -42,5 +42,6 @@ percentages.
 }
 \examples{
 # TODO
+# TODO: as an idea: we could flip the order of the levels to have it match the legend?
 
 }

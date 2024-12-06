@@ -10,7 +10,24 @@
 Cluster Independent Annotation
 }
 \details{
-This package provides functionality to ... TODO
+\code{CIA} (Cluster Independent Annotation) is a cutting-edge computational tool
+designed to accurately classify cells in scRNA-seq datasets using gene
+signatures.
+This tool operates without the need for a fully annotated reference dataset
+or complex machine learning processes, providing a highly user-friendly and
+practical solution for cell type annotation.
+
+\code{CIA} summarizes the information of each signature expression into a single
+score value for each cell.
+By comparing these score values, \code{CIA} assigns labels to each cell based
+on the top-scored signature.
+\code{CIA} can filter scores by their distribution or significance, allowing
+comparison of genesets with lengths spanning tens to thousands of genes.
+
+\code{CIA} is implemented in both R and Python, making it compatible with all
+major single-cell analysis frameworks like \code{SingleCellExperiment}, \code{Seurat},
+and \code{Scanpy}.
+This compatibility ensures a seamless integration into existing workflows.
 }
 \seealso{
 Useful links:
@@ -21,12 +38,13 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: a1 a2 \email{ab@c.d} (\href{https://orcid.org/0000-0001-0002-0003}{ORCID})
+\strong{Maintainer}: Ivan Ferrari \email{ferrari@ingm.org} (\href{https://orcid.org/0000-0003-3746-4143}{ORCID})
 
 Authors:
 \itemize{
-  \item a1 a2 \email{ab@c.d} (\href{https://orcid.org/0000-0001-0002-0003}{ORCID})
-  \item a1 a2 \email{ab@c.d} (\href{https://orcid.org/0000-0001-0002-0003}{ORCID})
+  \item Andrea Gobbini \email{gobbini@ingm.org} (\href{https://orcid.org/0000-0002-8846-4656}{ORCID})
+  \item Mattia Battistella \email{battistella@ingm.org} (\href{https://orcid.org/0009-0006-9236-4398}{ORCID})
+  \item Eugenia Galeota \email{galeota@ingm.org} (\href{https://orcid.org/0000-0002-4413-7389}{ORCID})
   \item Federico Marini \email{marinif@uni-mainz.de} (\href{https://orcid.org/0000-0003-3252-7758}{ORCID})
 }
 

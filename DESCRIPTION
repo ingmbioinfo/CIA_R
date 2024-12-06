@@ -1,28 +1,35 @@
 Package: CIA
-Title: What the Package Does (One Line, Title Case) TODO
+Title: Cluster Independent Annotation (CIA) to Accurately Classify Cells in 
+    scRNA-seq Datasets Using Gene Signatures
 Version: 0.2.0
 Authors@R: 
     c(
         person(
-            given = "a1", family = "a2", role = c("aut", "cre"), 
-            email = "ab@c.d", comment = c(ORCID = "0000-0001-0002-0003")
+            given = "Ivan", family = "Ferrari", role = c("aut", "cre"), 
+            email = "ferrari@ingm.org", comment = c(ORCID = "0000-0003-3746-4143")
         ),
         person(
-            given = "a1", family = "a2", role = c("aut"), 
-            email = "ab@c.d", comment = c(ORCID = "0000-0001-0002-0003")
+            given = "Andrea", family = "Gobbini", role = c("aut"), 
+            email = "gobbini@ingm.org", comment = c(ORCID = "0000-0002-8846-4656")
         ),
         person(
-            given = "a1", family = "a2", role = c("aut"), 
-            email = "ab@c.d", comment = c(ORCID = "0000-0001-0002-0003")
+            given = "Mattia", family = "Battistella", role = c("aut"), 
+            email = "battistella@ingm.org", comment = c(ORCID = "0009-0006-9236-4398")
+        ),
+        person(
+            given = "Eugenia", family = "Galeota", role = c("aut"), 
+            email = "galeota@ingm.org", comment = c(ORCID = "0000-0002-4413-7389")
         ),
         person(
             given = "Federico", family = "Marini", role = c("aut"), 
             email = "marinif@uni-mainz.de", comment = c(ORCID = "0000-0003-3252-7758")
         )
     )
-Description: What the package does (one paragraph) longer longerlonger longer. 
-    TODO TODO yadda yadda longer longerlonger longer. TODO TODO final sentence 
-    is very long.
+Description: CIA (Cluster Independent Annotation) is designed to accurately 
+    classify cells in scRNA-seq datasets using gene signatures. This tool 
+    operates without the need for a fully annotated reference dataset or complex 
+    machine learning processes. All in all, it provides a highly user-friendly 
+    and practical solution for cell type annotation. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -55,6 +62,7 @@ Suggests:
     scRNAseq,
     scater,
     scran,
+    iSEE,
     patchwork,
     testthat (>= 3.0.0)
 URL: https://github.com/ingmbioinfo/CIA_R/
