@@ -47,4 +47,5 @@ in the corresponding group compared to all other groups.
 
 
 ## TODO: we need to warn right away that the scores have to be in!
+# grouped_distributions_heatmap?
 }
