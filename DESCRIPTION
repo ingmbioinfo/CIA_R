@@ -1,7 +1,7 @@
 Package: CIA
 Title: Cluster Independent Annotation (CIA) to Accurately Classify Cells in 
     scRNA-seq Datasets Using Gene Signatures
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     c(
         person(
