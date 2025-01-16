@@ -1,4 +1,11 @@
-url: ~
+url: https://ingmbioinfo.github.io/CIA_R/
+authors:
+  - Ivan Ferrari
+  - Andrea Gobbini
+  - Mattia Battistella
+  - Eugenia Galeota
+  - Federico Marini:
+    href: https://federicomarini.github.io
 template:
   bootstrap: 5
   bootswatch: lux
