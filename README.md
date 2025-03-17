@@ -57,9 +57,9 @@ integration into existing workflows.
 You can install the development version of `CIA` from GitHub with:
 
 ``` r
-library("remotes")
-remotes::install_github("ingmbioinfo/CIA_R", 
-                        dependencies = TRUE, build_vignettes = TRUE)
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ingmbioinfo/CIA_R", force = TRUE, dependencies = TRUE)
 ```
 
 ## Development
