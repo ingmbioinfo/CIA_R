@@ -62,6 +62,19 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("ingmbioinfo/CIA_R", force = TRUE, dependencies = TRUE)
 ```
 
+## Installation with conda
+
+You can also install the development version of `CIA` exploiting CIA_R.yml (in inst folder):
+
+``` bash
+
+conda env create -n {name} -f CIA_R.yml
+conda activate {name}
+Rscript -e 'if (!requireNamespace("remotes", quietly=TRUE)) install.packages("remotes", repos="https://cloud.r-project.org"); remotes::install_github("ingmbioinfo/CIA_R", dependencies=TRUE, upgrade="never", build_vignettes=FALSE)'
+
+```
+
+
 ## Development
 
 If you encounter a bug, have usage questions, or want to share ideas and
