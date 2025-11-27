@@ -26,7 +26,7 @@
 #' signatures
 #'
 #' gmt_url <-
-#'   "https://data.wikipathways.org/20240710/gmt/wikipathways-20240710-gmt-Homo_sapiens.gmt"
+#'   "https://data.wikipathways.org/20251110/gmt/wikipathways-20251110-gmt-Homo_sapiens.gmt"
 #'
 #' sig_wikipathways <- load_signatures(gmt_url)
 #' head(names(sig_wikipathways))
