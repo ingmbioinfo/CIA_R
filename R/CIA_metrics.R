@@ -584,8 +584,8 @@ grouped_distributions <- function(data,
     theme_minimal() +
     labs(
       title = "Median score values",
-      x = "Signatures",
-      y = ref_obs
+      x = ref_obs,
+      y = "Signatures"
     )
 
   ## Save or display plot
