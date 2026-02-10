@@ -65,6 +65,35 @@ If you encounter a bug, have usage questions, or want to share ideas and
 functionality to make this package better, feel free to file an
 [issue](https://github.com/ingmbioinfo/CIA_R/issues).
 
+## Citation
+
+To cite CIA in your work, please use:
+
+> Ferrari I, Battistella M, Vincenti F, Gobbini A, Marini F, Notarbartolo S,
+Costanza J, Biffo S, Grifantini R, Abrignani S, Galeota E (2025). “CIA:
+unveiling cellular identities with cluster-independent annotation in
+single-cell RNA sequencing data for comprehensive cell type characterization
+and exploration.” _BMC Bioinformatics_, *27*(38).
+doi:10.1186/s12859-025-06320-z <https://doi.org/10.1186/s12859-025-06320-z>.
+
+or the BibTeX entry:
+
+```
+@article{Ferrari2025,
+  title = {CIA: unveiling cellular identities with cluster-independent annotation in single-cell RNA sequencing data for comprehensive cell type characterization and exploration},
+  volume = {27},
+  ISSN = {1471-2105},
+  url = {http://dx.doi.org/10.1186/s12859-025-06320-z},
+  DOI = {10.1186/s12859-025-06320-z},
+  number = {38},
+  journal = {BMC Bioinformatics},
+  publisher = {Springer Science and Business Media LLC},
+  author = {Ferrari,  Ivan and Battistella,  Mattia and Vincenti,  Francesca and Gobbini,  Andrea and Marini,  Federico and Notarbartolo,  Samuele and Costanza,  Jole and Biffo,  Stefano and Grifantini,  Renata and Abrignani,  Sergio and Galeota,  Eugenia},
+  year = {2025},
+  month = dec 
+}
+```
+
 ## Code of Conduct
 
 Please note that the CIA project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html). 

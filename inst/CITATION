@@ -1,0 +1,24 @@
+bibentry(
+  bibtype = "Article",
+  title = "CIA: unveiling cellular identities with cluster-independent annotation in single-cell RNA sequencing data for comprehensive cell type characterization and exploration",
+  author = c(
+    person("Ivan", "Ferrari"),
+    person("Mattia", "Battistella"),
+    person("Francesca", "Vincenti"),
+    person("Andrea", "Gobbini"),
+    person("Federico", "Marini"),
+    person("Samuele", "Notarbartolo"),
+    person("Jole", "Costanza"),
+    person("Stefano", "Biffo"),
+    person("Renata", "Grifantini"),
+    person("Sergio", "Abrignani"),
+    person("Eugenia", "Galeota")
+  ),
+  journal = "BMC Bioinformatics",
+  publisher = "Springer Science and Business Media LLC",
+  year = "2025",
+  volume = "27",
+  url = "http://dx.doi.org/10.1186/s12859-025-06320-z",
+  number = "38",
+  doi = "10.1186/s12859-025-06320-z"
+)
