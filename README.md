@@ -50,36 +50,51 @@ integration into existing workflows.
 - **Python docs**:
   `CIA Python documentation <https://cia-python.readthedocs.io/en/latest/index.html>`\_
 - **R Package and Tutorial**:
-  `CIA R GitHub Repository <https://github.com/ingmbioinfo/CIA_R>`\_
+  `CIA R GitHub Repository <https://github.com/ingmbioinfo/cia/tree/master/tutorial>`\_
 
 ## Installation
 
 You can install the development version of `CIA` from GitHub with:
 
 ``` r
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("ingmbioinfo/CIA_R", force = TRUE, dependencies = TRUE)
+library("remotes")
+remotes::install_github("ingmbioinfo/CIA_R", 
+                        dependencies = TRUE, build_vignettes = TRUE)
 ```
-
-## Installation with conda
-
-You can also install the development version of `CIA` exploiting CIA_R.yml (in inst folder):
-
-``` bash
-
-conda env create -n {name} -f CIA_R.yml
-conda activate {name}
-Rscript -e 'if (!requireNamespace("remotes", quietly=TRUE)) install.packages("remotes", repos="https://cloud.r-project.org"); remotes::install_github("ingmbioinfo/CIA_R", dependencies=TRUE, upgrade="never", build_vignettes=FALSE)'
-
-```
-
 
 ## Development
 
 If you encounter a bug, have usage questions, or want to share ideas and
 functionality to make this package better, feel free to file an
 [issue](https://github.com/ingmbioinfo/CIA_R/issues).
+
+## Citation
+
+To cite CIA in your work, please use:
+
+> Ferrari I, Battistella M, Vincenti F, Gobbini A, Marini F,
+> Notarbartolo S, Costanza J, Biffo S, Grifantini R, Abrignani S,
+> Galeota E (2025). “CIA: unveiling cellular identities with
+> cluster-independent annotation in single-cell RNA sequencing data for
+> comprehensive cell type characterization and exploration.” *BMC
+> Bioinformatics*, *27*(38). <doi:10.1186/s12859-025-06320-z>
+> <https://doi.org/10.1186/s12859-025-06320-z>.
+
+or the BibTeX entry:
+
+    @article{Ferrari2025,
+      title = {CIA: unveiling cellular identities with cluster-independent annotation in single-cell RNA sequencing data for comprehensive cell type characterization and exploration},
+      volume = {27},
+      ISSN = {1471-2105},
+      url = {http://dx.doi.org/10.1186/s12859-025-06320-z},
+      DOI = {10.1186/s12859-025-06320-z},
+      number = {38},
+      journal = {BMC Bioinformatics},
+      publisher = {Springer Science and Business Media LLC},
+      author = {Ferrari,  Ivan and Battistella,  Mattia and Vincenti,  Francesca and Gobbini,  Andrea and Marini,  Federico and Notarbartolo,  Samuele and Costanza,  Jole and Biffo,  Stefano and Grifantini,  Renata and Abrignani,  Sergio and Galeota,  Eugenia},
+      year = {2025},
+      month = dec 
+    }
 
 ## Code of Conduct
 
