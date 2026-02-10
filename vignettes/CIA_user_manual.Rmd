@@ -88,6 +88,8 @@ This tool offers several advantages:
 
 # Getting started {#gettingstarted}
 
+## Installation and usage of CIA
+
 To install this package, start R and enter:
 
 ```{r install, eval=FALSE}
@@ -108,6 +110,24 @@ If you want to install the development version (from the GitHub repository), you
 ```{r installdev, eval=FALSE}
 BiocManager::install("ingmbioinfo/CIA_R")
 ```
+
+## Citing CIA
+
+To cite CIA in your work, please use:
+
+> Ferrari I, Battistella M, Vincenti F, Gobbini A, Marini F, Notarbartolo S,
+Costanza J, Biffo S, Grifantini R, Abrignani S, Galeota E (2025). “CIA:
+unveiling cellular identities with cluster-independent annotation in
+single-cell RNA sequencing data for comprehensive cell type characterization
+and exploration.” _BMC Bioinformatics_, *27*(38).
+doi:10.1186/s12859-025-06320-z <https://doi.org/10.1186/s12859-025-06320-z>.
+
+The full information, including a BibTeX entry, can be obtained as usual via 
+
+```{r citation}
+citation("CIA")
+```
+
 
 # CIA input {#inputtocia}
 
