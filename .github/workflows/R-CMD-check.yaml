@@ -146,6 +146,9 @@ jobs:
           ## Required for terra
           brew install gdal
 
+          ## libintl.h not found?
+          brew install gettext
+
       - name: Install binary units for macOS
         if: matrix.config.os == 'macOS-latest'
         run: |
